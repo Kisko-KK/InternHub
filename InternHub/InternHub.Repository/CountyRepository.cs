@@ -10,43 +10,43 @@ using System.Threading.Tasks;
 
 namespace InternHub.Repository
 {
-    public class StateRepository : IStateRepository
+    public class CountyRepository : ICountyRepository
     {
         public IConnectionString ConnectionString { get; set; }
 
-        public StateRepository(IConnectionString connectionString)
+        public CountyRepository(IConnectionString connectionString)
         {
             ConnectionString = connectionString;
         }
 
-        public async Task<List<State>> GetAllAsync()
+        public async Task<List<County>> GetAllAsync()
         {
-            List<State> states = new List<State>();
+            List<County> counties = new List<County>();
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "SELECT * FROM public.\"State\";";
+                string query = "SELECT * FROM public.\"County\";";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
 
                 await connection.OpenAsync();
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
-                while (reader.HasRows && await reader.ReadAsync())
+                while(reader.HasRows && await reader.ReadAsync())
                 {
-                    State state = ReadState(reader);
-                    if (state != null) states.Add(state);
+                    County county = ReadCounty(reader);
+                    if (county != null) counties.Add(county);
                 }
             }
 
-            return states;
+            return counties;
         }
 
-        public async Task<State> GetByIdAsync(Guid id)
+        public async Task<County> GetByIdAsync(Guid id)
         {
-            State state = new State();
+            County county = new County();
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "SELECT * FROM public.\"State\" where \"Id\" = @id;";
+                string query = "SELECT * FROM public.\"County\" where \"Id\" = @id;";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
                 command.Parameters.AddWithValue("@id", id);
 
@@ -56,28 +56,28 @@ namespace InternHub.Repository
 
                 if (reader.HasRows && await reader.ReadAsync())
                 {
-                    state = ReadState(reader);
+                    county = ReadCounty(reader);
                 }
             }
 
-            return state;
+            return county;
         }
 
-        public async Task<bool> Add(State state)
+        public async Task<bool> Add(County county)
         {
             int numberOfAffectedRows = 0;
 
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "INSERT into public.\"State\" values  (@id, @name, @dateCreated, @dateUpdated, @createdByUserId, @updatedByUserId, @isActive);";
+                string query = "INSERT into public.\"County\" values  (@id, @name, @dateCreated, @dateUpdated, @createdByUserId, @updatedByUserId, @isActive);";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
-                command.Parameters.AddWithValue("@id", state.Id);
-                command.Parameters.AddWithValue("@name", state.Name);
-                command.Parameters.AddWithValue("@dateUpdated", state.DateUpdated);
-                command.Parameters.AddWithValue("@updatedByUserId", state.UpdatedByUserId);
-                command.Parameters.AddWithValue("@isActive", state.IsActive);
-                command.Parameters.AddWithValue("@dateCreated", state.DateCreated);
-                command.Parameters.AddWithValue("@createdByUserId", state.CreatedByUserId);
+                command.Parameters.AddWithValue("@id", county.Id);
+                command.Parameters.AddWithValue("@name", county.Name);
+                command.Parameters.AddWithValue("@dateUpdated", county.DateUpdated);
+                command.Parameters.AddWithValue("@updatedByUserId", county.UpdatedByUserId);
+                command.Parameters.AddWithValue("@isActive", county.IsActive);
+                command.Parameters.AddWithValue("@dateCreated", county.DateCreated);
+                command.Parameters.AddWithValue("@createdByUserId", county.CreatedByUserId);
 
                 await connection.OpenAsync();
 
@@ -87,19 +87,19 @@ namespace InternHub.Repository
             return numberOfAffectedRows != 0;
         }
 
-        public async Task<bool> Update(State state)
+        public async Task<bool> Update(County county)
         {
             int numberOfAffectedRows = 0;
 
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "UPDATE public.\"State\" SET \"Name\" = @name, \"DateUpdated\" = @dateUpdated, \"UpdatedByUserId\" = @updatedByUserId, \"IsActive\" = @isActive where \"Id\" = @id";
+                string query = "UPDATE public.\"County\" SET \"Name\" = @name, \"DateUpdated\" = @dateUpdated, \"UpdatedByUserId\" = @updatedByUserId, \"IsActive\" = @isActive where \"Id\" = @id";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
-                command.Parameters.AddWithValue("@id", state.Id);
-                command.Parameters.AddWithValue("@name", state.Name);
-                command.Parameters.AddWithValue("@dateUpdated", state.DateUpdated);
-                command.Parameters.AddWithValue("@updatedByUserId", state.UpdatedByUserId);
-                command.Parameters.AddWithValue("@isActive", state.IsActive);
+                command.Parameters.AddWithValue("@id", county.Id);
+                command.Parameters.AddWithValue("@name", county.Name);
+                command.Parameters.AddWithValue("@dateUpdated", county.DateUpdated);
+                command.Parameters.AddWithValue("@updatedByUserId", county.UpdatedByUserId);
+                command.Parameters.AddWithValue("@isActive", county.IsActive);
 
                 await connection.OpenAsync();
 
@@ -115,7 +115,7 @@ namespace InternHub.Repository
 
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "DELETE FROM public.\"State\" where \"Id\" = @id";
+                string query = "DELETE FROM public.\"County\" where \"Id\" = @id";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
                 command.Parameters.AddWithValue("@id", id);
 
@@ -127,11 +127,11 @@ namespace InternHub.Repository
             return numberOfAffectedRows != 0;
         }
 
-        private State ReadState(NpgsqlDataReader reader)
+        private County ReadCounty(NpgsqlDataReader reader)
         {
             try
             {
-                return new State
+                return new County
                 {
                     Id = (Guid)reader["Id"],
                     Name = Convert.ToString(reader["Name"]),

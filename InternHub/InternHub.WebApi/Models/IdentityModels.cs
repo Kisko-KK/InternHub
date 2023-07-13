@@ -20,10 +20,16 @@ namespace InternHub.WebApi.Models
         }
     }
 
+    public class ApplicationRole : Role
+    {
+        public ApplicationRole() : base() { }
+        public ApplicationRole(string roleName) : base(roleName) { }
+    }
+
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base(Environment.GetEnvironmentVariable("ConnectionString"), throwIfV1Schema: false)
         {
         }
 

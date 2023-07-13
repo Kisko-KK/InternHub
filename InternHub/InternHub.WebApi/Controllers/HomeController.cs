@@ -13,6 +13,7 @@ namespace InternHub.WebApi.Controllers
         public ActionResult Index()
         {
             ViewBag.Title = "Home Page";
+            
 
             return View();
         }

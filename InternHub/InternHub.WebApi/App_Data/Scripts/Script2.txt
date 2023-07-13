@@ -1,0 +1,31 @@
+﻿INSERT INTO public."County" ("Id", "Name", "DateCreated", "DateUpdated", "CreatedByUserId", "UpdatedByUserId", "IsActive")
+VALUES
+    ('dcf8f823-e739-4c32-9668-bbed19a8335f', 'Bjelovarsko-Bilogorska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('2f4a6b78-302c-4c0a-abd7-ed399b378ff6', 'Brodsko-Posavska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('1d40f327-a6ad-478d-b13a-e96a21f86082', 'Dubrovačko-Neretvanska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('df4d6960-b0ca-48b6-b690-a2a25adab5d0', 'Istarska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('1fef1f7e-b916-4e6a-81fd-03d306ffdf02', 'Karlovacka', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('5738e483-42f0-4b31-9bca-cf993ba4db54', 'Koprivničko-Križevačka', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('2094b05e-91b0-4343-85de-86b253689c42', 'Krapinsko-Zagorska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('40032647-bffc-4f19-805e-bc4a912f56b5', 'Ličko-Senjska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('30dcecf7-2202-43e0-aafe-580c200466ad', 'Međimurska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('517bf28e-8064-4731-b9b9-099eb8d39f2f', 'Osječko-Baranjska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('e9f21cae-ccc3-4ae0-8cbb-f41bae9cffaf', 'Požeško-Slavonska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('5405aa56-9ea5-4c8d-81c3-04c218f0efaf', 'Primorsko-Goranska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('fa2db7fe-519c-4a33-9254-492513e073fd', 'Sisačko-Moslavačka', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('0f15336f-6025-4448-82b1-3703970b3ebc', 'Splitsko-Dalmatinska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('37d2ebb7-f0e1-40d3-a560-87dae16f1805', 'Šibensko-Kninska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('251ec21f-257a-429b-862c-9f60bf6b49f1', 'Varaždinska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('9bbde208-4241-427b-b27a-b617140de2ef', 'Virovitičko-Podravska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('28a6e041-5316-4567-a4e1-2ac56d043f78', 'Vukovarsko-Srijemska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('931b77ef-b011-4402-96d0-ddc613e66181', 'Zadarska', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('afce55f4-177a-4869-8736-9450aa91d163', 'Zagrebačka', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('1eb58f2e-7966-4171-90a6-8912558325df', 'Grad Zagreb', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true);
+    
+ALTER TABLE public."State" ADD COLUMN "DateUpdated" TIMESTAMP not null;
+
+INSERT INTO public."State" ("Id", "Name", "DateCreated", "DateUpdated", "CreatedByUserId", "UpdatedByUserId", "IsActive")
+VALUES
+    ('45ba9671-60e0-4368-b6f7-aa094bcff23e', 'Prihvaćeno', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('80879fa0-c082-49ff-8722-f45f4017e834', 'U procesu', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('d9355afe-8866-47d4-a636-0914201cb139', 'Odbijeno', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true);

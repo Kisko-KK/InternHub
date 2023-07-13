@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace InternHub.Repository.Common
 {
-    public interface IStateRepository
+    public interface ICountyRepository
     {
-        Task<List<State>> GetAllAsync();
-        Task<State> GetByIdAsync(Guid id);
-        Task<bool> Add(State state);
-        Task<bool> Update(State state);
+        Task<List<County>> GetAllAsync();
+        Task<County> GetByIdAsync(Guid id);
+        Task<bool> Add(County county);
+        Task<bool> Update(County county);
         Task<bool> Remove(Guid id);
     }
 }

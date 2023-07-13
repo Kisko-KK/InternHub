@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICountyRepository.cs" />
     <Compile Include="IStateRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -48,6 +49,10 @@
     <ProjectReference Include="..\InternHub.Common\InternHub.Common.csproj">
       <Project>{ffd157ea-a094-4dd5-81ab-fb4d2f4425b2}</Project>
       <Name>InternHub.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InternHub.Model\InternHub.Model.csproj">
+      <Project>{A1603186-460C-4EFD-813E-0636612D117C}</Project>
+      <Name>InternHub.Model</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

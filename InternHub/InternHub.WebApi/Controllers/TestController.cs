@@ -20,7 +20,7 @@ namespace InternHub.WebApi.Controllers
 
         public HttpResponseMessage Post()
         {
-            State.Add();
+            //State.Add();
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 

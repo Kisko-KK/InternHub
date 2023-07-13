@@ -48,6 +48,7 @@
     <Compile Include="IInternship.cs" />
     <Compile Include="IInternshipApplication.cs" />
     <Compile Include="INotification.cs" />
+    <Compile Include="IRole.cs" />
     <Compile Include="IState.cs" />
     <Compile Include="IStudent.cs" />
     <Compile Include="IStudyArea.cs" />
