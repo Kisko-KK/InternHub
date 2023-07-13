@@ -9,6 +9,7 @@ namespace InternHub.Model
 {
     public class StudyArea : BaseModel, IStudyArea
     {
+       
         public string Name { get; set; }
     }
 }
