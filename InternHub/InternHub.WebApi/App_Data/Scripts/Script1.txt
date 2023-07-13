@@ -1,4 +1,122 @@
-﻿create table public."County"(
+﻿-- dbo."AspNetUsers" definition
+
+-- Drop table
+
+-- DROP TABLE dbo."AspNetUsers";
+
+CREATE TABLE dbo."AspNetUsers" (
+	"Id" varchar(128) NOT NULL,
+	"FirstName" text NULL,
+	"LastName" text NULL,
+	"Address" text NULL,
+	"Description" text NULL,
+	"CountyId" uuid NOT NULL,
+	"IsActive" bool NOT NULL,
+	"DateCreated" timestamp NOT NULL,
+	"DateUpdated" timestamp NOT NULL,
+	"Email" varchar(256) NULL,
+	"EmailConfirmed" bool NOT NULL,
+	"PasswordHash" text NULL,
+	"SecurityStamp" text NULL,
+	"PhoneNumber" text NULL,
+	"PhoneNumberConfirmed" bool NOT NULL,
+	"TwoFactorEnabled" bool NOT NULL,
+	"LockoutEndDateUtc" timestamp NULL,
+	"LockoutEnabled" bool NOT NULL,
+	"AccessFailedCount" int4 NOT NULL,
+	"UserName" varchar(256) NOT NULL,
+	CONSTRAINT "PK_dbo.AspNetUsers" PRIMARY KEY ("Id")
+);
+CREATE UNIQUE INDEX "AspNetUsers_UserNameIndex" ON dbo."AspNetUsers" USING btree ("UserName");
+
+-- dbo."AspNetRoles" definition
+
+-- Drop table
+
+-- DROP TABLE dbo."AspNetRoles";
+
+CREATE TABLE dbo."AspNetRoles" (
+	"Id" varchar(128) NOT NULL,
+	"Name" varchar(256) NOT NULL,
+	CONSTRAINT "PK_dbo.AspNetRoles" PRIMARY KEY ("Id")
+);
+CREATE UNIQUE INDEX "AspNetRoles_RoleNameIndex" ON dbo."AspNetRoles" USING btree ("Name");
+
+-- dbo."AspNetUserClaims" definition
+
+-- Drop table
+
+-- DROP TABLE dbo."AspNetUserClaims";
+
+CREATE TABLE dbo."AspNetUserClaims" (
+	"Id" serial4 NOT NULL,
+	"UserId" varchar(128) NOT NULL,
+	"ClaimType" text NULL,
+	"ClaimValue" text NULL,
+	CONSTRAINT "PK_dbo.AspNetUserClaims" PRIMARY KEY ("Id")
+);
+CREATE INDEX "AspNetUserClaims_IX_UserId" ON dbo."AspNetUserClaims" USING btree ("UserId");
+
+
+-- dbo."AspNetUserClaims" foreign keys
+
+ALTER TABLE dbo."AspNetUserClaims" ADD CONSTRAINT "FK_dbo.AspNetUserClaims_dbo.AspNetUsers_UserId" FOREIGN KEY ("UserId") REFERENCES dbo."AspNetUsers"("Id") ON DELETE CASCADE;
+
+-- dbo."AspNetUserLogins" definition
+
+-- Drop table
+
+-- DROP TABLE dbo."AspNetUserLogins";
+
+CREATE TABLE dbo."AspNetUserLogins" (
+	"LoginProvider" varchar(128) NOT NULL,
+	"ProviderKey" varchar(128) NOT NULL,
+	"UserId" varchar(128) NOT NULL,
+	CONSTRAINT "PK_dbo.AspNetUserLogins" PRIMARY KEY ("LoginProvider", "ProviderKey", "UserId")
+);
+CREATE INDEX "AspNetUserLogins_IX_UserId" ON dbo."AspNetUserLogins" USING btree ("UserId");
+
+
+-- dbo."AspNetUserLogins" foreign keys
+
+ALTER TABLE dbo."AspNetUserLogins" ADD CONSTRAINT "FK_dbo.AspNetUserLogins_dbo.AspNetUsers_UserId" FOREIGN KEY ("UserId") REFERENCES dbo."AspNetUsers"("Id") ON DELETE CASCADE;
+
+-- dbo."AspNetUserRoles" definition
+
+-- Drop table
+
+-- DROP TABLE dbo."AspNetUserRoles";
+
+CREATE TABLE dbo."AspNetUserRoles" (
+	"UserId" varchar(128) NOT NULL,
+	"RoleId" varchar(128) NOT NULL,
+	CONSTRAINT "PK_dbo.AspNetUserRoles" PRIMARY KEY ("UserId", "RoleId")
+);
+CREATE INDEX "AspNetUserRoles_IX_RoleId" ON dbo."AspNetUserRoles" USING btree ("RoleId");
+CREATE INDEX "AspNetUserRoles_IX_UserId" ON dbo."AspNetUserRoles" USING btree ("UserId");
+
+
+-- dbo."AspNetUserRoles" foreign keys
+
+ALTER TABLE dbo."AspNetUserRoles" ADD CONSTRAINT "FK_dbo.AspNetUserRoles_dbo.AspNetRoles_RoleId" FOREIGN KEY ("RoleId") REFERENCES dbo."AspNetRoles"("Id") ON DELETE CASCADE;
+ALTER TABLE dbo."AspNetUserRoles" ADD CONSTRAINT "FK_dbo.AspNetUserRoles_dbo.AspNetUsers_UserId" FOREIGN KEY ("UserId") REFERENCES dbo."AspNetUsers"("Id") ON DELETE CASCADE;
+
+
+-- dbo."__MigrationHistory" definition
+
+-- Drop table
+
+-- DROP TABLE dbo."__MigrationHistory";
+
+CREATE TABLE dbo."__MigrationHistory" (
+	"MigrationId" varchar(150) NOT NULL,
+	"ContextKey" varchar(300) NOT NULL,
+	"Model" bytea NOT NULL,
+	"ProductVersion" varchar(32) NOT NULL,
+	CONSTRAINT "PK_dbo.__MigrationHistory" PRIMARY KEY ("MigrationId", "ContextKey")
+);
+
+create table public."County"(
     "Id" uuid primary key,
     "Name" varchar NOT NULL,
     "DateCreated" TIMESTAMP NOT NULL, 
