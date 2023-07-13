@@ -9,6 +9,7 @@ namespace InternHub.Common
     public class PagedList<T>
     {
         public int CurrentPage { get; set; } = 1;
+        //Convert.ToInt32(pagedList.ItemCount / paging.PageSize) + (pagedList.ItemCount % paging.PageSize != 0 ? 1 : 0);
         public int LastPage { get; set; } = 1;
         public int DatabaseRecordsCount { get; set; } = 0;
         public int PageSize { get; set; } = 0;

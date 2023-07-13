@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternHub.WebApi", "InternHub.WebApi\InternHub.WebApi.csproj", "{0ACE74AB-9489-4886-A7DB-A82F5B77FA53}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternHub.Common", "InternHub.Common\InternHub.Common.csproj", "{FFD157EA-A094-4DD5-81AB-FB4D2F4425B2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternHub.Repository", "InternHub.Repository\InternHub.Repository.csproj", "{6A1B5CFD-7140-4ECE-87A5-1D150B9016D0}"
@@ -21,16 +19,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternHub.Model.Common", "I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternHub.DAL", "InternHub.DAL\InternHub.DAL.csproj", "{ED158916-42A8-46B6-B9A0-4866AC0A94A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternHub.WebApi", "InternHub.WebApi\InternHub.WebApi.csproj", "{4AE91784-C183-4E53-8B94-CA5DB60D8ADD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0ACE74AB-9489-4886-A7DB-A82F5B77FA53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0ACE74AB-9489-4886-A7DB-A82F5B77FA53}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0ACE74AB-9489-4886-A7DB-A82F5B77FA53}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0ACE74AB-9489-4886-A7DB-A82F5B77FA53}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FFD157EA-A094-4DD5-81AB-FB4D2F4425B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FFD157EA-A094-4DD5-81AB-FB4D2F4425B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFD157EA-A094-4DD5-81AB-FB4D2F4425B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -63,6 +59,10 @@ Global
 		{ED158916-42A8-46B6-B9A0-4866AC0A94A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED158916-42A8-46B6-B9A0-4866AC0A94A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED158916-42A8-46B6-B9A0-4866AC0A94A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AE91784-C183-4E53-8B94-CA5DB60D8ADD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AE91784-C183-4E53-8B94-CA5DB60D8ADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AE91784-C183-4E53-8B94-CA5DB60D8ADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AE91784-C183-4E53-8B94-CA5DB60D8ADD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

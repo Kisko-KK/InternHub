@@ -67,10 +67,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RepositoryModule.cs" />
+    <Compile Include="StateRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\InternHub.Model.Common\InternHub.Model.Common.csproj">
+      <Project>{84f6f170-d048-4833-8f62-a19dca4435a4}</Project>
+      <Name>InternHub.Model.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InternHub.Model\InternHub.Model.csproj">
+      <Project>{a1603186-460c-4efd-813e-0636612d117c}</Project>
+      <Name>InternHub.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InternHub.Repository.Common\InternHub.Repository.Common.csproj">
+      <Project>{05e39e4d-685b-4111-8083-76f6e6384128}</Project>
+      <Name>InternHub.Repository.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

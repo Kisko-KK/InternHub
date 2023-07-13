@@ -1,0 +1,101 @@
+﻿create table public."County"(
+    "Id" uuid primary key,
+    "Name" varchar NOT NULL,
+    "DateCreated" TIMESTAMP NOT NULL, 
+    "DateUpdated" TIMESTAMP NOT NULL,
+    "CreatedByUserId" varchar(128) NOT NULL,
+    "UpdatedByUserId" varchar(128) NOT NULL,
+    "IsActive" bool NOT NULL DEFAULT true
+);
+
+create table public."State"(
+	"Id" uuid primary key,
+	"Name" text not null,
+	"DateCreated" TIMESTAMP not null,
+	"CreatedByUserId" varchar(128) not null,
+	"UpdatedByUserId" varchar(128) not null,
+	"IsActive" bool default true
+);
+
+create table public."StudyArea" (
+    "Id" uuid primary key,
+    "Name" varchar NOT NULL,
+    "DateCreated" TIMESTAMP NOT NULL, 
+    "DateUpdated" TIMESTAMP NOT NULL,
+    "CreatedByUserId" varchar(128) NOT NULL,
+    "UpdatedByUserId" varchar(128) NOT NULL,
+    "IsActive" bool NOT NULL DEFAULT true
+);
+
+create table public."Student"(
+	"Id" varchar(128) primary key,
+	constraint "FK_Student_User_Id" foreign key ("Id") references dbo."AspNetUsers"("Id"),
+	"StudyAreaId" uuid not null,
+	constraint "FK_Student_StudyArea_Id" foreign key("StudyAreaId") references public."StudyArea"("Id"),
+	"DateCreated" TIMESTAMP not null,
+	"DateUpdated" TIMESTAMP not null,
+	"CreatedByUserId" varchar(128) not null,
+	"UpdatedByUserId" varchar(128) not null,
+	"IsActive" bool not null default true
+);
+
+create table public."Company"(
+	"Id" varchar(128) primary key,
+	"StateId" uuid not null,
+	"Name" VARCHAR not null,
+	"Website" VARCHAR not null,
+	"IsAccepted" bool not null,
+	"DateCreated" TIMESTAMP not null,
+	"DateUpdated" TIMESTAMP not null,
+	"IsActive" bool not null default true,
+	
+	CONSTRAINT "FK_Company_State_StateId" FOREIGN KEY ("StateId") references public."State"("Id"),
+	CONSTRAINT "FK_Company_User_Id" FOREIGN KEY ("Id") references dbo."AspNetUsers"("Id")
+);
+
+create table public."Internship"(
+	"Id" uuid primary key,
+	"StudyAreaId" uuid not null,
+	"CompanyId" varchar(128) not null,
+	"Name" VARCHAR not null,
+	"Description" VARCHAR not null,
+	"Address" VARCHAR not null,
+	"StartDate" TIMESTAMP not null,
+	"EndDate" TIMESTAMP not null,
+	"CreatedByUserId" uuid not null,
+	"UpdatedByUserId" uuid not null,
+	"DateCreated" TIMESTAMP not null,
+	"DateUpdated" TIMESTAMP not null,
+	"IsActive" bool not null default true,
+	
+	CONSTRAINT "FK_Internship_StudyArea_StudyAreaId" FOREIGN KEY ("StudyAreaId") references public."StudyArea"("Id"),
+	CONSTRAINT "FK_Internship_Company_CompanyId" FOREIGN KEY ("CompanyId") references public."Company"("Id")
+);
+
+create table public."Notification" (
+	"Id" uuid primary key,
+	"Title" VARCHAR not null,
+	"Body" VARCHAR not null,
+	"ReceiverUserId" varchar(128) not null,
+	constraint "FK_Notification_User_ReceiverUserId" foreign key ("ReceiverUserId") references dbo."AspNetUsers"("Id"),
+	"DateCreated" TIMESTAMP not null,
+	"DateUpdated" TIMESTAMP not null,
+	"CreatedByUserId" varchar(128) not null,
+	"UpdatedByUserId" varchar(128) not null,
+	"IsActive" bool not null default true
+);
+
+create table public."InternshipApplication" (
+    "Id" uuid primary key,
+    "StateId" uuid NOT NULL,
+    "StudentId" varchar(128) NOT NULL,
+    "InternshipId" uuid NOT NULL,
+    "DateCreated" TIMESTAMP NOT NULL, 
+    "DateUpdated" TIMESTAMP NOT NULL,
+    "CreatedByUserId" varchar(128) NOT NULL,
+    "UpdatedByUserId" varchar(128) NOT NULL,
+    "IsActive" bool not null DEFAULT true,
+    CONSTRAINT "FK_InternshipApplication_State_StateId" FOREIGN KEY ("StateId") REFERENCES public."State"("Id"),
+    CONSTRAINT "FK_InternshipApplication_Student_StudentId" FOREIGN KEY ("StudentId") REFERENCES public."Student"("Id"),
+    CONSTRAINT "FK_InternshipApplication_Internship_InternshipId" FOREIGN KEY ("InternshipId") REFERENCES public."Internship"("Id")
+);
