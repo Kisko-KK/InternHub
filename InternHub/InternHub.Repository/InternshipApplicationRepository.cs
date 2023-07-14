@@ -93,6 +93,12 @@ namespace InternHub.Repository
         public async Task<InternshipApplication> GetInternshipApplicationByIdAsync(Guid id)
         {
             throw new NotImplementedException();
+           /* InternshipApplication internshipApplication = null;
+            using(NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
+            {
+                
+            }*/
+
         }
 
         public async Task<InternshipApplication> PostInternshipApplicationAsync(InternshipApplication internshipApplication)
@@ -124,11 +130,7 @@ namespace InternHub.Repository
                     StateId = (Guid)reader["StateId"],
                     StudentId = (string)reader["StudentId"],
                     InternshipId = (Guid)reader["InternshipId"]
-
-                    //Student student= getstudentbyid(StudentId)
-                    //State state= getStateById(StateId)
-                    //Internship internship=GetInternshipById(InternshipId)
-
+             
                 };
 
             }
