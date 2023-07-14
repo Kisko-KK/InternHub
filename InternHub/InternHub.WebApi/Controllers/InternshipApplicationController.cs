@@ -47,15 +47,17 @@ namespace InternHub.WebApi.Controllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest);
                 }
 
-                PagedList<InternshipApplication> pagedApplications = new PagedList<InternshipApplication>
+                PagedList<InternshipApplicationView> pagedApplications = new PagedList<InternshipApplicationView>
                 {
                     CurrentPage = internshipApplications.CurrentPage,
                     DatabaseRecordsCount = internshipApplications.DatabaseRecordsCount,
                     LastPage = internshipApplications.LastPage,
                     PageSize = internshipApplications.PageSize,
-                    Data = internshipApplications.Data.Select(x => new InternshipApplicationView(x)).ToList();
-                }
+                    Data = internshipApplications.Data.Select(x => new InternshipApplicationView(x)).ToList()
+                };
+                return Request.CreateResponse(HttpStatusCode.OK, pagedApplications);
             }
+            catch { return Request.CreateResponse(HttpStatusCode.InternalServerError,"Code crashed");}
         }
 
     }
