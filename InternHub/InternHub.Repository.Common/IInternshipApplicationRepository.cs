@@ -12,7 +12,7 @@ namespace InternHub.Repository.Common
     {
         Task<PagedList<InternshipApplication>> GetAllInternshipApplicationsAsync(Paging paging, Sorting sorting,InternshipApplicationFilter internshipApplicationFilter);
         Task<InternshipApplication> GetInternshipApplicationByIdAsync(Guid id);
-        Task<InternshipApplication> PostInternshipApplicationAsync(InternshipApplication internshipApplication);
+        Task<bool> PostInternshipApplicationAsync(InternshipApplication internshipApplication);
         Task<InternshipApplication> PutInternshipApplicationAsync(Guid id, InternshipApplication internshipApplication);
         Task<bool> DeleteInternshipApplicationAsync(Guid id);
     }

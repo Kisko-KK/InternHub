@@ -21,14 +21,11 @@ namespace InternHub.Service
 
 
         public async Task<PagedList<InternshipApplication>> GetAllInternshipApplicationsAsync(Paging paging, Sorting sorting, InternshipApplicationFilter internshipApplicationFilter) => await _repo.GetAllInternshipApplicationsAsync(paging, sorting, internshipApplicationFilter);
-      
 
-        public Task<InternshipApplication> GetInternshipApplicationByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<InternshipApplication> PostInternshipApplicationAsync(InternshipApplication internshipApplication)
+        public async Task<InternshipApplication> GetInternshipApplicationByIdAsync(Guid id) => await _repo.GetInternshipApplicationByIdAsync(id);
+       
+        public Task<bool> PostInternshipApplicationAsync(InternshipApplication internshipApplication, string currentUserId)
         {
             throw new NotImplementedException();
         }

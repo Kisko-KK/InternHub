@@ -1,12 +1,15 @@
 ﻿using InternHub.Common;
 using InternHub.Model;
 using InternHub.Service.Common;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Permissions;
 using System.Threading.Tasks;
+using System.Web.Configuration;
 using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
@@ -20,26 +23,36 @@ namespace InternHub.WebApi.Controllers
             _internshipApplicationService = internshipApplicationService;   
         }
 
-        public async Task<HttpResponseMessage> GetAll(int currentPage, int pageSize, string sortBy, string sortOrder, string stateName, string internshipName)
+        public async Task<HttpResponseMessage> GetAll(int? currentPage=null, int? pageSize=null, string sortBy=null, string sortOrder=null, string stateName=null, string internshipName=null)
         {
             try
             {
-                Sorting sorting = new Sorting()
+                Sorting sorting = new Sorting();
+                if (sortBy != null)
                 {
-                    SortBy = sortBy,
-                    SortOrder = sortOrder
-                };
-                if (sorting.SortOrder.ToLower() != "desc" && sorting.SortOrder.ToLower() != "asc") sorting.SortOrder = "ASC";
-                Paging paging = new Paging()
+                    sorting.SortBy = sortBy;
+                }
+                if(sortOrder != null)
                 {
-                    PageSize = pageSize,
-                    CurrentPage = currentPage
-                };
-                InternshipApplicationFilter filter = new InternshipApplicationFilter()
+                    sorting.SortOrder = sortOrder;  
+                }
+                Paging paging = new Paging();
+
+                if(currentPage != null) {
+                    paging.CurrentPage = (int)currentPage;
+                }
+                if(pageSize != null) {
+                    paging.PageSize = (int)pageSize;
+                }
+              
+                InternshipApplicationFilter filter = new InternshipApplicationFilter();
+                if (stateName != null)
                 {
-                    StateName = stateName,
-                    InternshipName = internshipName
-                };
+                    filter.StateName = stateName;   
+                }
+                if(internshipName!=null) {
+                    filter.InternshipName=internshipName;   
+                }    
 
                 PagedList<InternshipApplication> internshipApplications = await _internshipApplicationService.GetAllInternshipApplicationsAsync(paging, sorting, filter);
                 if (internshipApplications == null)
@@ -57,8 +70,34 @@ namespace InternHub.WebApi.Controllers
                 };
                 return Request.CreateResponse(HttpStatusCode.OK, pagedApplications);
             }
-            catch { return Request.CreateResponse(HttpStatusCode.InternalServerError,"Code crashed");}
+            catch (Exception ex)
+            {
+                // Log the exception here
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "An error occurred while processing the request.", ex);
+            }
         }
+
+        public async Task<HttpResponseMessage> GetById(Guid id)
+        {
+            try
+            {
+                
+                if(id==null) return Request.CreateResponse(HttpStatusCode.BadRequest);
+                InternshipApplication internshipApplication = await _internshipApplicationService.GetInternshipApplicationByIdAsync(id);
+
+                if (internshipApplication == null) return Request.CreateResponse(HttpStatusCode.NotFound);
+                return Request.CreateResponse(HttpStatusCode.OK, new InternshipApplicationView(internshipApplication));
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        //za post metodu
+        //[Login]
+        //User.Identity.GetUserId();
+
 
     }
 }
