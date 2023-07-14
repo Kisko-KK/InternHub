@@ -12,7 +12,7 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class CountyController : ApiController
     {
         public ICountyService CountyService { get; }
@@ -23,17 +23,19 @@ namespace InternHub.WebApi.Controllers
         }
 
         // GET: api/County
+        [Authorize]
         public async Task<HttpResponseMessage> Get()
         {
             try
             {
                 List<County> counties = await CountyService.GetAllAsync();
-                return Request.CreateResponse(HttpStatusCode.OK, counties.Select(x => new CountyView() { Name = x.Name }));
+                return Request.CreateResponse(HttpStatusCode.OK, counties.Select(x => new CountyView(x)));
             }
             catch { return Request.CreateResponse(HttpStatusCode.InternalServerError, "Code crash"); }
         }
 
         // GET: api/County/5
+        [Authorize]
         public async Task<HttpResponseMessage> Get(Guid id)
         {
             try
@@ -43,7 +45,7 @@ namespace InternHub.WebApi.Controllers
                 County county = await CountyService.GetByIdAsync(id);
 
                 if (county == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
-                return Request.CreateResponse(HttpStatusCode.OK, new CountyView() { Name = county.Name });
+                return Request.CreateResponse(HttpStatusCode.OK, new CountyView(county));
             }
             catch { return Request.CreateResponse(HttpStatusCode.InternalServerError, "Code crash"); }
         }

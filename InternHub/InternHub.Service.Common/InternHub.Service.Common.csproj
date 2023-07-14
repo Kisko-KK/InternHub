@@ -42,14 +42,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ICountyService.cs" />
+    <Compile Include="INotificationService.cs" />
     <Compile Include="IStateService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\InternHub.Common\InternHub.Common.csproj">
+      <Project>{FFD157EA-A094-4DD5-81AB-FB4D2F4425B2}</Project>
+      <Name>InternHub.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\InternHub.Model\InternHub.Model.csproj">
       <Project>{a1603186-460c-4efd-813e-0636612d117c}</Project>
       <Name>InternHub.Model</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace InternHub.Model
 {
-    public class BaseModel : IBaseModel
+    public abstract class BaseModel : IBaseModel
     {
         public Guid Id { get; set; }
         public DateTime DateCreated { get; set; }

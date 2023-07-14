@@ -12,7 +12,7 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class StateController : ApiController
     {
         public IStateService StateService { get; set; }
@@ -23,17 +23,19 @@ namespace InternHub.WebApi.Controllers
         }
 
         // GET: api/State
+        [Authorize]
         public async Task<HttpResponseMessage> Get()
         {
-            //try
-            //{
+            try
+            {
                 List<State> states = await StateService.GetAllAsync();
-                return Request.CreateResponse(HttpStatusCode.OK, states.Select(x => new StateView() { Name = x.Name }));
-            //}
-            //catch { return Request.CreateResponse(HttpStatusCode.InternalServerError, "Code crash"); }
+                return Request.CreateResponse(HttpStatusCode.OK, states.Select(x => new StateView(x)));
+            }
+            catch { return Request.CreateResponse(HttpStatusCode.InternalServerError, "Code crash"); }
         }
 
         // GET: api/State/5
+        [Authorize]
         public async Task<HttpResponseMessage> Get(Guid id)
         {
             try
@@ -41,7 +43,7 @@ namespace InternHub.WebApi.Controllers
                 if (id == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
                 State state = await StateService.GetByIdAsync(id);
                 if (state == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
-                return Request.CreateResponse(HttpStatusCode.OK, new StateView() { Name = state.Name });
+                return Request.CreateResponse(HttpStatusCode.OK, new StateView(state));
             }
             catch { return Request.CreateResponse(HttpStatusCode.InternalServerError, "Code crash"); }
         }

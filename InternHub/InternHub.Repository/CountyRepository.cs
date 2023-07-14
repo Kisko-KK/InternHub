@@ -24,7 +24,7 @@ namespace InternHub.Repository
             List<County> counties = new List<County>();
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "SELECT * FROM public.\"County\";";
+                string query = "SELECT * FROM public.\"County\" WHERE \"IsActive\" = true;";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
 
                 await connection.OpenAsync();
@@ -43,10 +43,10 @@ namespace InternHub.Repository
 
         public async Task<County> GetByIdAsync(Guid id)
         {
-            County county = new County();
+            County county = null;
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "SELECT * FROM public.\"County\" where \"Id\" = @id;";
+                string query = "SELECT * FROM public.\"County\" where \"IsActive\" = true and \"Id\" = @id;";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
                 command.Parameters.AddWithValue("@id", id);
 
@@ -115,7 +115,7 @@ namespace InternHub.Repository
 
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "DELETE FROM public.\"County\" where \"Id\" = @id";
+                string query = "UPDATE public.\"County\" SET \"IsActive\" = false WHERE \"Id\" = @id";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
                 command.Parameters.AddWithValue("@id", id);
 

@@ -24,7 +24,7 @@ namespace InternHub.Repository
             List<State> states = new List<State>();
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "SELECT * FROM public.\"State\";";
+                string query = "SELECT * FROM public.\"State\" WHERE \"IsActive\" = true;";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
 
                 await connection.OpenAsync();
@@ -43,10 +43,10 @@ namespace InternHub.Repository
 
         public async Task<State> GetByIdAsync(Guid id)
         {
-            State state = new State();
+            State state = null;
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "SELECT * FROM public.\"State\" where \"Id\" = @id;";
+                string query = "SELECT * FROM public.\"State\" where \"IsActive\" = true and \"Id\" = @id;";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
                 command.Parameters.AddWithValue("@id", id);
 
@@ -115,7 +115,7 @@ namespace InternHub.Repository
 
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "DELETE FROM public.\"State\" where \"Id\" = @id";
+                string query = "UPDATE public.\"State\" SET \"IsActive\" = false where \"Id\" = @id";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
                 command.Parameters.AddWithValue("@id", id);
 

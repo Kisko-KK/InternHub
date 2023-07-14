@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Filter\InternshipFilter.cs" />
+    <Compile Include="Filter\NotificationFilter.cs" />
     <Compile Include="Filter\StudentFilter.cs" />
     <Compile Include="PagedList.cs" />
     <Compile Include="Paging.cs" />

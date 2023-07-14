@@ -10,6 +10,7 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
 using InternHub.WebApi.Models;
+using InternHub.Service;
 
 namespace InternHub.WebApi.Providers
 {
@@ -29,9 +30,9 @@ namespace InternHub.WebApi.Providers
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-            var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
+            var userManager = context.OwinContext.GetUserManager<UserManager>();
 
-            ApplicationUser user = await userManager.FindAsync(context.UserName, context.Password);
+            Model.User user = await userManager.FindAsync(context.UserName, context.Password);
 
             if (user == null)
             {

@@ -1,4 +1,4 @@
-﻿namespace InternHub.WebApi.Migrations
+﻿namespace InternHub.Model.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
@@ -13,6 +13,7 @@
                     {
                         Id = c.String(nullable: false, maxLength: 128),
                         Name = c.String(nullable: false, maxLength: 256),
+                        Discriminator = c.String(nullable: false, maxLength: 128),
                     })
                 .PrimaryKey(t => t.Id)
                 .Index(t => t.Name, unique: true, name: "RoleNameIndex");
@@ -54,9 +55,19 @@
                         LockoutEnabled = c.Boolean(nullable: false),
                         AccessFailedCount = c.Int(nullable: false),
                         UserName = c.String(nullable: false, maxLength: 256),
+                        StateId = c.Guid(),
+                        Name = c.String(),
+                        Website = c.String(),
+                        IsAccepted = c.Boolean(),
+                        StudyAreaId = c.Guid(),
+                        Discriminator = c.String(nullable: false, maxLength: 128),
                     })
                 .PrimaryKey(t => t.Id)
-                .Index(t => t.UserName, unique: true, name: "UserNameIndex");
+                .ForeignKey("dbo.States", t => t.StateId, cascadeDelete: true)
+                .ForeignKey("dbo.StudyAreas", t => t.StudyAreaId, cascadeDelete: true)
+                .Index(t => t.UserName, unique: true, name: "UserNameIndex")
+                .Index(t => t.StateId)
+                .Index(t => t.StudyAreaId);
             
             CreateTable(
                 "dbo.AspNetUserClaims",
@@ -83,20 +94,54 @@
                 .ForeignKey("dbo.AspNetUsers", t => t.UserId, cascadeDelete: true)
                 .Index(t => t.UserId);
             
+            CreateTable(
+                "dbo.States",
+                c => new
+                    {
+                        Id = c.Guid(nullable: false),
+                        Name = c.String(),
+                        DateCreated = c.DateTime(nullable: false),
+                        DateUpdated = c.DateTime(nullable: false),
+                        CreatedByUserId = c.String(),
+                        UpdatedByUserId = c.String(),
+                        IsActive = c.Boolean(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
+                "dbo.StudyAreas",
+                c => new
+                    {
+                        Id = c.Guid(nullable: false),
+                        Name = c.String(),
+                        DateCreated = c.DateTime(nullable: false),
+                        DateUpdated = c.DateTime(nullable: false),
+                        CreatedByUserId = c.String(),
+                        UpdatedByUserId = c.String(),
+                        IsActive = c.Boolean(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id);
+            
         }
         
         public override void Down()
         {
+            DropForeignKey("dbo.AspNetUsers", "StudyAreaId", "dbo.StudyAreas");
+            DropForeignKey("dbo.AspNetUsers", "StateId", "dbo.States");
             DropForeignKey("dbo.AspNetUserRoles", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "RoleId", "dbo.AspNetRoles");
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
+            DropIndex("dbo.AspNetUsers", new[] { "StudyAreaId" });
+            DropIndex("dbo.AspNetUsers", new[] { "StateId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
             DropIndex("dbo.AspNetUserRoles", new[] { "RoleId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "UserId" });
             DropIndex("dbo.AspNetRoles", "RoleNameIndex");
+            DropTable("dbo.StudyAreas");
+            DropTable("dbo.States");
             DropTable("dbo.AspNetUserLogins");
             DropTable("dbo.AspNetUserClaims");
             DropTable("dbo.AspNetUsers");
