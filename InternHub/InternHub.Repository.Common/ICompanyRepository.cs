@@ -1,8 +1,10 @@
 ﻿using InternHub.Common;
+using InternHub.Common.Filter;
 using InternHub.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,12 +12,12 @@ namespace InternHub.Repository.Common
 {
     public interface ICompanyRepository
     {
-        Task<PagedList<Company>> GetAsync(Sorting sorting, Paging paging);
+        Task<PagedList<Company>> GetAsync(Sorting sorting, Paging paging, CompanyFilter filter);
         Task<Company> GetAsync(string id);
-        Task<int> PostAsync(Company company);
-        Task<int> PutAsync(Company company);
-        Task<int> DeleteAsync(string id);
+        Task<bool> PostAsync(Company company);
+        Task<bool> PutAsync(Company company);
+        Task<bool> DeleteAsync(string id);
         Task<Company> GetCompanyAsync(string id);
-        Task<int> AcceptAsync(string id);
+        Task<bool> AcceptAsync(string id);
     }
 }

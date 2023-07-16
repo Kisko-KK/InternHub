@@ -2,11 +2,15 @@
 using InternHub.Model;
 using InternHub.Repository.Common;
 using InternHub.Service.Common;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using InternHub.Common.Filter;
 
 namespace InternHub.Service
 {
@@ -16,14 +20,14 @@ namespace InternHub.Service
         public CompanyService(ICompanyRepository companyRepository) {
             CompanyRepository = companyRepository;
         }
-        public async Task<int> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(string id)
         {
             return await CompanyRepository.DeleteAsync(id);
         }
 
-        public async Task<PagedList<Company>> GetAsync(Sorting sorting, Paging paging)
+        public async Task<PagedList<Company>> GetAsync(Sorting sorting, Paging paging, CompanyFilter filter)
         {
-            return await CompanyRepository.GetAsync(sorting, paging);
+            return await CompanyRepository.GetAsync(sorting, paging, filter);
         }
 
         public async Task<Company> GetAsync(string id)
@@ -36,22 +40,24 @@ namespace InternHub.Service
             return await CompanyRepository.GetCompanyAsync(id);
         }
 
-        public async Task<int> PostAsync(Company company)
+        public async Task<bool> PostAsync(Company company)
         {
             company.DateCreated = DateTime.Now;
             company.Id = Guid.NewGuid().ToString();
             return await CompanyRepository.PostAsync(company);
         }
 
-        public async Task<int> PutAsync(Company company)
+        public async Task<bool> PutAsync(Company company)
         {
             company.DateUpdated = DateTime.Now;
             return await CompanyRepository.PutAsync(company);
         }
 
-        public Task<int> AcceptAsync(string id)
+        public async Task<bool> AcceptAsync(string id)
         {
-            throw new NotImplementedException();
+            return await CompanyRepository.AcceptAsync(id);
         }
+
+        
     }
 }

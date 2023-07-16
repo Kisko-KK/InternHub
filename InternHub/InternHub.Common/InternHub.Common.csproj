@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Filter\CompanyFilter.cs" />
     <Compile Include="Filter\InternshipFilter.cs" />
     <Compile Include="Filter\NotificationFilter.cs" />
     <Compile Include="Filter\StudentFilter.cs" />

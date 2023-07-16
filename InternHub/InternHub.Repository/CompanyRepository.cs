@@ -1,12 +1,11 @@
 ﻿using InternHub.Common;
+using InternHub.Common.Filter;
 using InternHub.Model;
 using InternHub.Model.Common;
 using InternHub.Repository.Common;
 using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,48 +17,73 @@ namespace InternHub.Repository
         public CompanyRepository(IConnectionString connectionString) {
             this.connectionString = connectionString;
         }
-        public async Task<int> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(string id)
         {
-            Company existingCompany = await GetCompanyAsync(id);
-
-            if(existingCompany == null)
-            {
-                return -2;
-            }
 
             using(NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
                 connection.Open();
-                string commandQuery = $"UPDATE public.\"Company\" SET \"IsActive\" = false WHERE \"Id\" = '{id}'";
-                NpgsqlCommand command = new NpgsqlCommand(commandQuery, connection);
 
-                int rowsAffected = await command.ExecuteNonQueryAsync();
-                return rowsAffected;
+                using(NpgsqlTransaction transaction = connection.BeginTransaction())
+                {
+                    string companyQuery = $"UPDATE public.\"Company\" SET \"IsActive\" = false WHERE \"Id\" = '{id}'";
+                    string userQuery = $"UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false WHERE \"Id\" = '{id}'";
+
+                    NpgsqlCommand companyCommand = new NpgsqlCommand(companyQuery, connection);
+                    NpgsqlCommand userCommand = new NpgsqlCommand(userQuery, connection);
+
+                    int companyRowsUpdated = await companyCommand.ExecuteNonQueryAsync();
+                    int userRowsUpdated = await userCommand.ExecuteNonQueryAsync();
+
+                    transaction.Commit();
+                    return companyRowsUpdated > 0 || userRowsUpdated > 0;
+                }
             }
-            
         }
 
-        public async Task<PagedList<Company>> GetAsync(Sorting sorting, Paging paging)
+        public async Task<PagedList<Company>> GetAsync(Sorting sorting, Paging paging, CompanyFilter filter)
         {
             List<Company> companies = new List<Company>();
             int recordsCount = 0;
 
             StringBuilder selectQueryBuilder = new StringBuilder();
+            StringBuilder countQueryBuilder = new StringBuilder();
+            StringBuilder filterQueryBuilder = new StringBuilder();
+
 
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
                 connection.Open();
 
                 string selectQuery = "SELECT * FROM public.\"Company\" INNER JOIN dbo.\"AspNetUsers\" ON public.\"Company\".\"Id\" = dbo.\"AspNetUsers\".\"Id\" ";
-                string countQuery = "SELECT COUNT(*) FROM public.\"Company\" WHERE \"Company\".\"IsActive\" = true ";
+                string countQuery = "SELECT COUNT(*) FROM public.\"Company\"";
 
-                string filterQuery = " WHERE \"Company\".\"IsActive\" = true AND \"IsAccepted\" = true";
+                string filterQuery = " WHERE 1=1 ";
                 string sortingQuery = $" ORDER BY public.\"Company\".\"{sorting.SortBy}\" {sorting.SortOrder} ";
                 string pagingQuery = $" LIMIT {paging.PageSize} OFFSET {(paging.CurrentPage - 1) * paging.PageSize}";
 
                 
+                filterQueryBuilder.Append(filterQuery);
+                if (filter.IsActive == true)
+                {
+                    filterQueryBuilder.Append($" AND public.\"Company\".\"IsActive\" = true");
+                }
+                else
+                {
+                    filterQueryBuilder.Append($" AND public.\"Company\".\"IsActive\" = false");
+                }
+                if (filter.IsAccepted == true)
+                {
+                    filterQueryBuilder.Append($" AND public.\"Company\".\"IsAccepted\" = true");
+                }
+                else
+                {
+                    filterQueryBuilder.Append($" AND public.\"Company\".\"IsAccepted\" = false");
+                }
+
+
                 selectQueryBuilder.Append(selectQuery);
-                selectQueryBuilder.Append(filterQuery);
+                selectQueryBuilder.Append(filterQueryBuilder.ToString());
                 selectQueryBuilder.Append(sortingQuery);
                 selectQueryBuilder.Append(pagingQuery);
 
@@ -76,7 +100,10 @@ namespace InternHub.Repository
                 }
                 selectReader.Close();
 
-                NpgsqlCommand countCommand = new NpgsqlCommand(countQuery, connection);
+                countQueryBuilder.Append(countQuery);
+                countQueryBuilder.Append(filterQueryBuilder.ToString());
+
+                NpgsqlCommand countCommand = new NpgsqlCommand(countQueryBuilder.ToString(), connection);
                 var countScalar = await countCommand.ExecuteScalarAsync();
                 recordsCount = Convert.ToInt32(countScalar);
 
@@ -100,7 +127,7 @@ namespace InternHub.Repository
 
         
 
-        public async Task<int> PostAsync(Company company)
+        public async Task<bool> PostAsync(Company company)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
@@ -116,38 +143,38 @@ namespace InternHub.Repository
                         NpgsqlCommand userCommand = new NpgsqlCommand(insertUserQuery, connection);
                         NpgsqlCommand companyCommand = new NpgsqlCommand(insertCompanyQuery, connection);
 
-                        using (NpgsqlCommand companyInsertCommand = new NpgsqlCommand(insertCompanyQuery, connection, transaction))
-                        using (NpgsqlCommand userInsertCommand = new NpgsqlCommand(insertUserQuery, connection, transaction))
-                        {
-                            userInsertCommand.Parameters.AddWithValue("@id", company.Id);
-                            userInsertCommand.Parameters.AddWithValue("@firstname", company.FirstName);
-                            userInsertCommand.Parameters.AddWithValue("@lastname", company.LastName);
-                            userInsertCommand.Parameters.AddWithValue("@address", company.Address);
-                            userInsertCommand.Parameters.AddWithValue("@description", company.Description);
-                            userInsertCommand.Parameters.AddWithValue("@countyId", company.CountyId);
-                            userInsertCommand.Parameters.AddWithValue("@dateCreated", company.DateCreated);
-                            userInsertCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
-                            userInsertCommand.Parameters.AddWithValue("@email", company.Email);
-                            userInsertCommand.Parameters.AddWithValue("@username", company.Email);
+                        NpgsqlCommand companyInsertCommand = new NpgsqlCommand(insertCompanyQuery, connection, transaction);
+                        NpgsqlCommand userInsertCommand = new NpgsqlCommand(insertUserQuery, connection, transaction);
+                        
+                        userInsertCommand.Parameters.AddWithValue("@id", company.Id);
+                        userInsertCommand.Parameters.AddWithValue("@firstname", company.FirstName);
+                        userInsertCommand.Parameters.AddWithValue("@lastname", company.LastName);
+                        userInsertCommand.Parameters.AddWithValue("@address", company.Address);
+                        userInsertCommand.Parameters.AddWithValue("@description", company.Description);
+                        userInsertCommand.Parameters.AddWithValue("@countyId", company.CountyId);
+                        userInsertCommand.Parameters.AddWithValue("@dateCreated", company.DateCreated);
+                        userInsertCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
+                        userInsertCommand.Parameters.AddWithValue("@email", company.Email);
+                        userInsertCommand.Parameters.AddWithValue("@username", company.Email);
 
+                        
+                        companyInsertCommand.Parameters.AddWithValue("@id", company.Id);
+                        companyInsertCommand.Parameters.AddWithValue("@name", company.Name);
+                        companyInsertCommand.Parameters.AddWithValue("@website", company.Website);
+                        companyInsertCommand.Parameters.AddWithValue("@dateCreated", company.DateCreated);
+                        companyInsertCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
 
-                            companyInsertCommand.Parameters.AddWithValue("@id", company.Id);
-                            companyInsertCommand.Parameters.AddWithValue("@name", company.Name);
-                            companyInsertCommand.Parameters.AddWithValue("@website", company.Website);
-                            companyInsertCommand.Parameters.AddWithValue("@dateCreated", company.DateCreated);
-                            companyInsertCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
+                        await userInsertCommand.ExecuteNonQueryAsync();
+                        await companyInsertCommand.ExecuteNonQueryAsync();
 
-                            await userInsertCommand.ExecuteNonQueryAsync();
-                            await companyInsertCommand.ExecuteNonQueryAsync();
-
-                            transaction.Commit();
-                            return 1;
-                        }
+                        transaction.Commit();
+                        return true;
+                        
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        return -1;
+                        return false;
                     }
                 }
 
@@ -156,7 +183,7 @@ namespace InternHub.Repository
 
         }
 
-        public async Task<int> PutAsync(Company company)
+        public async Task<bool> PutAsync(Company company)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
@@ -189,13 +216,13 @@ namespace InternHub.Repository
 
                             transaction.Commit();
 
-                            return 1;
+                            return true;
                         }
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        return -1;
+                        return false;
                     }
                 }
             }
@@ -229,11 +256,8 @@ namespace InternHub.Repository
             }catch (Exception) { return null; }
         }
 
-        public async Task<int> AcceptAsync(string id)
+        public async Task<bool> AcceptAsync(string id)
         {
-            Company existingCompany = await GetCompanyAsync(id);
-
-            if(existingCompany != null) { return -2; }
 
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
@@ -241,11 +265,12 @@ namespace InternHub.Repository
 
                 NpgsqlCommand command = new NpgsqlCommand("UPDATE \"Company\" SET \"IsAccepted\" = true WHERE \"Id\" = @id", connection);
                 command.Parameters.AddWithValue("@id", id);
-                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-
-                
+                int rowsAffected = await command.ExecuteNonQueryAsync();
+                return rowsAffected > 0;
             }
-            return 1;
+            
         }
+
+        
     }
 }

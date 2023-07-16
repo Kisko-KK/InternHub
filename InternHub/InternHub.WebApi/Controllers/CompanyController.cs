@@ -1,4 +1,5 @@
 ﻿using InternHub.Common;
+using InternHub.Common.Filter;
 using InternHub.Model;
 using InternHub.Service.Common;
 using InternHub.WebApi.Models;
@@ -19,7 +20,7 @@ namespace InternHub.WebApi.Controllers
         public CompanyController(ICompanyService companyService) {
             CompanyService = companyService;
         }
-        public async Task<HttpResponseMessage> Get(int pageSize = 2, int currentPage = 1, string sortBy = "Id", string sortOrder = "ASC")
+        public async Task<HttpResponseMessage> Get(int pageSize = 2, int currentPage = 1, string sortBy = "Id", string sortOrder = "ASC", bool isActive = true, bool isAccepted = true)
         {
             Sorting sorting = new Sorting();
             sorting.SortBy = sortBy;
@@ -27,8 +28,11 @@ namespace InternHub.WebApi.Controllers
             Paging paging = new Paging();
             paging.PageSize = pageSize;
             paging.CurrentPage = currentPage;
+            CompanyFilter filter = new CompanyFilter();
+            filter.IsActive = isActive;
+            filter.IsAccepted = isAccepted;
 
-            PagedList<Company> pagedList = await CompanyService.GetAsync(sorting, paging);
+            PagedList<Company> pagedList = await CompanyService.GetAsync(sorting, paging, filter);
 
             PagedList<CompanyView> pagedListView = new PagedList<CompanyView> { 
                 CurrentPage = pagedList.CurrentPage,
@@ -44,14 +48,11 @@ namespace InternHub.WebApi.Controllers
         // GET api/<controller>/5
         public async Task<HttpResponseMessage> Get(string id)
         {
-            Company company = await CompanyService.GetCompanyAsync(id);
+            Company existingCompany = await CompanyService.GetCompanyAsync(id);
 
-            if (company == null)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "There isn't any company with that id!");
-            }
+            if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any compayn with that id!"); }
 
-            CompanyView companyView = new CompanyView(company);
+            CompanyView companyView = new CompanyView(existingCompany);
 
             return Request.CreateResponse(HttpStatusCode.OK, companyView);
         }
@@ -70,9 +71,8 @@ namespace InternHub.WebApi.Controllers
                 CountyId = updatedCompany.CountyId,
                 Email = updatedCompany.Email
     };
-            int num = await CompanyService.PostAsync(company);
 
-            if (num <= 0)
+            if (await CompanyService.PostAsync(company) == false)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Bad Request");
             }
@@ -84,12 +84,9 @@ namespace InternHub.WebApi.Controllers
         {
             Company existingCompany = await CompanyService.GetCompanyAsync(id);
 
-            if (existingCompany == null)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "There isn't any company with that id!");
-            }
+            if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
 
-            if(updatedCompany.Website != null) existingCompany.Website = updatedCompany.Website;
+            if (updatedCompany.Website != null) existingCompany.Website = updatedCompany.Website;
             if (updatedCompany.Name != null) existingCompany.Name = updatedCompany.Name;
 
             if (updatedCompany.FirstName != null) existingCompany.FirstName = updatedCompany.FirstName;
@@ -98,17 +95,13 @@ namespace InternHub.WebApi.Controllers
             if (updatedCompany.Description != null) existingCompany.Description = updatedCompany.Description;
             if (updatedCompany.Email != null) existingCompany.Email = updatedCompany.Email;
 
-            int rowsAffected = await CompanyService.PutAsync(existingCompany);
 
-            if (rowsAffected == -3)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "There are no specified parameters!");
-            }
-            if (rowsAffected <= 0)
+
+
+            if (await CompanyService.PutAsync(existingCompany) == false)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't update it!");
             }
-
             return Request.CreateResponse(HttpStatusCode.OK, "Updated");
 
 
@@ -117,24 +110,29 @@ namespace InternHub.WebApi.Controllers
         // DELETE api/<controller>/5
         public async Task<HttpResponseMessage> Delete(string id)
         {
-            int rowsAffected = await CompanyService.DeleteAsync(id);
+            Company existingCompany = await CompanyService.GetCompanyAsync(id);
 
-            if (rowsAffected == -2)
+            if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
+
+            if (await CompanyService.DeleteAsync(id) == false)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Hall with this id doesn't exist.");
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't delete companyl!");
             }
-            if (rowsAffected <= 0)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't delete hall!");
-            }
-            return Request.CreateResponse(HttpStatusCode.OK, $"Hall with id:{id} was deleted!");
+            return Request.CreateResponse(HttpStatusCode.OK, $"Company with id:{id} was deleted!");
         }
 
 
-        [HttpGet, Route("api/Company/Approve/{id}")]
-        public int ApproveCompany(string id)
+        [HttpPut, Route("api/Company/Approve/{id}")]
+        public async Task<HttpResponseMessage> ApproveCompany(string id)
         {
-            return 1;
+            Company existingCompany = await CompanyService.GetAsync(id);
+            if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
+
+            if(await CompanyService.AcceptAsync(id) == false)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't approve company!");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, "Company accepted!");
         }
     }
 }
