@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="ICountyRepository.cs" />
     <Compile Include="INotificationRepository.cs" />
+    <Compile Include="ICompanyRepository.cs" />
     <Compile Include="IStateRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

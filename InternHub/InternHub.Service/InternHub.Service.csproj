@@ -118,6 +118,7 @@
   <ItemGroup>
     <Compile Include="CountyService.cs" />
     <Compile Include="NotificationService.cs" />
+    <Compile Include="CompanyService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoleManager.cs" />
     <Compile Include="ServiceModule.cs" />

@@ -9,10 +9,9 @@ namespace InternHub.Model
 {
     public class Company : User, ICompany
     {
-        public Guid StateId { get; set; }
-        public State State { get; set; }
         public string Name { get; set; }
         public string Website { get; set; }
         public bool IsAccepted { get; set; }
+        public override string Id { get; set; }
     }
 }
