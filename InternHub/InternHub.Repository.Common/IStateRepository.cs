@@ -11,8 +11,8 @@ namespace InternHub.Repository.Common
     {
         Task<List<State>> GetAllAsync();
         Task<State> GetByIdAsync(Guid id);
-        Task<bool> Add(State state);
-        Task<bool> Update(State state);
-        Task<bool> Remove(Guid id);
+        Task<bool> AddAsync(State state);
+        Task<bool> UpdateAsync(State state);
+        Task<bool> RemoveAsync(State state);
     }
 }

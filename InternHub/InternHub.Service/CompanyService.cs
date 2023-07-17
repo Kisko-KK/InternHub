@@ -35,14 +35,9 @@ namespace InternHub.Service
             return await CompanyRepository.GetAsync(id);
         }
 
-        public async Task<Company> GetCompanyAsync(string id)
-        {
-            return await CompanyRepository.GetCompanyAsync(id);
-        }
-
         public async Task<bool> PostAsync(Company company)
         {
-            company.DateCreated = DateTime.Now;
+            company.DateUpdated = company.DateCreated = DateTime.Now;
             company.Id = Guid.NewGuid().ToString();
             return await CompanyRepository.PostAsync(company);
         }

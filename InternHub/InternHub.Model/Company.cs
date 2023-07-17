@@ -12,6 +12,5 @@ namespace InternHub.Model
         public string Name { get; set; }
         public string Website { get; set; }
         public bool IsAccepted { get; set; }
-        public override string Id { get; set; }
     }
 }

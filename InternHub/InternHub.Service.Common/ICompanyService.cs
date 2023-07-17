@@ -17,7 +17,6 @@ namespace InternHub.Service.Common
         Task<bool> PostAsync(Company company);
         Task<bool> PutAsync(Company company);
         Task<bool> DeleteAsync(string id);
-        Task<Company> GetCompanyAsync(string id);
         Task<bool> AcceptAsync(string id);
     }
 }

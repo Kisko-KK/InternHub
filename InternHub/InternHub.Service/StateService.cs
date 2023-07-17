@@ -28,23 +28,26 @@ namespace InternHub.Service
             return await Repo.GetByIdAsync(id);
         }
 
-        public async Task<bool> Add(State state, string currentUserId)
+        public async Task<bool> AddAsync(State state, string currentUserId)
         {
             state.DateCreated = state.DateUpdated = DateTime.UtcNow;
             state.CreatedByUserId = state.UpdatedByUserId = currentUserId;
-            return await Repo.Add(state);
+            return await Repo.AddAsync(state);
         }
 
-        public async Task<bool> Update(State state, string currentUserId)
+        public async Task<bool> UpdateAsync(State state, string currentUserId)
         {
             state.DateUpdated = DateTime.UtcNow;
             state.UpdatedByUserId = currentUserId;
-            return await Repo.Update(state);
+            return await Repo.UpdateAsync(state);
         }
 
-        public async Task<bool> Remove(Guid id)
+        public async Task<bool> RemoveAsync(State state, string currentUserId)
         {
-            return await Repo.Remove(id);
+            state.UpdatedByUserId = currentUserId;
+            state.DateUpdated = DateTime.Now;
+            state.IsActive = false;
+            return await Repo.RemoveAsync(state);
         }
     }
 }

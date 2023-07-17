@@ -63,7 +63,7 @@ namespace InternHub.WebApi.Controllers
                     Name = county.Name
                 };
 
-                bool result = await CountyService.Add(newCounty, User.Identity.GetUserId());
+                bool result = await CountyService.AddAsync(newCounty, User.Identity.GetUserId());
 
                 if (!result) return Request.CreateResponse(HttpStatusCode.BadRequest);
                 return Request.CreateResponse(HttpStatusCode.OK);
@@ -82,7 +82,7 @@ namespace InternHub.WebApi.Controllers
                 
                 if (county.Name != null) oldCounty.Name = county.Name;
 
-                bool result = await CountyService.Update(oldCounty, User.Identity.GetUserId());
+                bool result = await CountyService.UpdateAsync(oldCounty, User.Identity.GetUserId());
 
                 if (!result) return Request.CreateResponse(HttpStatusCode.BadRequest);
                 return Request.CreateResponse(HttpStatusCode.OK);
@@ -97,7 +97,11 @@ namespace InternHub.WebApi.Controllers
             {
                 if(id == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
 
-                bool result = await CountyService.Remove(id);
+                County county = await CountyService.GetByIdAsync(id);
+
+                if (county == null) return Request.CreateResponse(HttpStatusCode.NotFound);
+
+                bool result = await CountyService.RemoveAsync(county, User.Identity.GetUserId());
 
                 if(!result) return Request.CreateResponse(HttpStatusCode.BadRequest);
                 return Request.CreateResponse(HttpStatusCode.OK);

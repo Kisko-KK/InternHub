@@ -59,7 +59,7 @@ namespace InternHub.Repository
             return numberOfAffectedRows != 0;
         }
 
-        public async Task<PagedList<Notification>> GetAll(Sorting sorting, Paging paging, NotificationFilter filter)
+        public async Task<PagedList<Notification>> GetAllAsync(Sorting sorting, Paging paging, NotificationFilter filter)
         {
             if (sorting == null) sorting = new Sorting();
             if (paging == null) paging = new Paging();

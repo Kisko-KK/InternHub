@@ -63,7 +63,7 @@ namespace InternHub.Repository
             return state;
         }
 
-        public async Task<bool> Add(State state)
+        public async Task<bool> AddAsync(State state)
         {
             int numberOfAffectedRows = 0;
 
@@ -87,7 +87,7 @@ namespace InternHub.Repository
             return numberOfAffectedRows != 0;
         }
 
-        public async Task<bool> Update(State state)
+        public async Task<bool> UpdateAsync(State state)
         {
             int numberOfAffectedRows = 0;
 
@@ -109,15 +109,17 @@ namespace InternHub.Repository
             return numberOfAffectedRows != 0;
         }
 
-        public async Task<bool> Remove(Guid id)
+        public async Task<bool> RemoveAsync(State state)
         {
             int numberOfAffectedRows = 0;
 
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "UPDATE public.\"State\" SET \"IsActive\" = false where \"Id\" = @id";
+                string query = "UPDATE public.\"State\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated, \"UpdatedByUserId\" = @updatedByUserId where \"Id\" = @id";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
-                command.Parameters.AddWithValue("@id", id);
+                command.Parameters.AddWithValue("@id", state.Id);
+                command.Parameters.AddWithValue("@dateUpdated", state.DateUpdated);
+                command.Parameters.AddWithValue("@updatedByUserId", state.UpdatedByUserId);
 
                 await connection.OpenAsync();
 

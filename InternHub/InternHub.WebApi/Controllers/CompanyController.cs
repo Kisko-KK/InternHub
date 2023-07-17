@@ -3,6 +3,7 @@ using InternHub.Common.Filter;
 using InternHub.Model;
 using InternHub.Service.Common;
 using InternHub.WebApi.Models;
+using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security.Provider;
 using System;
 using System.Linq;
@@ -17,7 +18,8 @@ namespace InternHub.WebApi.Controllers
     {
         private ICompanyService CompanyService { get; set; }
 
-        public CompanyController(ICompanyService companyService) {
+        public CompanyController(ICompanyService companyService)
+        {
             CompanyService = companyService;
         }
         public async Task<HttpResponseMessage> Get(int pageSize = 2, int currentPage = 1, string sortBy = "Id", string sortOrder = "ASC", bool isActive = true, bool isAccepted = true)
@@ -34,7 +36,8 @@ namespace InternHub.WebApi.Controllers
 
             PagedList<Company> pagedList = await CompanyService.GetAsync(sorting, paging, filter);
 
-            PagedList<CompanyView> pagedListView = new PagedList<CompanyView> { 
+            PagedList<CompanyView> pagedListView = new PagedList<CompanyView>
+            {
                 CurrentPage = pagedList.CurrentPage,
                 PageSize = pagedList.PageSize,
                 DatabaseRecordsCount = pagedList.DatabaseRecordsCount,
@@ -48,7 +51,7 @@ namespace InternHub.WebApi.Controllers
         // GET api/<controller>/5
         public async Task<HttpResponseMessage> Get(string id)
         {
-            Company existingCompany = await CompanyService.GetCompanyAsync(id);
+            Company existingCompany = await CompanyService.GetAsync(id);
 
             if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any compayn with that id!"); }
 
@@ -65,12 +68,12 @@ namespace InternHub.WebApi.Controllers
                 Name = updatedCompany.Name,
                 Website = updatedCompany.Website,
                 FirstName = updatedCompany.FirstName,
-                LastName = updatedCompany?.LastName,
+                LastName = updatedCompany.LastName,
                 Address = updatedCompany.Address,
                 Description = updatedCompany.Description,
                 CountyId = updatedCompany.CountyId,
                 Email = updatedCompany.Email
-    };
+            };
 
             if (await CompanyService.PostAsync(company) == false)
             {
@@ -80,9 +83,9 @@ namespace InternHub.WebApi.Controllers
         }
 
         // PUT api/<controller>/5
-        public async Task<HttpResponseMessage> Put(string id, [FromBody] Company updatedCompany)
+        public async Task<HttpResponseMessage> Put(string id, [FromBody] CompanyUpdate updatedCompany)
         {
-            Company existingCompany = await CompanyService.GetCompanyAsync(id);
+            Company existingCompany = await CompanyService.GetAsync(id);
 
             if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
 
@@ -110,15 +113,15 @@ namespace InternHub.WebApi.Controllers
         // DELETE api/<controller>/5
         public async Task<HttpResponseMessage> Delete(string id)
         {
-            Company existingCompany = await CompanyService.GetCompanyAsync(id);
+            Company existingCompany = await CompanyService.GetAsync(id);
 
             if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
 
             if (await CompanyService.DeleteAsync(id) == false)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't delete companyl!");
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't delete company!");
             }
-            return Request.CreateResponse(HttpStatusCode.OK, $"Company with id:{id} was deleted!");
+            return Request.CreateResponse(HttpStatusCode.OK, $"Company with id: {id} was deleted!");
         }
 
 
@@ -128,7 +131,7 @@ namespace InternHub.WebApi.Controllers
             Company existingCompany = await CompanyService.GetAsync(id);
             if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
 
-            if(await CompanyService.AcceptAsync(id) == false)
+            if (await CompanyService.AcceptAsync(id) == false)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't approve company!");
             }

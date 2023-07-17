@@ -13,6 +13,6 @@ namespace InternHub.Repository.Common
     {
         Task<bool> AddAsync(Notification notification);
         Task<bool> AddRangeAsync(List<Notification> notifications);
-        Task<PagedList<Notification>> GetAll(Sorting sorting, Paging paging, NotificationFilter filter);
+        Task<PagedList<Notification>> GetAllAsync(Sorting sorting, Paging paging, NotificationFilter filter);
     }
 }

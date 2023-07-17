@@ -59,7 +59,7 @@ namespace InternHub.WebApi.Controllers
                     Id = Guid.NewGuid(),
                     Name = state.Name
                 };
-                bool result = await StateService.Add(newState, User.Identity.GetUserId());
+                bool result = await StateService.AddAsync(newState, User.Identity.GetUserId());
                 if (!result) return Request.CreateResponse(HttpStatusCode.BadRequest);
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
@@ -76,7 +76,7 @@ namespace InternHub.WebApi.Controllers
 
                 if (state.Name != null) oldState.Name = state.Name;
 
-                bool result = await StateService.Update(oldState, User.Identity.GetUserId());
+                bool result = await StateService.UpdateAsync(oldState, User.Identity.GetUserId());
                 if (!result) return Request.CreateResponse(HttpStatusCode.BadRequest);
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
@@ -90,7 +90,10 @@ namespace InternHub.WebApi.Controllers
             {
                 if (id == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
 
-                bool result = await StateService.Remove(id);
+                State state = await StateService.GetByIdAsync(id);
+                if (state == null) return Request.CreateResponse(HttpStatusCode.NotFound);
+
+                bool result = await StateService.RemoveAsync(state, User.Identity.GetUserId());
 
                 if (!result) return Request.CreateResponse(HttpStatusCode.BadRequest);
                 return Request.CreateResponse(HttpStatusCode.OK);

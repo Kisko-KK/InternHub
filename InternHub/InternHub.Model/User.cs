@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -18,6 +19,8 @@ namespace InternHub.Model
         public string Address { get; set; }
         public string Description { get; set; }
         public Guid CountyId { get; set; }
+        [NotMapped]
+        public County County { get; set; }
         public bool IsActive { get; set; } = true;
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }

@@ -72,9 +72,9 @@ namespace InternHub.Service
             catch { return false; }
         }
 
-        public async Task<PagedList<Notification>> GetAll(Sorting sorting, Paging paging, NotificationFilter filter)
+        public async Task<PagedList<Notification>> GetAllAsync(Sorting sorting, Paging paging, NotificationFilter filter)
         {
-            return await NotificationRepository.GetAll(sorting, paging, filter);
+            return await NotificationRepository.GetAllAsync(sorting, paging, filter);
         }
     }
 }

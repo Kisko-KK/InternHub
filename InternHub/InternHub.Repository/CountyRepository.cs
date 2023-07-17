@@ -63,7 +63,7 @@ namespace InternHub.Repository
             return county;
         }
 
-        public async Task<bool> Add(County county)
+        public async Task<bool> AddAsync(County county)
         {
             int numberOfAffectedRows = 0;
 
@@ -87,7 +87,7 @@ namespace InternHub.Repository
             return numberOfAffectedRows != 0;
         }
 
-        public async Task<bool> Update(County county)
+        public async Task<bool> UpdateAsync(County county)
         {
             int numberOfAffectedRows = 0;
 
@@ -109,15 +109,17 @@ namespace InternHub.Repository
             return numberOfAffectedRows != 0;
         }
 
-        public async Task<bool> Remove(Guid id)
+        public async Task<bool> RemoveAsync(County county)
         {
             int numberOfAffectedRows = 0;
 
             using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
             {
-                string query = "UPDATE public.\"County\" SET \"IsActive\" = false WHERE \"Id\" = @id";
+                string query = "UPDATE public.\"County\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated, \"UpdatedByUserId\" = @updatedByUserId  WHERE \"Id\" = @id";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
-                command.Parameters.AddWithValue("@id", id);
+                command.Parameters.AddWithValue("@id", county.Id);
+                command.Parameters.AddWithValue("@dateUpdated", county.DateUpdated);
+                command.Parameters.AddWithValue("@updatedByUserId", county.UpdatedByUserId);
 
                 await connection.OpenAsync();
 
