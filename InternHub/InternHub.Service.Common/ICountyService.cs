@@ -11,8 +11,8 @@ namespace InternHub.Service.Common
     {
         Task<List<County>> GetAllAsync();
         Task<County> GetByIdAsync(Guid id);
-        Task<bool> Add(County county, string currentUserId);
-        Task<bool> Update(County county, string currentUserId);
-        Task<bool> Remove(Guid id);
+        Task<bool> AddAsync(County county, string currentUserId);
+        Task<bool> UpdateAsync(County county, string currentUserId);
+        Task<bool> RemoveAsync(County county, string currentUserId);
     }
 }

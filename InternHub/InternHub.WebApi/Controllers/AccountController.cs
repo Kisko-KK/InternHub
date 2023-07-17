@@ -33,8 +33,12 @@ namespace InternHub.WebApi.Controllers
         {
         }
 
-        public AccountController(UserManager userManager,
-            ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
+        public AccountController(UserManager userManager)
+        {
+            UserManager = userManager;
+        }
+
+        public AccountController(UserManager userManager, ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
         {
             UserManager = userManager;
             AccessTokenFormat = accessTokenFormat;

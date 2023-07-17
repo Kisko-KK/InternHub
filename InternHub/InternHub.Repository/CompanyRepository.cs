@@ -14,31 +14,25 @@ namespace InternHub.Repository
     public class CompanyRepository : ICompanyRepository
     {
         private readonly IConnectionString connectionString;
-        public CompanyRepository(IConnectionString connectionString) {
+        public CompanyRepository(IConnectionString connectionString)
+        {
             this.connectionString = connectionString;
         }
+
         public async Task<bool> DeleteAsync(string id)
         {
-
-            using(NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
+            int numberOfAffectedRows = 0;
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
                 connection.Open();
+                string userQuery = $"UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false WHERE \"Id\" = @id";
 
-                using(NpgsqlTransaction transaction = connection.BeginTransaction())
-                {
-                    string companyQuery = $"UPDATE public.\"Company\" SET \"IsActive\" = false WHERE \"Id\" = '{id}'";
-                    string userQuery = $"UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false WHERE \"Id\" = '{id}'";
+                NpgsqlCommand userCommand = new NpgsqlCommand(userQuery, connection);
+                userCommand.Parameters.AddWithValue("@id", id);
 
-                    NpgsqlCommand companyCommand = new NpgsqlCommand(companyQuery, connection);
-                    NpgsqlCommand userCommand = new NpgsqlCommand(userQuery, connection);
-
-                    int companyRowsUpdated = await companyCommand.ExecuteNonQueryAsync();
-                    int userRowsUpdated = await userCommand.ExecuteNonQueryAsync();
-
-                    transaction.Commit();
-                    return companyRowsUpdated > 0 || userRowsUpdated > 0;
-                }
+                numberOfAffectedRows = await userCommand.ExecuteNonQueryAsync();
             }
+            return numberOfAffectedRows > 0;
         }
 
         public async Task<PagedList<Company>> GetAsync(Sorting sorting, Paging paging, CompanyFilter filter)
@@ -50,35 +44,45 @@ namespace InternHub.Repository
             StringBuilder countQueryBuilder = new StringBuilder();
             StringBuilder filterQueryBuilder = new StringBuilder();
 
+            string sortBy;
+
+            switch(sorting.SortBy.ToLower())
+            {
+                case "name": sortBy = "c.\"" + sorting.SortBy + "\""; break;
+                case "website": sortBy = "c.\"" + sorting.SortBy + "\""; break;
+                case "isaccepted": sortBy = "c.\"" + sorting.SortBy + "\""; break;
+                default: sortBy = "u.\"" + sorting.SortBy + "\""; break;
+            }
+
 
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
                 connection.Open();
 
-                string selectQuery = "SELECT * FROM public.\"Company\" INNER JOIN dbo.\"AspNetUsers\" ON public.\"Company\".\"Id\" = dbo.\"AspNetUsers\".\"Id\" ";
-                string countQuery = "SELECT COUNT(*) FROM public.\"Company\"";
+                string selectQuery = "SELECT * FROM public.\"Company\" c INNER JOIN dbo.\"AspNetUsers\" u ON c.\"Id\" = u.\"Id\" ";
+                string countQuery = "SELECT COUNT(*) FROM public.\"Company\" c INNER JOIN dbo.\"AspNetUsers\" u ON c.\"Id\" = u.\"Id\" ";
 
                 string filterQuery = " WHERE 1=1 ";
-                string sortingQuery = $" ORDER BY public.\"Company\".\"{sorting.SortBy}\" {sorting.SortOrder} ";
+                string sortingQuery = $" ORDER BY {sortBy} {sorting.SortOrder} ";
                 string pagingQuery = $" LIMIT {paging.PageSize} OFFSET {(paging.CurrentPage - 1) * paging.PageSize}";
 
-                
+
                 filterQueryBuilder.Append(filterQuery);
                 if (filter.IsActive == true)
                 {
-                    filterQueryBuilder.Append($" AND public.\"Company\".\"IsActive\" = true");
+                    filterQueryBuilder.Append($" AND u.\"IsActive\" = true");
                 }
                 else
                 {
-                    filterQueryBuilder.Append($" AND public.\"Company\".\"IsActive\" = false");
+                    filterQueryBuilder.Append($" AND u.\"IsActive\" = false");
                 }
                 if (filter.IsAccepted == true)
                 {
-                    filterQueryBuilder.Append($" AND public.\"Company\".\"IsAccepted\" = true");
+                    filterQueryBuilder.Append($" AND c.\"IsAccepted\" = true");
                 }
                 else
                 {
-                    filterQueryBuilder.Append($" AND public.\"Company\".\"IsAccepted\" = false");
+                    filterQueryBuilder.Append($" AND c.\"IsAccepted\" = false");
                 }
 
 
@@ -89,14 +93,10 @@ namespace InternHub.Repository
 
                 NpgsqlCommand selectCommand = new NpgsqlCommand(selectQueryBuilder.ToString(), connection);
                 NpgsqlDataReader selectReader = await selectCommand.ExecuteReaderAsync();
-                while (selectReader.Read())
+                while (selectReader.HasRows && selectReader.Read())
                 {
-                    Company company = new Company();
-                    company.Name = (string)selectReader["Name"];
-                    company.Address = (string)selectReader["Address"];
-                    company.Website = (string)selectReader["Website"];
-                    company.Id = (string)selectReader["Id"];
-                    companies.Add(company);
+                    Company company = ReadCompany(selectReader);
+                    if (company != null) companies.Add(company);
                 }
                 selectReader.Close();
 
@@ -116,16 +116,9 @@ namespace InternHub.Repository
                 LastPage = Convert.ToInt32(recordsCount / paging.PageSize) + (recordsCount % paging.PageSize != 0 ? 1 : 0),
                 PageSize = paging.PageSize
             };
-            
+
             return pagedList;
         }
-
-        public async Task<Company> GetAsync(string id)
-        {
-            return await GetCompanyAsync(id);
-        }
-
-        
 
         public async Task<bool> PostAsync(Company company)
         {
@@ -137,15 +130,15 @@ namespace InternHub.Repository
                 {
                     try
                     {
-                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, '@email', false, 'hashed_password', 'security_stamp', '', false, false, null, false, 0, @username);";
-                        string insertCompanyQuery = "INSERT INTO public.\"Company\" (\"Id\", \"Name\", \"Website\", \"IsAccepted\", \"DateCreated\", \"DateUpdated\", \"IsActive\") VALUES(@id, @name, @website, false, @dateCreated, @dateUpdated, true);";
+                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\", \"Discriminator\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, '@email', false, 'hashed_password', 'security_stamp', '', false, false, null, false, 0, @username, 'User');";
+                        string insertCompanyQuery = "INSERT INTO public.\"Company\" (\"Id\", \"Name\", \"Website\", \"IsAccepted\") VALUES(@id, @name, @website, false);";
 
                         NpgsqlCommand userCommand = new NpgsqlCommand(insertUserQuery, connection);
                         NpgsqlCommand companyCommand = new NpgsqlCommand(insertCompanyQuery, connection);
 
                         NpgsqlCommand companyInsertCommand = new NpgsqlCommand(insertCompanyQuery, connection, transaction);
                         NpgsqlCommand userInsertCommand = new NpgsqlCommand(insertUserQuery, connection, transaction);
-                        
+
                         userInsertCommand.Parameters.AddWithValue("@id", company.Id);
                         userInsertCommand.Parameters.AddWithValue("@firstname", company.FirstName);
                         userInsertCommand.Parameters.AddWithValue("@lastname", company.LastName);
@@ -157,30 +150,28 @@ namespace InternHub.Repository
                         userInsertCommand.Parameters.AddWithValue("@email", company.Email);
                         userInsertCommand.Parameters.AddWithValue("@username", company.Email);
 
-                        
+
                         companyInsertCommand.Parameters.AddWithValue("@id", company.Id);
                         companyInsertCommand.Parameters.AddWithValue("@name", company.Name);
                         companyInsertCommand.Parameters.AddWithValue("@website", company.Website);
-                        companyInsertCommand.Parameters.AddWithValue("@dateCreated", company.DateCreated);
-                        companyInsertCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
 
-                        await userInsertCommand.ExecuteNonQueryAsync();
-                        await companyInsertCommand.ExecuteNonQueryAsync();
+                        int userRowsAffectedCount = await userInsertCommand.ExecuteNonQueryAsync();
+                        int companyRowsAffectedCount = await companyInsertCommand.ExecuteNonQueryAsync();
 
-                        transaction.Commit();
-                        return true;
-                        
+                        if (userRowsAffectedCount * companyRowsAffectedCount > 0)
+                            await transaction.CommitAsync();
+                        else
+                            await transaction.RollbackAsync();
+
+                        return userRowsAffectedCount * companyRowsAffectedCount > 0;
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         transaction.Rollback();
                         return false;
                     }
                 }
-
-                
             }
-
         }
 
         public async Task<bool> PutAsync(Company company)
@@ -211,26 +202,27 @@ namespace InternHub.Repository
                             updateUserCommand.Parameters.AddWithValue("@address", company.Address);
                             updateUserCommand.Parameters.AddWithValue("@email", company.Email);
 
-                            await updateCompanyCommand.ExecuteNonQueryAsync();
-                            await updateUserCommand.ExecuteNonQueryAsync();
+                            int companyRowsAffectedCount = await updateCompanyCommand.ExecuteNonQueryAsync();
+                            int userRowsAffectedCount = await updateUserCommand.ExecuteNonQueryAsync();
 
-                            transaction.Commit();
+                            if (companyRowsAffectedCount * userRowsAffectedCount > 0)
+                                await transaction.CommitAsync();
+                            else
+                                await transaction.RollbackAsync();
 
-                            return true;
+                            return companyRowsAffectedCount * userRowsAffectedCount > 0;
                         }
                     }
-                    catch (Exception ex)
+                    catch
                     {
-                        transaction.Rollback();
+                        await transaction.RollbackAsync();
                         return false;
                     }
                 }
             }
         }
 
-
-
-        public async Task<Company> GetCompanyAsync(string id)
+        public async Task<Company> GetAsync(string id)
         {
             Company company = new Company();
             try
@@ -239,38 +231,67 @@ namespace InternHub.Repository
                 {
                     connection.Open();
 
-                    NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM public.\"Company\" INNER JOIN dbo.\"AspNetUsers\" ON public.\"Company\".\"Id\" = dbo.\"AspNetUsers\".\"Id\" WHERE \"Company\".\"Id\" = @Id", connection);
+                    NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM public.\"Company\" INNER JOIN dbo.\"AspNetUsers\" ON public.\"Company\".\"Id\" = dbo.\"AspNetUsers\".\"Id\" INNER JOIN public.\"County\" ON public.\"County\".\"Id\" = dbo.\"AspNetUsers\".\"CountyId\" WHERE \"Company\".\"Id\" = @Id", connection);
                     command.Parameters.AddWithValue("@Id", id);
                     NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
-                    reader.Read();
+                    if (!reader.HasRows || !reader.Read()) return null;
 
-                    company.Name = (string)reader["Name"];
-                    company.Address = (string)reader["Address"];
-                    company.Website = (string)reader["Website"];
-                    company.Id = (string)reader["Id"];
+                    company = ReadCompany(reader);
 
                     reader.Close();
                 }
                 return company;
-            }catch (Exception) { return null; }
+            }
+            catch { return null; }
         }
 
         public async Task<bool> AcceptAsync(string id)
         {
-
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
                 connection.Open();
 
-                NpgsqlCommand command = new NpgsqlCommand("UPDATE \"Company\" SET \"IsAccepted\" = true WHERE \"Id\" = @id", connection);
+                NpgsqlCommand command = new NpgsqlCommand("UPDATE public.\"Company\" SET \"IsAccepted\" = true WHERE \"Id\" = @id", connection);
                 command.Parameters.AddWithValue("@id", id);
                 int rowsAffected = await command.ExecuteNonQueryAsync();
                 return rowsAffected > 0;
             }
-            
         }
 
-        
+        private Company ReadCompany(NpgsqlDataReader reader)
+        {
+            try
+            {
+                return new Company()
+                {
+                    Address = Convert.ToString(reader["Address"]),
+                    CountyId = (Guid)reader["CountyId"],
+                    County = new County()
+                    {
+                        Id = (Guid)reader["CountyId"],
+                        CreatedByUserId = Convert.ToString(reader["CreatedByUserId"]),
+                        UpdatedByUserId = Convert.ToString(reader["UpdatedByUserId"]),
+                        DateCreated = Convert.ToDateTime(reader["DateCreated"]),
+                        DateUpdated = Convert.ToDateTime(reader["DateUpdated"]),
+                        Name = Convert.ToString(reader["Name"]),
+                        IsActive = Convert.ToBoolean(reader["IsActive"])
+                    },
+                    DateCreated = Convert.ToDateTime(reader["DateCreated"]),
+                    DateUpdated = Convert.ToDateTime(reader["DateUpdated"]),
+                    Description = Convert.ToString(reader["Description"]),
+                    Email = Convert.ToString(reader["Email"]),
+                    FirstName = Convert.ToString(reader["FirstName"]),
+                    LastName = Convert.ToString(reader["LastName"]),
+                    Id = Convert.ToString(reader["Id"]),
+                    IsAccepted = Convert.ToBoolean(reader["IsAccepted"]),
+                    IsActive = Convert.ToBoolean(reader["IsActive"]),
+                    Name = Convert.ToString(reader["Name"]),
+                    PhoneNumber = Convert.ToString(reader["PhoneNumber"]),
+                    Website = Convert.ToString(reader["Website"])
+                };
+            }
+            catch { return null; }
+        }
     }
 }

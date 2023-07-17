@@ -28,23 +28,26 @@ namespace InternHub.Service
             return await Repo.GetByIdAsync(id);
         }
 
-        public async Task<bool> Add(County county, string currentUserId)
+        public async Task<bool> AddAsync(County county, string currentUserId)
         {
             county.DateCreated = county.DateUpdated = DateTime.UtcNow;
             county.CreatedByUserId = county.UpdatedByUserId = currentUserId;
-            return await Repo.Add(county);
+            return await Repo.AddAsync(county);
         }
 
-        public async Task<bool> Update(County county, string currentUserId)
+        public async Task<bool> UpdateAsync(County county, string currentUserId)
         {
             county.DateUpdated = DateTime.UtcNow;
             county.UpdatedByUserId = currentUserId;
-            return await Repo.Update(county);
+            return await Repo.UpdateAsync(county);
         }
 
-        public async Task<bool> Remove(Guid id)
+        public async Task<bool> RemoveAsync(County county, string currentUserId)
         {
-            return await Repo.Remove(id);
+            county.UpdatedByUserId = currentUserId;
+            county.DateUpdated = DateTime.Now;
+            county.IsActive = false;
+            return await Repo.RemoveAsync(county);
         }
     }
 }

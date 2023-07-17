@@ -42,7 +42,7 @@ namespace InternHub.WebApi.Controllers
 
                 NotificationFilter filter = new NotificationFilter();
 
-                PagedList<Notification> pagedList = await NotificationService.GetAll(sorting, paging, filter);
+                PagedList<Notification> pagedList = await NotificationService.GetAllAsync(sorting, paging, filter);
 
 
                 PagedList<NotificationView> notifications = new PagedList<NotificationView>()

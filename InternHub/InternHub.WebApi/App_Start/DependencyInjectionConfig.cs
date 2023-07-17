@@ -22,6 +22,8 @@ namespace InternHub.WebApi.App_Start
 {
     public class DependencyInjectionConfig
     {
+        public static IContainer Container { get; private set; }
+
         public static void Register()
         {
             var builder = new ContainerBuilder();
@@ -88,8 +90,8 @@ namespace InternHub.WebApi.App_Start
             builder.RegisterWebApiModelBinderProvider();
 
             // Set the dependency resolver to be Autofac.
-            var container = builder.Build();
-            config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
+            Container = builder.Build();
+            config.DependencyResolver = new AutofacWebApiDependencyResolver(Container);
         }
     }
 }

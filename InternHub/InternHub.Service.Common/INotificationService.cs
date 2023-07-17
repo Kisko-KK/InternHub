@@ -13,6 +13,6 @@ namespace InternHub.Service.Common
     {
         Task<bool> AddAsync(string subject, string body, User user);
         Task<bool> AddRangeAsync(string subject, string body, List<User> users);
-        Task<PagedList<Notification>> GetAll(Sorting sorting, Paging paging, NotificationFilter filter);
+        Task<PagedList<Notification>> GetAllAsync(Sorting sorting, Paging paging, NotificationFilter filter);
     }
 }
