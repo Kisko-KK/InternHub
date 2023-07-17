@@ -1,4 +1,5 @@
 ﻿using InternHub.Common;
+using InternHub.Common.Filter;
 using InternHub.Model;
 using System;
 using System.Collections.Generic;
