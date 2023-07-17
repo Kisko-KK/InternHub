@@ -122,6 +122,10 @@
     <Compile Include="Migrations\202307141117120_IdentityInitialization.designer.cs">
       <DependentUpon>202307141117120_IdentityInitialization.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202307170858100_FirstMigration.cs" />
+    <Compile Include="Migrations\202307170858100_FirstMigration.designer.cs">
+      <DependentUpon>202307170858100_FirstMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Notification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -148,6 +152,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202307141117120_IdentityInitialization.resx">
       <DependentUpon>202307141117120_IdentityInitialization.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202307170858100_FirstMigration.resx">
+      <DependentUpon>202307170858100_FirstMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

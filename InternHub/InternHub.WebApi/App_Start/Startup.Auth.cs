@@ -11,6 +11,9 @@ using Owin;
 using InternHub.WebApi.Providers;
 using InternHub.WebApi.Models;
 using InternHub.Model.Identity;
+using InternHub.WebApi.App_Start;
+using Autofac;
+using InternHub.Service;
 
 namespace InternHub.WebApi
 {
@@ -23,10 +26,7 @@ namespace InternHub.WebApi
         // For more information on configuring authentication, please visit https://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
         {
-            // Configure the db context and user manager to use a single instance per request
-            //app.CreatePerOwinContext(ApplicationDbContext.Create);
-            //app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
-            //app.CreatePerOwinContext<ApplicationRoleManager>(ApplicationRoleManager.Create);
+            DependencyInjectionConfig.Register();
 
             // Enable the application to use a cookie to store information for the signed in user
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider
@@ -38,7 +38,7 @@ namespace InternHub.WebApi
             OAuthOptions = new OAuthAuthorizationServerOptions
             {
                 TokenEndpointPath = new PathString("/Login"),
-                Provider = new ApplicationOAuthProvider(PublicClientId),
+                Provider = new ApplicationOAuthProvider(PublicClientId, DependencyInjectionConfig.Container.Resolve<UserManager>()),
                 AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
                 // In production mode set AllowInsecureHttp = false

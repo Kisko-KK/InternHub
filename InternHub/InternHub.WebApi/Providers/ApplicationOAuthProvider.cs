@@ -11,14 +11,13 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
 using InternHub.WebApi.Models;
 using InternHub.Service;
+using InternHub.Model;
 
 namespace InternHub.WebApi.Providers
 {
     public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider
     {
-        private readonly string _publicClientId;
-
-        public ApplicationOAuthProvider(string publicClientId)
+        public ApplicationOAuthProvider(string publicClientId, UserManager userManager)
         {
             if (publicClientId == null)
             {
@@ -26,13 +25,16 @@ namespace InternHub.WebApi.Providers
             }
 
             _publicClientId = publicClientId;
+            UserManager = userManager;
         }
+
+        public UserManager UserManager { get; set; }
+
+        private readonly string _publicClientId;
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-            var userManager = context.OwinContext.GetUserManager<UserManager>();
-
-            Model.User user = await userManager.FindAsync(context.UserName, context.Password);
+            Model.User user = await UserManager.FindAsync(context.UserName, context.Password);
 
             if (user == null)
             {
@@ -40,9 +42,9 @@ namespace InternHub.WebApi.Providers
                 return;
             }
 
-            ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
+            ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
                OAuthDefaults.AuthenticationType);
-            ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
+            ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(UserManager,
                 CookieAuthenticationDefaults.AuthenticationType);
 
             AuthenticationProperties properties = CreateProperties(user.UserName);

@@ -45,6 +45,8 @@
                     FirstName = "Admin",
                     LastName = "Admin",
                     Description = "I am the admin",
+                    SecurityStamp = "",
+                    PhoneNumber = "",
                     IsActive = true,
                     PasswordHash = new PasswordHasher().HashPassword("123456")
                 };
