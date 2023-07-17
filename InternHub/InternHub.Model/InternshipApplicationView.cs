@@ -11,7 +11,8 @@ namespace InternHub.Model
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
 
-        public InternshipApplicationView(InternshipApplication internshipApplication) 
+
+        public InternshipApplicationView(InternshipApplication internshipApplication)
         {
             DateCreated=internshipApplication.DateCreated;  
             DateUpdated=internshipApplication.DateUpdated;  

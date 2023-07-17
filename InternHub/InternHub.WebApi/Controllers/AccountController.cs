@@ -29,8 +29,9 @@ namespace InternHub.WebApi.Controllers
     {
         private const string LocalLoginProvider = "Local";
 
-        public AccountController()
+        public AccountController(UserManager userManager)
         {
+            UserManager = userManager;
         }
 
         public AccountController(UserManager userManager)

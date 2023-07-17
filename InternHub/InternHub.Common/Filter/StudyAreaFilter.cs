@@ -8,5 +8,6 @@ namespace InternHub.Common
 {
     public class StudyAreaFilter
     {
+        public string Name { get; set; }
     }
 }

@@ -26,19 +26,21 @@ namespace InternHub.Service
 
         public async Task<InternshipApplication> GetInternshipApplicationByIdAsync(Guid id) => await _repo.GetInternshipApplicationByIdAsync(id);
        
-        public Task<bool> PostInternshipApplicationAsync(InternshipApplication internshipApplication, string currentUserId)
+        public async Task<bool> PostInternshipApplicationAsync(InternshipApplication internshipApplication,string currentUserId)
         {
-            throw new NotImplementedException();
+            if(currentUserId == null) {
+                return false;
+                            
+            }
+            if (internshipApplication == null)
+            {
+                return false;
+
+            }
+            return await _repo.PostInternshipApplicationAsync(internshipApplication);
         }
 
-        public Task<InternshipApplication> PutInternshipApplicationAsync(Guid id, InternshipApplication internshipApplication)
-        {
-            throw new NotImplementedException();
-        }
-        public Task<bool> DeleteInternshipApplicationAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+       
 
     }
 }

@@ -21,9 +21,10 @@ namespace InternHub.WebApi.Controllers
 
         public InternshipApplicationController(IInternshipApplicationService internshipApplicationService) 
         {
-            _internshipApplicationService = internshipApplicationService;   
+            _internshipApplicationService = internshipApplicationService;
+            
         }
-
+        [Authorize]
         public async Task<HttpResponseMessage> GetAll(int? currentPage=null, int? pageSize=null, string sortBy=null, string sortOrder=null, string stateName=null, string internshipName=null)
         {
             try
@@ -78,6 +79,7 @@ namespace InternHub.WebApi.Controllers
             }
         }
 
+        [Authorize]
         public async Task<HttpResponseMessage> GetById(Guid id)
         {
             try
@@ -95,9 +97,36 @@ namespace InternHub.WebApi.Controllers
             }
         }
 
-        //za post metodu
-        //[Login]
-        //User.Identity.GetUserId();
+      
+        //
+        [Authorize]
+        public async Task<HttpResponseMessage> Post([FromBody]InternshipApplicationView internshipApplication)
+        {
+            string currentUserId = User.Identity.GetUserId();
+            try
+            {
+                if (internshipApplication == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+                InternshipApplication newInternshipApplication = new InternshipApplication()
+                {
+                    Id = Guid.NewGuid(),
+                    DateCreated = internshipApplication.DateCreated,
+                    DateUpdated = internshipApplication.DateUpdated,
+                    CreatedByUserId = currentUserId,
+                    UpdatedByUserId = currentUserId,
+                    IsActive = true,
+                   
+                };
+                bool success = await _internshipApplicationService.PostInternshipApplicationAsync(newInternshipApplication,currentUserId);
+                if (!success) return Request.CreateResponse(HttpStatusCode.BadRequest);
+                return Request.CreateResponse(HttpStatusCode.OK, new InternshipApplicationView(newInternshipApplication));
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+
+        }    
 
 
     }

@@ -117,23 +117,50 @@ namespace InternHub.Repository
 
         public async Task<bool> PostInternshipApplicationAsync(InternshipApplication internshipApplication)
         {
-            throw new NotImplementedException();
-            /*bool success = false;
+            
+            bool success = false;
 
             using(NpgsqlConnection connection=new NpgsqlConnection(_connectionString.Name))
             {
-                string applicationQuery="INSERT INTO \"InternshipApplication\" VALUES (@id,)"
-            }*/
+                connection.Open();
+
+                Guid stateId = await GetStateIdAsync(internshipApplication.State.Id, connection);
+                string studentId = await GetStudentIdAsync(internshipApplication.Student.Id, connection);
+                Guid internshipId = await GetInternshipIdAsync(internshipApplication.Internship.Id, connection);
+
+
+                string applicationQuery = "INSERT INTO \"InternshipApplication\" VALUES (@id,@dateCreated,@dateUpdated,@createdByUserId,@updatedByUserId,@isActive,@stateId" +
+                    "@studentId,@internshipId);";
+
+                NpgsqlCommand applicationCommand = new NpgsqlCommand(applicationQuery, connection); 
+                applicationCommand.Parameters.AddWithValue("@id",internshipApplication.Id);
+                applicationCommand.Parameters.AddWithValue("@dateCreated", internshipApplication.DateCreated);
+                applicationCommand.Parameters.AddWithValue("@dateUpdated", internshipApplication.DateUpdated);
+                applicationCommand.Parameters.AddWithValue("@createdByUserId", internshipApplication.CreatedByUserId);
+                applicationCommand.Parameters.AddWithValue("@updatedByUserId", internshipApplication.UpdatedByUserId);
+                applicationCommand.Parameters.AddWithValue("@isActive", internshipApplication.IsActive);
+                applicationCommand.Parameters.AddWithValue("@stateId", internshipApplication.StateId);
+                applicationCommand.Parameters.AddWithValue("@studentId", internshipApplication.StudentId);
+                applicationCommand.Parameters.AddWithValue("@internshipId", internshipApplication.InternshipId);
+
+               
+                NpgsqlTransaction transaction = connection.BeginTransaction();
+                applicationCommand.Transaction = transaction;
+
+                int applicationResult = await applicationCommand.ExecuteNonQueryAsync();
+
+                if (applicationResult != 0) 
+                {
+                    success= true;
+                    transaction.Commit();
+                }
+                else {  success= false; transaction.Rollback(); }   
+
+            }
+            return success;
         }
 
-        public async Task<InternshipApplication> PutInternshipApplicationAsync(Guid id, InternshipApplication internshipApplication)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<bool> DeleteInternshipApplicationAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public InternshipApplication ReadInternshipApplication(NpgsqlDataReader reader)
         {
@@ -158,6 +185,30 @@ namespace InternHub.Repository
 
 
 
+        }
+
+        private async Task<Guid> GetStateIdAsync(Guid stateId, NpgsqlConnection connection)
+        {
+            string query = "SELECT \"Id\" FROM \"State\" WHERE \"Id\" = @stateId;";
+            NpgsqlCommand command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("@stateId", stateId);
+            return (Guid)await command.ExecuteScalarAsync();
+        }
+
+        private async Task<string> GetStudentIdAsync(string studentId, NpgsqlConnection connection)
+        {
+            string query = "SELECT \"Id\" FROM \"Student\" WHERE \"Id\" = @studentId;";
+            NpgsqlCommand command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("@studentId", studentId);
+            return (string)await command.ExecuteScalarAsync();
+        }
+
+        private async Task<Guid> GetInternshipIdAsync(Guid internshipId, NpgsqlConnection connection)
+        {
+            string query = "SELECT \"Id\" FROM \"Internship\" WHERE \"Id\" = @internshipId;";
+            NpgsqlCommand command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("@internshipId", internshipId);
+            return (Guid)await command.ExecuteScalarAsync();
         }
 
     }
