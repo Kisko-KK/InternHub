@@ -103,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CountyRepository.cs" />
+    <Compile Include="InternshipRepository.cs" />
     <Compile Include="NotificationRepository.cs" />
     <Compile Include="CompanyRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

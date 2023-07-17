@@ -117,6 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CountyService.cs" />
+    <Compile Include="InternshipService.cs" />
     <Compile Include="NotificationService.cs" />
     <Compile Include="CompanyService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

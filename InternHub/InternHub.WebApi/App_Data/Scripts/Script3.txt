@@ -1,0 +1,78 @@
+-- Drop foreign key constraint
+ALTER TABLE public."Company"
+DROP CONSTRAINT IF EXISTS "FK_Company_State_StateId";
+
+-- Drop attribute StateId
+ALTER TABLE public."Company"
+DROP COLUMN IF EXISTS "StateId";
+
+
+
+-- Insert into County table
+INSERT INTO public."County" ("Id", "Name", "DateCreated", "DateUpdated", "CreatedByUserId", "UpdatedByUserId", "IsActive")
+VALUES ('f7e8d9c0-a1b2-c3d4-e5f6-0123456789ab', 'County 1', current_timestamp, current_timestamp, 'user1_id', 'user1_id', true);
+
+-- Insert into County table
+INSERT INTO public."County" ("Id", "Name", "DateCreated", "DateUpdated", "CreatedByUserId", "UpdatedByUserId", "IsActive")
+VALUES ('1a2b3c4d-5e6f-7a8b-9c0d-a1b2c3d4e5f6', 'County 2', current_timestamp, current_timestamp, 'user2_id', 'user2_id', true);
+
+
+
+-- Insert into AspNetUsers table (dependency)
+INSERT INTO dbo."AspNetUsers" ("Id", "FirstName", "LastName", "Address", "Description", "CountyId", "IsActive", "DateCreated", "DateUpdated", "Email", "EmailConfirmed", "PasswordHash", "SecurityStamp", "PhoneNumber", "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEndDateUtc", "LockoutEnabled", "AccessFailedCount", "UserName")
+VALUES ('5a45f90f-086b-4f3b-bf16-6e9243a26f27', 'John', 'Doe', 'Address1', 'Description1', 'f7e8d9c0-a1b2-c3d4-e5f6-0123456789ab', true, current_timestamp, current_timestamp, 'john.doe@example.com', true, 'password_hash', 'security_stamp', 'phone_number', true, true, null, true, 0, 'john.doe');
+
+-- Insert into Company table
+INSERT INTO public."Company" ("Id", "Name", "Website", "IsAccepted", "DateCreated", "DateUpdated", "IsActive")
+VALUES ('5a45f90f-086b-4f3b-bf16-6e9243a26f27', 'Company 1', 'www.company1.com', true, current_timestamp, current_timestamp, true);
+
+-- Insert into AspNetUsers table (dependency)
+INSERT INTO dbo."AspNetUsers" ("Id", "FirstName", "LastName", "Address", "Description", "CountyId", "IsActive", "DateCreated", "DateUpdated", "Email", "EmailConfirmed", "PasswordHash", "SecurityStamp", "PhoneNumber", "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEndDateUtc", "LockoutEnabled", "AccessFailedCount", "UserName")
+VALUES ('e1323c34-b0ae-49d2-9d37-9d9a2ef783ee', 'Jane', 'Smith', 'Address2', 'Description2', 'f7e8d9c0-a1b2-c3d4-e5f6-0123456789ab', true, current_timestamp, current_timestamp, 'jane.smith@example.com', true, 'password_hash', 'security_stamp', 'phone_number', true, true, null, true, 0, 'jane.smith');
+
+-- Insert into Company table
+INSERT INTO public."Company" ("Id", "Name", "Website", "IsAccepted", "DateCreated", "DateUpdated", "IsActive")
+VALUES ('e1323c34-b0ae-49d2-9d37-9d9a2ef783ee', 'Company 2', 'www.company2.com', true, current_timestamp, current_timestamp, true);
+
+-- Insert into AspNetUsers table (dependency)
+INSERT INTO dbo."AspNetUsers" ("Id", "FirstName", "LastName", "Address", "Description", "CountyId", "IsActive", "DateCreated", "DateUpdated", "Email", "EmailConfirmed", "PasswordHash", "SecurityStamp", "PhoneNumber", "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEndDateUtc", "LockoutEnabled", "AccessFailedCount", "UserName")
+VALUES ('a8a8a8a8-8a8a-8a8a-8a8a-8a8a8a8a8a8a', 'David', 'Johnson', 'Address3', 'Description3', 'f7e8d9c0-a1b2-c3d4-e5f6-0123456789ab', true, current_timestamp, current_timestamp, 'david.johnson@example.com', true, 'password_hash', 'security_stamp', 'phone_number', true, true, null, true, 0, 'david.johnson');
+
+-- Insert into Company table
+INSERT INTO public."Company" ("Id", "Name", "Website", "IsAccepted", "DateCreated", "DateUpdated", "IsActive")
+VALUES ('a8a8a8a8-8a8a-8a8a-8a8a-8a8a8a8a8a8a', 'Company 3', 'www.company3.com', true, current_timestamp, current_timestamp, true);
+
+-- Insert into AspNetUsers table (dependency)
+INSERT INTO dbo."AspNetUsers" ("Id", "FirstName", "LastName", "Address", "Description", "CountyId", "IsActive", "DateCreated", "DateUpdated", "Email", "EmailConfirmed", "PasswordHash", "SecurityStamp", "PhoneNumber", "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEndDateUtc", "LockoutEnabled", "AccessFailedCount", "UserName")
+VALUES ('12345678-1234-5678-1234-567812345678', 'Sarah', 'Williams', 'Address4', 'Description4', '1a2b3c4d-5e6f-7a8b-9c0d-a1b2c3d4e5f6', true, current_timestamp, current_timestamp, 'sarah.williams@example.com', true, 'password_hash', 'security_stamp', 'phone_number', true, true, null, true, 0, 'sarah.williams');
+
+-- Insert into Company table
+INSERT INTO public."Company" ("Id", "Name", "Website", "IsAccepted", "DateCreated", "DateUpdated", "IsActive")
+VALUES ('12345678-1234-5678-1234-567812345678', 'Company 4', 'www.company4.com', true, current_timestamp, current_timestamp, true);
+
+-- Insert into AspNetUsers table (dependency)
+INSERT INTO dbo."AspNetUsers" ("Id", "FirstName", "LastName", "Address", "Description", "CountyId", "IsActive", "DateCreated", "DateUpdated", "Email", "EmailConfirmed", "PasswordHash", "SecurityStamp", "PhoneNumber", "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEndDateUtc", "LockoutEnabled", "AccessFailedCount", "UserName")
+VALUES ('f1e2d3c4-b5a6-7d8e-9f0a-1b2c3d4e5f6', 'Michael', 'Brown', 'Address5', 'Description5', '1a2b3c4d-5e6f-7a8b-9c0d-a1b2c3d4e5f6', true, current_timestamp, current_timestamp, 'michael.brown@example.com', true, 'password_hash', 'security_stamp', 'phone_number', true, true, null, true, 0, 'michael.brown');
+
+-- Insert into Company table
+INSERT INTO public."Company" ("Id", "Name", "Website", "IsAccepted", "DateCreated", "DateUpdated", "IsActive")
+VALUES ('f1e2d3c4-b5a6-7d8e-9f0a-1b2c3d4e5f6', 'Company 5', 'www.company5.com', true, current_timestamp, current_timestamp, true);
+
+
+
+INSERT INTO public."StudyArea" ("Id", "Name", "DateCreated", "DateUpdated", "CreatedByUserId", "UpdatedByUserId", "IsActive") 
+VALUES 
+    ('9a3b1890-ffcf-4e6c-a748-89ff7f6d6431', 'Study Area 1', '2023-07-17 10:00:00', '2023-07-17 11:30:00', 'a75550c0-6f7a-4a13-9e4c-8124f0f3663a', '78eabf22-84e2-4b06-92a3-6320b8f5d4b3', true),
+    ('0672d7d8-1444-498a-bd76-4b8c8ac48ed7', 'Study Area 2', '2023-07-17 12:00:00', '2023-07-17 13:30:00', 'ecb71e3e-7782-45c2-bf20-03e1e1a1a1d9', 'f4e4e132-2a3a-4c35-85d7-2fbd22564a6e', true),
+    ('a9e6e7fe-47b4-4bfa-88e6-dfa6bb63f50e', 'Study Area 3', '2023-07-17 14:00:00', '2023-07-17 15:30:00', 'c40ef70a-8a4c-4eaf-9b9f-3ddcde4d08c1', 'd84a86c1-48a2-4ad9-8dbb-897d707dd057', true),
+    ('ed22b6a3-68f9-4f07-bc64-c7b85573ab0c', 'Study Area 4', '2023-07-17 16:00:00', '2023-07-17 17:30:00', 'fa9e4e5b-f8d6-492d-b0b5-6f631f68d7d9', '2b4e3f78-14ae-4e83-8a55-0de7765f1531', true);
+
+
+INSERT INTO public."Internship" (
+    "Id", "StudyAreaId", "CompanyId", "Name", "Description", "Address", "StartDate", "EndDate", "CreatedByUserId", "UpdatedByUserId", "DateCreated", "DateUpdated", "IsActive"
+) 
+VALUES 
+    ('e0e4e38e-3716-47f6-8c78-7a726b7c86be', '9a3b1890-ffcf-4e6c-a748-89ff7f6d6431', '447871e1-c002-4266-bc91-b50906da4a48', 'Internship 1', 'Internship Description 1', 'Address 1', '2023-08-01 09:00:00', '2023-08-31 17:00:00', 'a75550c0-6f7a-4a13-9e4c-8124f0f3663a', '78eabf22-84e2-4b06-92a3-6320b8f5d4b3', '2023-07-17 09:00:00', '2023-07-17 09:30:00', true),
+    ('8eb7bde9-9449-4297-872d-2250a2b1c32f', '0672d7d8-1444-498a-bd76-4b8c8ac48ed7', 'ced74ce5-a76d-4305-961b-555adf114ead', 'Internship 2', 'Internship Description 2', 'Address 2', '2023-09-01 09:00:00', '2023-09-30 17:00:00', 'ecb71e3e-7782-45c2-bf20-03e1e1a1a1d9', 'f4e4e132-2a3a-4c35-85d7-2fbd22564a6e', '2023-07-17 10:00:00', '2023-07-17 10:30:00', true),
+    ('74d18b26-4b0b-4649-94e3-24be5f9fe161', 'a9e6e7fe-47b4-4bfa-88e6-dfa6bb63f50e', '447871e1-c002-4266-bc91-b50906da4a48', 'Internship 3', 'Internship Description 3', 'Address 3', '2023-10-01 09:00:00', '2023-10-31 17:00:00', 'c40ef70a-8a4c-4eaf-9b9f-3ddcde4d08c1', 'd84a86c1-48a2-4ad9-8dbb-897d707dd057', '2023-07-17 11:00:00', '2023-07-17 11:30:00', true),
+    ('a1a3a891-35af-4eef-af0b-d1276be62d1a', 'ed22b6a3-68f9-4f07-bc64-c7b85573ab0c', 'ced74ce5-a76d-4305-961b-555adf114ead', 'Internship 4', 'Internship Description 4', 'Address 4', '2023-11-01 09:00:00', '2023-11-30 17:00:00', 'fa9e4e5b-f8d6-492d-b0b5-6f631f68d7d9', '2b4e3f78-14ae-4e83-8a55-0de7765f1531', '2023-07-17 12:00:00', '2023-07-17 12:30:00', true);
