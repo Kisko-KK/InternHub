@@ -17,7 +17,7 @@ namespace InternHub.Repository
     public class StudentRepository : IStudentRepository
     {
         IConnectionString _connectionString;
-        
+
         public StudentRepository(IConnectionString connectionString)
         {
             _connectionString = connectionString;
@@ -53,7 +53,7 @@ namespace InternHub.Repository
 
                 countQueryBuilder.Append(countQuery);
                 countQueryBuilder.Append(initialFilterCondition);
-                
+
 
                 if (string.IsNullOrEmpty(filter.FirstName) == false)
                 {
@@ -131,7 +131,7 @@ namespace InternHub.Repository
                 NpgsqlCommand countCommand = new NpgsqlCommand(countQueryBuilder.ToString(), connection);
                 var countScalar = await countCommand.ExecuteScalarAsync();
                 totalCount = Convert.ToInt32(countScalar);
-                
+
                 connection.Close();
             }
 
@@ -141,7 +141,7 @@ namespace InternHub.Repository
 
             return pagedStudents;
         }
-        
+
         private Student ReadStudent(NpgsqlDataReader dr)
         {
             string id = dr.GetString(dr.GetOrdinal("Id"));
@@ -155,9 +155,9 @@ namespace InternHub.Repository
             DateTime dateUpdated = dr.GetDateTime(dr.GetOrdinal("DateUpdated"));
             Guid countyId = dr.GetGuid(dr.GetOrdinal("CountyId"));
             bool isActive = dr.GetBoolean(dr.GetOrdinal("IsActive"));
-            StudyArea studyArea = new StudyArea();
+            Guid studyAreaId = dr.GetGuid(dr.GetOrdinal("StudyAreaId"));
 
-            return new Student(id, firstName, lastName, email, phoneNumber, address, description, dateCreated, dateUpdated, countyId, isActive, studyArea);
+            return new Student(id, firstName, lastName, email, phoneNumber, address, description, dateCreated, dateUpdated, countyId, isActive, studyAreaId);
         }
 
         public async Task<Student> GetStudentByIdAsync(string id)
@@ -190,21 +190,128 @@ namespace InternHub.Repository
 
         public async Task<int> PostAsync(Student student)
         {
-            return 1;
+            int rowsAffected = 0;
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
+            {
+                connection.Open();
+
+                using (NpgsqlTransaction transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, @email, false, 'hashed_password', 'security_stamp', '', false, false, null, false, 0, @username)";
+                        string insertStudentQuery = "INSERT INTO public.\"Student\" (\"Id\", \"StudyAreaId\") VALUES (@id, @studyAreaId)";
+
+
+                        NpgsqlCommand studentInsertCommand = new NpgsqlCommand(insertStudentQuery, connection, transaction);
+                        NpgsqlCommand userInsertCommand = new NpgsqlCommand(insertUserQuery, connection, transaction);
+
+                        userInsertCommand.Parameters.AddWithValue("@id", student.Id);
+                        userInsertCommand.Parameters.AddWithValue("@firstname", student.FirstName);
+                        userInsertCommand.Parameters.AddWithValue("@lastname", student.LastName);
+                        userInsertCommand.Parameters.AddWithValue("@address", student.Address);
+                        userInsertCommand.Parameters.AddWithValue("@description", student.Description);
+                        userInsertCommand.Parameters.AddWithValue("@countyId", student.CountyId);
+                        userInsertCommand.Parameters.AddWithValue("@dateCreated", student.DateCreated);
+                        userInsertCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
+                        userInsertCommand.Parameters.AddWithValue("@email", student.Email);
+                        userInsertCommand.Parameters.AddWithValue("@username", student.Email);
+                        userInsertCommand.Parameters.AddWithValue("@isActive", student.IsActive = true);
+
+
+
+                        studentInsertCommand.Parameters.AddWithValue("@id", student.Id);
+                        studentInsertCommand.Parameters.AddWithValue("@studyAreaId", student.StudyAreaId);
+
+                        rowsAffected += await userInsertCommand.ExecuteNonQueryAsync();
+                        rowsAffected += await studentInsertCommand.ExecuteNonQueryAsync();
+
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                    }
+                }
+            }
+
+            return rowsAffected;
         }
 
-        public async Task<int> DeleteAsync(string id)
+        public async Task<int> DeleteAsync(Student student)
         {
-            return 1;
+            int rowsAffected = 0;
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
+            {
+                connection.Open();
+
+                string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
+
+
+                NpgsqlCommand updateUserCommand = new NpgsqlCommand(updateUserQuery, connection);
+
+                updateUserCommand.Parameters.AddWithValue("@id", student.Id);
+                updateUserCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
+
+                rowsAffected = await updateUserCommand.ExecuteNonQueryAsync();
+            }
+
+            return rowsAffected;
         }
-        public async Task<int> PutAsync(string id,Student student)
+
+        public async Task<int> PutAsync(Student student)
         {
-            return 1;
+            int rowsAffected = 0;
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
+            {
+                connection.Open();
+                using (NpgsqlTransaction transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        string updateStudentQuery = "UPDATE public.\"Student\" SET \"StudyAreaId\" = @studyAreaId WHERE \"Id\" = @id ";
+
+                        string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"FirstName\" = @firstName, \"LastName\" = @lastName, \"Address\" = @address, \"Description\" = @description, \"Email\" = @email, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
+
+                        NpgsqlCommand updateStudentCommand = new NpgsqlCommand(updateStudentQuery, connection);
+                        NpgsqlCommand updateUserCommand = new NpgsqlCommand(updateUserQuery, connection);
+
+                        updateStudentCommand.Parameters.AddWithValue("@id", student.Id);
+                        updateStudentCommand.Parameters.AddWithValue("@studyAreaId", student.StudyAreaId);
+
+                        updateUserCommand.Parameters.AddWithValue("@id", student.Id);
+                        updateUserCommand.Parameters.AddWithValue("@firstName", student.FirstName);
+                        updateUserCommand.Parameters.AddWithValue("@lastName", student.LastName);
+                        updateUserCommand.Parameters.AddWithValue("@address", student.Address);
+                        updateUserCommand.Parameters.AddWithValue("@description", student.Description);
+                        updateUserCommand.Parameters.AddWithValue("@email", student.Email);
+                        updateUserCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
+
+
+
+                        rowsAffected += await updateStudentCommand.ExecuteNonQueryAsync();
+                        rowsAffected += await updateUserCommand.ExecuteNonQueryAsync();
+                        
+
+                        await transaction.CommitAsync();
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+
+                    }
+                }
+            }
+
+            return rowsAffected;
+            
         }
-
-
-
     }
 
-
 }
+
+
+

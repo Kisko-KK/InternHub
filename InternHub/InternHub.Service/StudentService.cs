@@ -34,16 +34,21 @@ namespace InternHub.Service
 
         public async Task<int> PostAsync(Student student)
         {
+            student.DateCreated = DateTime.Now;
+            student.DateUpdated = DateTime.Now;
             return await _studentRepository.PostAsync(student);
+            
         }
-        public async Task<int> DeleteAsync(string id)
+        public async Task<int> DeleteAsync(Student student)
         {
-            return await _studentRepository.DeleteAsync(id);
+            student.DateUpdated = DateTime.Now;
+            return await _studentRepository.DeleteAsync(student);
         }
 
-        public async Task<int> PutAsync(string id, Student student)
+        public async Task<int> PutAsync(Student student)
         {
-            return await _studentRepository.PutAsync(id, student);
+            student.DateUpdated = DateTime.Now;
+            return await _studentRepository.PutAsync(student);
         }
     }
 }

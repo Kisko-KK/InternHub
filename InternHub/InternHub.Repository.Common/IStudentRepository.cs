@@ -17,9 +17,9 @@ namespace InternHub.Repository.Common
 
         Task<int> PostAsync(Student student);
 
-        Task<int> DeleteAsync(string id);
+        Task<int> DeleteAsync(Student student);
 
-        Task<int> PutAsync(string id, Student student);
+        Task<int> PutAsync(Student student);
 
 
     }

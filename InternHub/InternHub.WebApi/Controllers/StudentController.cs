@@ -3,6 +3,8 @@ using InternHub.Common.Filter;
 using InternHub.Model;
 using InternHub.Service;
 using InternHub.Service.Common;
+using InternHub.WebApi.Models;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -106,31 +108,29 @@ namespace InternHub.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, studentView);
         }
 
-        public async Task<HttpResponseMessage> Post([FromBody] StudentView student)
+        public async Task<HttpResponseMessage> Post([FromBody] PostStudent student)
         {
             if (student == null)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            Guid idToString = Guid.NewGuid();
+            
+            Guid generatedId = Guid.NewGuid();
 
             Student mappedStudent = new Student()
             {
-                Id = idToString.ToString(),
+                Id = generatedId.ToString(),
                 FirstName = student.FirstName,
                 LastName = student.LastName,
                 Email = student.Email,
                 PhoneNumber = student.PhoneNumber,
                 Address = student.Address,
                 Description = student.Description,
-                DateCreated = student.DateCreated,
-                DateUpdated = student.DateUpdated,
                 CountyId = student.CountyId,
-                IsActive = student.IsActive,
-                StudyArea = student.StudyArea
-
+                StudyAreaId = student.StudyAreaId,
             };
+            
             int rowsAffected = await studentService.PostAsync(mappedStudent);
 
             if (rowsAffected <= 0)
@@ -138,9 +138,97 @@ namespace InternHub.WebApi.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't create new student");
             }
             else
-                return Request.CreateResponse(HttpStatusCode.OK, new StudentView(student.Id, student.FirstName, student.LastName, student.Email, student.PhoneNumber, student.Address, student.Description, student.DateCreated, student.DateUpdated, student.CountyId, student.IsActive, student.StudyArea));
+                return Request.CreateResponse(HttpStatusCode.OK, mappedStudent);
         }
 
+        public async Task<HttpResponseMessage> DeleteAsync(string id)
+        {
+
+            Student existingStudent = await studentService.GetStudentByIdAsync(id);
+
+
+            if(existingStudent == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any student with that id! "); }
+
+            if(await studentService.DeleteAsync(existingStudent) != 1)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Unable to delete student!");
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, $"Student with id : {id} is deleted! ");
+
+        }
+
+        public async Task <HttpResponseMessage> PutAsync(string id, [FromBody]PostStudent student)
+        {
+            try
+            {
+                
+                Student existingStudent = await studentService.GetStudentByIdAsync(id);
+
+                if(existingStudent == null)
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, $"Student with id: {id} is not found");
+                }
+               
+
+                if (!string.IsNullOrEmpty(student.FirstName))
+                {
+                    existingStudent.FirstName = student.FirstName;
+
+                }
+                if (!string.IsNullOrEmpty(student.LastName))
+                {
+                    existingStudent.LastName = student.LastName;
+
+                }
+                if (!string.IsNullOrEmpty(student.Email))
+                {
+                    existingStudent.Email = student.Email;
+
+                }
+                if (!string.IsNullOrEmpty(student.PhoneNumber))
+                {
+                    existingStudent.PhoneNumber = student.PhoneNumber;
+
+                }
+                if (!string.IsNullOrEmpty(student.Address))
+                {
+                    existingStudent.Address = student.Address;
+
+                }
+                if (!string.IsNullOrEmpty(student.Description))
+                {
+                    existingStudent.Description = student.Description;
+
+                }
+                if (student.StudyAreaId != Guid.Empty)
+                {
+                    existingStudent.StudyAreaId = student.StudyAreaId;
+                }
+                if (student.CountyId != Guid.Empty)
+                {
+                    existingStudent.CountyId = student.CountyId;
+                }
+
+                int rowsAffected = await studentService.PutAsync(existingStudent);
+
+                if (rowsAffected <= 0)
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't update student");
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, existingStudent);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+
+
+        }
 
     }
 }

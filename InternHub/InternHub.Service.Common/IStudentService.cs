@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using InternHub;
 namespace InternHub.Service.Common
 {
     public interface IStudentService
@@ -14,8 +14,8 @@ namespace InternHub.Service.Common
         Task<PagedList<Student>> GetAllAsync(Sorting sorting, Paging paging, StudentFilter filter);
         Task<Student> GetStudentByIdAsync(string id);
         Task<int> PostAsync(Student student);
-        Task<int> DeleteAsync(string id);
-        Task<int> PutAsync(string id, Student student);
+        Task<int> DeleteAsync(Student student);
+        Task<int> PutAsync(Student student);
         
     }
 }

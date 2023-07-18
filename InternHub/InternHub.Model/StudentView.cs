@@ -10,6 +10,7 @@ namespace InternHub.Model
     public class StudentView : User
     {
         public StudyArea StudyArea { get; set; }
+        public Guid StudyAreaId { get; set; }
         public string Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

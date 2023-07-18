@@ -21,9 +21,10 @@ namespace InternHub.Model
         public string Description { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
+
         public Guid CountyId { get; set; }
 
-        public Student(string id, string firstName, string lastName, string email, string phoneNumber, string address, string description, DateTime dateCreated, DateTime dateUpdated, Guid countyId, bool isActive, StudyArea studyArea)
+        public Student(string id, string firstName, string lastName, string email, string phoneNumber, string address, string description, DateTime dateCreated, DateTime dateUpdated, Guid countyId, bool isActive, Guid studyAreaId)
         {
             Id = id;
             FirstName = firstName;
@@ -35,7 +36,7 @@ namespace InternHub.Model
             DateCreated = dateCreated;
             DateUpdated = dateUpdated;
             CountyId = countyId;
-            StudyArea = studyArea;
+            StudyAreaId = studyAreaId;
             IsActive = isActive;
         }
     }
