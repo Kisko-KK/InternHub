@@ -74,6 +74,9 @@
       <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\lib\net461\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -84,8 +87,8 @@
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Collections.Immutable, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.6.0.0\lib\net461\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.7.0.0\lib\net462\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -109,11 +112,11 @@
     <Reference Include="System.Text.Encodings.Web, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encodings.Web.6.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
     </Reference>
-    <Reference Include="System.Text.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Json.6.0.0\lib\net461\System.Text.Json.dll</HintPath>
+    <Reference Include="System.Text.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.7.0.0\lib\net462\System.Text.Json.dll</HintPath>
     </Reference>
-    <Reference Include="System.Threading.Channels, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Channels.6.0.0\lib\net461\System.Threading.Channels.dll</HintPath>
+    <Reference Include="System.Threading.Channels, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Channels.7.0.0\lib\net462\System.Threading.Channels.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
@@ -269,10 +272,12 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CountyController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
+    <Compile Include="Controllers\InternshipApplicationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\StateController.cs" />
     <Compile Include="Controllers\StudentController.cs" />
+    <Compile Include="Controllers\StudyAreaController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -285,6 +290,7 @@
     <Compile Include="Models\Identity\UserInfoViewModel.cs" />
     <Compile Include="Models\Identity\UserLoginInfoViewModel.cs" />
     <Compile Include="Models\NotificationView.cs" />
+    <Compile Include="Models\PutInternshipApplication.cs" />
     <Compile Include="Models\PutNotification.cs" />
     <Compile Include="Models\PostStudent.cs" />
     <Compile Include="Models\StateView.cs" />
@@ -442,35 +448,27 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InternHub.Common\InternHub.Common.csproj">
-      <Project>{ffd157ea-a094-4dd5-81ab-fb4d2f4425b2}</Project>
+      <Project>{FFD157EA-A094-4DD5-81AB-FB4D2F4425B2}</Project>
       <Name>InternHub.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\InternHub.DAL\InternHub.DAL.csproj">
-      <Project>{ed158916-42a8-46b6-b9a0-4866ac0a94a5}</Project>
-      <Name>InternHub.DAL</Name>
-    </ProjectReference>
     <ProjectReference Include="..\InternHub.Model.Common\InternHub.Model.Common.csproj">
-      <Project>{84f6f170-d048-4833-8f62-a19dca4435a4}</Project>
+      <Project>{84F6F170-D048-4833-8F62-A19DCA4435A4}</Project>
       <Name>InternHub.Model.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\InternHub.Model\InternHub.Model.csproj">
-      <Project>{a1603186-460c-4efd-813e-0636612d117c}</Project>
+      <Project>{A1603186-460C-4EFD-813E-0636612D117C}</Project>
       <Name>InternHub.Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\InternHub.Repository.Common\InternHub.Repository.Common.csproj">
-      <Project>{05e39e4d-685b-4111-8083-76f6e6384128}</Project>
-      <Name>InternHub.Repository.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\InternHub.Repository\InternHub.Repository.csproj">
-      <Project>{6a1b5cfd-7140-4ece-87a5-1d150b9016d0}</Project>
+      <Project>{6A1B5CFD-7140-4ECE-87A5-1D150B9016D0}</Project>
       <Name>InternHub.Repository</Name>
     </ProjectReference>
     <ProjectReference Include="..\InternHub.Service.Common\InternHub.Service.Common.csproj">
-      <Project>{90230df2-828b-4368-8d34-4ec2a66b6870}</Project>
+      <Project>{90230DF2-828B-4368-8D34-4EC2A66B6870}</Project>
       <Name>InternHub.Service.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\InternHub.Service\InternHub.Service.csproj">
-      <Project>{a1d5841e-d2a0-4a2e-95a4-9a8256e58dc4}</Project>
+      <Project>{A1D5841E-D2A0-4A2E-95A4-9A8256E58DC4}</Project>
       <Name>InternHub.Service</Name>
     </ProjectReference>
   </ItemGroup>
@@ -510,9 +508,10 @@
     <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
     <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
     <Error Condition="!Exists('..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets'))" />
   </Target>
   <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
-  <Import Project="..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets" Condition="Exists('..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets')" />
+  <Import Project="..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

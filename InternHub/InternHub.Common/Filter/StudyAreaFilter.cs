@@ -1,15 +1,13 @@
-﻿using InternHub.Model.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InternHub.Model
+namespace InternHub.Common
 {
-    public class StudyArea : BaseModel, IStudyArea
+    public class StudyAreaFilter
     {
-       
         public string Name { get; set; }
     }
 }

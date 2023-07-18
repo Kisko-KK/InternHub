@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -71,8 +70,8 @@
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.6.0.0\lib\net461\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -118,6 +117,7 @@
     <Compile Include="Identity\SetPasswordBindingModel.cs" />
     <Compile Include="Internship.cs" />
     <Compile Include="InternshipApplication.cs" />
+    <Compile Include="InternshipApplicationView.cs" />
     <Compile Include="Migrations\202307141117120_IdentityInitialization.cs" />
     <Compile Include="Migrations\202307141117120_IdentityInitialization.designer.cs">
       <DependentUpon>202307141117120_IdentityInitialization.cs</DependentUpon>
@@ -134,15 +134,12 @@
     <Compile Include="Student.cs" />
     <Compile Include="StudentView.cs" />
     <Compile Include="StudyArea.cs" />
+    <Compile Include="StudyAreaView.cs" />
     <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\InternHub.Common\InternHub.Common.csproj">
-      <Project>{ffd157ea-a094-4dd5-81ab-fb4d2f4425b2}</Project>
-      <Name>InternHub.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\InternHub.Model.Common\InternHub.Model.Common.csproj">
-      <Project>{84f6f170-d048-4833-8f62-a19dca4435a4}</Project>
+      <Project>{84F6F170-D048-4833-8F62-A19DCA4435A4}</Project>
       <Name>InternHub.Model.Common</Name>
     </ProjectReference>
   </ItemGroup>

@@ -18,7 +18,6 @@ using InternHub.WebApi.Providers;
 using InternHub.WebApi.Results;
 using InternHub.WebApi.Models.Identity;
 using InternHub.Model.Identity;
-using InternHub.Service.Common;
 using InternHub.Service;
 
 namespace InternHub.WebApi.Controllers
@@ -29,14 +28,11 @@ namespace InternHub.WebApi.Controllers
     {
         private const string LocalLoginProvider = "Local";
 
-        public AccountController()
-        {
-        }
-
         public AccountController(UserManager userManager)
         {
             UserManager = userManager;
         }
+
 
         public AccountController(UserManager userManager, ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
         {

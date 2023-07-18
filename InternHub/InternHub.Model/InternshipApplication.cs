@@ -9,11 +9,13 @@ namespace InternHub.Model
 {
     public class InternshipApplication : BaseModel, IInternshipApplication
     {
+     
         public Guid StateId { get; set; }
         public State State { get; set; }
         public string StudentId { get; set; }
         public Student Student { get; set; }
         public Guid InternshipId { get; set; }
         public Internship Internship { get; set; }
+
     }
 }

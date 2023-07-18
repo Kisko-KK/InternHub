@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using InternHub.Service.Common;
 using InternHub.Repository;
 using InternHub.Common.Filter;
-using InternHub.Model.Common;
 using InternHub.Repository.Common;
 
 namespace InternHub.Service
