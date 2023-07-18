@@ -11,33 +11,21 @@ namespace InternHub.Model
     {
         public StudyArea StudyArea { get; set; }
         public Guid StudyAreaId { get; set; }
-        public string Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Address { get; set; }
-        public string Description { get; set; }
-        public DateTime DateCreated { get; set; }
-        public DateTime DateUpdated { get; set; }
-        public Guid CountyId { get; set; }
 
-        public bool IsActive { get; set; }
-
-        public StudentView(string id, string firstName, string lastName, string email, string phoneNumber, string address, string description, DateTime dateCreated, DateTime dateUpdated, Guid countyId, bool isActive, StudyArea studyArea)
+        public StudentView(Student student)
         {
-            Id = id;
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            PhoneNumber = phoneNumber;
-            Address = address;
-            Description = description;
-            DateCreated = dateCreated;
-            DateUpdated = dateUpdated;
-            CountyId = countyId;
-            IsActive = isActive;
-            StudyArea = studyArea;
+            Id = student.Id;
+            FirstName = student.FirstName;
+            LastName = student.LastName;
+            Email = student.Email;
+            PhoneNumber = student.PhoneNumber;
+            Address = student.Address;
+            Description = student.Description;
+            DateCreated = student.DateCreated;
+            DateUpdated = student.DateUpdated;
+            CountyId = student.CountyId;
+            IsActive = student.IsActive;
+            StudyArea = student.StudyArea;
         }
     }
 }
