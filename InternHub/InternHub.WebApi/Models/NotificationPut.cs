@@ -6,7 +6,7 @@ using System.Web;
 
 namespace InternHub.WebApi.Models
 {
-    public class PutNotification
+    public class NotificationPut
     {
         [Required]
         public string Subject { get; set; }

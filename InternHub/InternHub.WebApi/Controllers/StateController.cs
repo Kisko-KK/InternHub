@@ -24,7 +24,7 @@ namespace InternHub.WebApi.Controllers
 
         // GET: api/State
         [Authorize]
-        public async Task<HttpResponseMessage> Get()
+        public async Task<HttpResponseMessage> GetAsync()
         {
             try
             {
@@ -36,7 +36,7 @@ namespace InternHub.WebApi.Controllers
 
         // GET: api/State/5
         [Authorize]
-        public async Task<HttpResponseMessage> Get(Guid id)
+        public async Task<HttpResponseMessage> GetAsync(Guid id)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // POST: api/State
-        public async Task<HttpResponseMessage> Post([FromBody] StateView state)
+        public async Task<HttpResponseMessage> PostASync([FromBody] StateView state)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // PUT: api/State/5
-        public async Task<HttpResponseMessage> Put(Guid id, [FromBody] StateView state)
+        public async Task<HttpResponseMessage> PutAsync(Guid id, [FromBody] StateView state)
         {
             try
             {
@@ -84,7 +84,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // DELETE: api/State/5
-        public async Task<HttpResponseMessage> Delete(Guid id)
+        public async Task<HttpResponseMessage> DeleteAsync(Guid id)
         {
             try
             {

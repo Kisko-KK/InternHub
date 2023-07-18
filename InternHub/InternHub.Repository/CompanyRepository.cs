@@ -19,16 +19,17 @@ namespace InternHub.Repository
             this.connectionString = connectionString;
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(Company company)
         {
             int numberOfAffectedRows = 0;
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
-                connection.Open();
-                string userQuery = $"UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false WHERE \"Id\" = @id";
+                await connection.OpenAsync();
+                string userQuery = $"UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
 
                 NpgsqlCommand userCommand = new NpgsqlCommand(userQuery, connection);
-                userCommand.Parameters.AddWithValue("@id", id);
+                userCommand.Parameters.AddWithValue("@id", company.Id);
+                userCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
 
                 numberOfAffectedRows = await userCommand.ExecuteNonQueryAsync();
             }
@@ -40,13 +41,17 @@ namespace InternHub.Repository
             List<Company> companies = new List<Company>();
             int recordsCount = 0;
 
+            if (sorting == null) sorting = new Sorting();
+            if (paging == null) paging = new Paging();
+            if(filter == null) filter = new CompanyFilter();
+
             StringBuilder selectQueryBuilder = new StringBuilder();
             StringBuilder countQueryBuilder = new StringBuilder();
             StringBuilder filterQueryBuilder = new StringBuilder();
 
             string sortBy;
 
-            switch(sorting.SortBy.ToLower())
+            switch (sorting.SortBy.ToLower())
             {
                 case "name": sortBy = "c.\"" + sorting.SortBy + "\""; break;
                 case "website": sortBy = "c.\"" + sorting.SortBy + "\""; break;
@@ -57,41 +62,41 @@ namespace InternHub.Repository
 
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
-                connection.Open();
+                await connection.OpenAsync();
 
-                string selectQuery = "SELECT * FROM public.\"Company\" c INNER JOIN dbo.\"AspNetUsers\" u ON c.\"Id\" = u.\"Id\" ";
+                string selectQuery = "SELECT * FROM public.\"Company\" c INNER JOIN dbo.\"AspNetUsers\" u ON c.\"Id\" = u.\"Id\" inner join \"County\" co on u.\"CountyId\" = co.\"Id\" ";
                 string countQuery = "SELECT COUNT(*) FROM public.\"Company\" c INNER JOIN dbo.\"AspNetUsers\" u ON c.\"Id\" = u.\"Id\" ";
 
                 string filterQuery = " WHERE 1=1 ";
                 string sortingQuery = $" ORDER BY {sortBy} {sorting.SortOrder} ";
                 string pagingQuery = $" LIMIT {paging.PageSize} OFFSET {(paging.CurrentPage - 1) * paging.PageSize}";
 
+                NpgsqlCommand selectCommand = new NpgsqlCommand();
 
                 filterQueryBuilder.Append(filterQuery);
-                if (filter.IsActive == true)
+                if (filter.IsActive != null)
                 {
-                    filterQueryBuilder.Append($" AND u.\"IsActive\" = true");
+                    filterQueryBuilder.Append(" AND u.\"IsActive\" = @isActive");
+                    selectCommand.Parameters.AddWithValue("@isActive", filter.IsActive.Value);
                 }
-                else
+                if(filter.IsAccepted != null)
                 {
-                    filterQueryBuilder.Append($" AND u.\"IsActive\" = false");
+                    filterQueryBuilder.Append(" AND c.\"IsAccepted\" = @isAccepted");
+                    selectCommand.Parameters.AddWithValue("@isAccepted", filter.IsAccepted.Value);
                 }
-                if (filter.IsAccepted == true)
+                if(filter.Name != null)
                 {
-                    filterQueryBuilder.Append($" AND c.\"IsAccepted\" = true");
+                    filterQueryBuilder.Append(" AND c.\"Name\" ilike @name");
+                    selectCommand.Parameters.AddWithValue("@name", "%" + filter.Name + "%");
                 }
-                else
-                {
-                    filterQueryBuilder.Append($" AND c.\"IsAccepted\" = false");
-                }
-
 
                 selectQueryBuilder.Append(selectQuery);
                 selectQueryBuilder.Append(filterQueryBuilder.ToString());
                 selectQueryBuilder.Append(sortingQuery);
                 selectQueryBuilder.Append(pagingQuery);
 
-                NpgsqlCommand selectCommand = new NpgsqlCommand(selectQueryBuilder.ToString(), connection);
+                selectCommand.CommandText = selectQueryBuilder.ToString();
+                selectCommand.Connection = connection;
                 NpgsqlDataReader selectReader = await selectCommand.ExecuteReaderAsync();
                 while (selectReader.HasRows && selectReader.Read())
                 {
@@ -104,6 +109,7 @@ namespace InternHub.Repository
                 countQueryBuilder.Append(filterQueryBuilder.ToString());
 
                 NpgsqlCommand countCommand = new NpgsqlCommand(countQueryBuilder.ToString(), connection);
+                foreach (NpgsqlParameter item in selectCommand.Parameters) countCommand.Parameters.AddWithValue(item.ParameterName, item.Value);
                 var countScalar = await countCommand.ExecuteScalarAsync();
                 recordsCount = Convert.ToInt32(countScalar);
 
@@ -124,7 +130,7 @@ namespace InternHub.Repository
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
-                connection.Open();
+                await connection.OpenAsync();
 
                 using (NpgsqlTransaction transaction = connection.BeginTransaction())
                 {
@@ -167,7 +173,7 @@ namespace InternHub.Repository
                     }
                     catch
                     {
-                        transaction.Rollback();
+                        await transaction.RollbackAsync();
                         return false;
                     }
                 }
@@ -178,7 +184,7 @@ namespace InternHub.Repository
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
-                connection.Open();
+                await connection.OpenAsync();
 
                 using (NpgsqlTransaction transaction = connection.BeginTransaction())
                 {
@@ -229,13 +235,13 @@ namespace InternHub.Repository
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
 
                     NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM public.\"Company\" INNER JOIN dbo.\"AspNetUsers\" ON public.\"Company\".\"Id\" = dbo.\"AspNetUsers\".\"Id\" INNER JOIN public.\"County\" ON public.\"County\".\"Id\" = dbo.\"AspNetUsers\".\"CountyId\" WHERE \"Company\".\"Id\" = @Id", connection);
                     command.Parameters.AddWithValue("@Id", id);
                     NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
-                    if (!reader.HasRows || !reader.Read()) return null;
+                    if (!reader.HasRows || !await reader.ReadAsync()) return null;
 
                     company = ReadCompany(reader);
 
@@ -246,15 +252,18 @@ namespace InternHub.Repository
             catch { return null; }
         }
 
-        public async Task<bool> AcceptAsync(string id)
+        public async Task<bool> AcceptAsync(Company company)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
-                connection.Open();
+                await connection.OpenAsync();
 
-                NpgsqlCommand command = new NpgsqlCommand("UPDATE public.\"Company\" SET \"IsAccepted\" = true WHERE \"Id\" = @id", connection);
-                command.Parameters.AddWithValue("@id", id);
+                NpgsqlCommand command = new NpgsqlCommand("UPDATE public.\"Company\" SET \"IsAccepted\" = true, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id", connection);
+                command.Parameters.AddWithValue("@id", company.Id);
+                command.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
+
                 int rowsAffected = await command.ExecuteNonQueryAsync();
+
                 return rowsAffected > 0;
             }
         }
@@ -272,8 +281,6 @@ namespace InternHub.Repository
                         Id = (Guid)reader["CountyId"],
                         CreatedByUserId = Convert.ToString(reader["CreatedByUserId"]),
                         UpdatedByUserId = Convert.ToString(reader["UpdatedByUserId"]),
-                        DateCreated = Convert.ToDateTime(reader["DateCreated"]),
-                        DateUpdated = Convert.ToDateTime(reader["DateUpdated"]),
                         Name = Convert.ToString(reader["Name"]),
                         IsActive = Convert.ToBoolean(reader["IsActive"])
                     },

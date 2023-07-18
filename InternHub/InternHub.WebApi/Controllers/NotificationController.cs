@@ -28,7 +28,7 @@ namespace InternHub.WebApi.Controllers
             UserManager = userManager;
         }
 
-        public async Task<HttpResponseMessage> Get(string sortBy = null, string sortOrder = null, int? currentPage = null, int? pageSize = null)
+        public async Task<HttpResponseMessage> GetAsync(string sortBy = null, string sortOrder = null, int? currentPage = null, int? pageSize = null)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace InternHub.WebApi.Controllers
             catch { return Request.CreateResponse(HttpStatusCode.InternalServerError, "Code crash"); }
         }
 
-        public async Task<HttpResponseMessage> Post([FromBody] PutNotification notification)
+        public async Task<HttpResponseMessage> PostAsync([FromBody] NotificationPut notification)
         {
             try
             {

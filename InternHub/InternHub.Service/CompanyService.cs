@@ -20,9 +20,10 @@ namespace InternHub.Service
         public CompanyService(ICompanyRepository companyRepository) {
             CompanyRepository = companyRepository;
         }
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(Company company)
         {
-            return await CompanyRepository.DeleteAsync(id);
+            company.DateUpdated = DateTime.Now;
+            return await CompanyRepository.DeleteAsync(company);
         }
 
         public async Task<PagedList<Company>> GetAsync(Sorting sorting, Paging paging, CompanyFilter filter)
@@ -48,9 +49,9 @@ namespace InternHub.Service
             return await CompanyRepository.PutAsync(company);
         }
 
-        public async Task<bool> AcceptAsync(string id)
+        public async Task<bool> AcceptAsync(Company company)
         {
-            return await CompanyRepository.AcceptAsync(id);
+            return await CompanyRepository.AcceptAsync(company);
         }
 
         

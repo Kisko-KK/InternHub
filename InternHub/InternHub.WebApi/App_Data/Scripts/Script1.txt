@@ -1,4 +1,14 @@
-﻿-- dbo."AspNetUsers" definition
+﻿create table public."County"(
+    "Id" uuid primary key,
+    "Name" varchar NOT NULL,
+    "DateCreated" TIMESTAMP NOT NULL, 
+    "DateUpdated" TIMESTAMP NOT NULL,
+    "CreatedByUserId" varchar(128) NOT NULL,
+    "UpdatedByUserId" varchar(128) NOT NULL,
+    "IsActive" bool NOT NULL DEFAULT true
+);
+
+-- dbo."AspNetUsers" definition
 
 -- Drop table
 
@@ -25,7 +35,9 @@ CREATE TABLE dbo."AspNetUsers" (
 	"LockoutEnabled" bool NOT NULL,
 	"AccessFailedCount" int4 NOT NULL,
 	"UserName" varchar(256) NOT NULL,
-	CONSTRAINT "PK_dbo.AspNetUsers" PRIMARY KEY ("Id")
+	"Discriminator" varchar(128) NOT NULL,
+	CONSTRAINT "PK_dbo.AspNetUsers" PRIMARY KEY ("Id"),
+	CONSTRAINT "FK_AspNetUsers_County_CountyId" foreign key("CountyId") references public."County"("Id")
 );
 CREATE UNIQUE INDEX "AspNetUsers_UserNameIndex" ON dbo."AspNetUsers" USING btree ("UserName");
 
@@ -38,6 +50,7 @@ CREATE UNIQUE INDEX "AspNetUsers_UserNameIndex" ON dbo."AspNetUsers" USING btree
 CREATE TABLE dbo."AspNetRoles" (
 	"Id" varchar(128) NOT NULL,
 	"Name" varchar(256) NOT NULL,
+	"Discriminator" varchar(128) NOT NULL,
 	CONSTRAINT "PK_dbo.AspNetRoles" PRIMARY KEY ("Id")
 );
 CREATE UNIQUE INDEX "AspNetRoles_RoleNameIndex" ON dbo."AspNetRoles" USING btree ("Name");
@@ -116,20 +129,11 @@ CREATE TABLE dbo."__MigrationHistory" (
 	CONSTRAINT "PK_dbo.__MigrationHistory" PRIMARY KEY ("MigrationId", "ContextKey")
 );
 
-create table public."County"(
-    "Id" uuid primary key,
-    "Name" varchar NOT NULL,
-    "DateCreated" TIMESTAMP NOT NULL, 
-    "DateUpdated" TIMESTAMP NOT NULL,
-    "CreatedByUserId" varchar(128) NOT NULL,
-    "UpdatedByUserId" varchar(128) NOT NULL,
-    "IsActive" bool NOT NULL DEFAULT true
-);
-
 create table public."State"(
 	"Id" uuid primary key,
 	"Name" text not null,
 	"DateCreated" TIMESTAMP not null,
+	"DateUpdated" TIMESTAMP not null,
 	"CreatedByUserId" varchar(128) not null,
 	"UpdatedByUserId" varchar(128) not null,
 	"IsActive" bool default true
@@ -149,25 +153,15 @@ create table public."Student"(
 	"Id" varchar(128) primary key,
 	constraint "FK_Student_User_Id" foreign key ("Id") references dbo."AspNetUsers"("Id"),
 	"StudyAreaId" uuid not null,
-	constraint "FK_Student_StudyArea_Id" foreign key("StudyAreaId") references public."StudyArea"("Id"),
-	"DateCreated" TIMESTAMP not null,
-	"DateUpdated" TIMESTAMP not null,
-	"CreatedByUserId" varchar(128) not null,
-	"UpdatedByUserId" varchar(128) not null,
-	"IsActive" bool not null default true
+	constraint "FK_Student_StudyArea_Id" foreign key("StudyAreaId") references public."StudyArea"("Id")
 );
 
 create table public."Company"(
 	"Id" varchar(128) primary key,
-	"StateId" uuid not null,
 	"Name" VARCHAR not null,
 	"Website" VARCHAR not null,
 	"IsAccepted" bool not null,
-	"DateCreated" TIMESTAMP not null,
-	"DateUpdated" TIMESTAMP not null,
-	"IsActive" bool not null default true,
 	
-	CONSTRAINT "FK_Company_State_StateId" FOREIGN KEY ("StateId") references public."State"("Id"),
 	CONSTRAINT "FK_Company_User_Id" FOREIGN KEY ("Id") references dbo."AspNetUsers"("Id")
 );
 
