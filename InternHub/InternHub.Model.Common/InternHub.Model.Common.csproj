@@ -51,6 +51,7 @@
     <Compile Include="IRole.cs" />
     <Compile Include="IState.cs" />
     <Compile Include="IStudent.cs" />
+    <Compile Include="IStudentView.cs" />
     <Compile Include="IStudyArea.cs" />
     <Compile Include="IUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

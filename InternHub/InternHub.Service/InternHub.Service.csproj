@@ -124,6 +124,7 @@
     <Compile Include="ServiceModule.cs" />
     <Compile Include="StateService.cs" />
     <Compile Include="UserManager.cs" />
+    <Compile Include="StudentService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -145,6 +146,10 @@
     <ProjectReference Include="..\InternHub.Repository.Common\InternHub.Repository.Common.csproj">
       <Project>{05e39e4d-685b-4111-8083-76f6e6384128}</Project>
       <Name>InternHub.Repository.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InternHub.Repository\InternHub.Repository.csproj">
+      <Project>{6A1B5CFD-7140-4ECE-87A5-1D150B9016D0}</Project>
+      <Name>InternHub.Repository</Name>
     </ProjectReference>
     <ProjectReference Include="..\InternHub.Service.Common\InternHub.Service.Common.csproj">
       <Project>{90230df2-828b-4368-8d34-4ec2a66b6870}</Project>

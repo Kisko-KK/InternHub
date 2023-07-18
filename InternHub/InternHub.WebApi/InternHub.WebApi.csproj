@@ -272,6 +272,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\StateController.cs" />
+    <Compile Include="Controllers\StudentController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -364,7 +365,9 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\Student\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\bootstrap.min.js.map" />
   </ItemGroup>

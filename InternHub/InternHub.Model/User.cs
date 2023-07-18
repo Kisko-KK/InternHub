@@ -19,6 +19,9 @@ namespace InternHub.Model
         public string Address { get; set; } = "";
         public string Description { get; set; } = "";
         public Guid CountyId { get; set; }
+        public bool IsActive { get; set; } = true;
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
         [NotMapped]
         public County County { get; set; }
         public bool IsActive { get; set; } = true;
