@@ -1,5 +1,4 @@
-﻿using InternHub.Common;
-using InternHub.Model;
+﻿using InternHub.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;

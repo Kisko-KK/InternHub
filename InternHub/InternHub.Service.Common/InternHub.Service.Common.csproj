@@ -103,12 +103,8 @@
       <Project>{FFD157EA-A094-4DD5-81AB-FB4D2F4425B2}</Project>
       <Name>InternHub.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\InternHub.Model.Common\InternHub.Model.Common.csproj">
-      <Project>{84F6F170-D048-4833-8F62-A19DCA4435A4}</Project>
-      <Name>InternHub.Model.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\InternHub.Model\InternHub.Model.csproj">
-      <Project>{a1603186-460c-4efd-813e-0636612d117c}</Project>
+      <Project>{A1603186-460C-4EFD-813E-0636612D117C}</Project>
       <Name>InternHub.Model</Name>
     </ProjectReference>
   </ItemGroup>

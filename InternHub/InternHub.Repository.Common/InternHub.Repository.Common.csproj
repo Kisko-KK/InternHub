@@ -100,7 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InternHub.Common\InternHub.Common.csproj">
-      <Project>{ffd157ea-a094-4dd5-81ab-fb4d2f4425b2}</Project>
+      <Project>{FFD157EA-A094-4DD5-81AB-FB4D2F4425B2}</Project>
       <Name>InternHub.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\InternHub.Model\InternHub.Model.csproj">

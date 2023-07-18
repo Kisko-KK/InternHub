@@ -448,35 +448,27 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InternHub.Common\InternHub.Common.csproj">
-      <Project>{ffd157ea-a094-4dd5-81ab-fb4d2f4425b2}</Project>
+      <Project>{FFD157EA-A094-4DD5-81AB-FB4D2F4425B2}</Project>
       <Name>InternHub.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\InternHub.DAL\InternHub.DAL.csproj">
-      <Project>{ed158916-42a8-46b6-b9a0-4866ac0a94a5}</Project>
-      <Name>InternHub.DAL</Name>
-    </ProjectReference>
     <ProjectReference Include="..\InternHub.Model.Common\InternHub.Model.Common.csproj">
-      <Project>{84f6f170-d048-4833-8f62-a19dca4435a4}</Project>
+      <Project>{84F6F170-D048-4833-8F62-A19DCA4435A4}</Project>
       <Name>InternHub.Model.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\InternHub.Model\InternHub.Model.csproj">
-      <Project>{a1603186-460c-4efd-813e-0636612d117c}</Project>
+      <Project>{A1603186-460C-4EFD-813E-0636612D117C}</Project>
       <Name>InternHub.Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\InternHub.Repository.Common\InternHub.Repository.Common.csproj">
-      <Project>{05e39e4d-685b-4111-8083-76f6e6384128}</Project>
-      <Name>InternHub.Repository.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\InternHub.Repository\InternHub.Repository.csproj">
-      <Project>{6a1b5cfd-7140-4ece-87a5-1d150b9016d0}</Project>
+      <Project>{6A1B5CFD-7140-4ECE-87A5-1D150B9016D0}</Project>
       <Name>InternHub.Repository</Name>
     </ProjectReference>
     <ProjectReference Include="..\InternHub.Service.Common\InternHub.Service.Common.csproj">
-      <Project>{90230df2-828b-4368-8d34-4ec2a66b6870}</Project>
+      <Project>{90230DF2-828B-4368-8D34-4EC2A66B6870}</Project>
       <Name>InternHub.Service.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\InternHub.Service\InternHub.Service.csproj">
-      <Project>{a1d5841e-d2a0-4a2e-95a4-9a8256e58dc4}</Project>
+      <Project>{A1D5841E-D2A0-4A2E-95A4-9A8256E58DC4}</Project>
       <Name>InternHub.Service</Name>
     </ProjectReference>
   </ItemGroup>
