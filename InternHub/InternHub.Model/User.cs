@@ -24,9 +24,6 @@ namespace InternHub.Model
         public DateTime DateUpdated { get; set; }
         [NotMapped]
         public County County { get; set; }
-        public bool IsActive { get; set; } = true;
-        public DateTime DateCreated { get; set; } = DateTime.Now;
-        public DateTime DateUpdated { get; set; } = DateTime.Now;
 
         public string GetFullName() => FirstName + " " + LastName;
 
