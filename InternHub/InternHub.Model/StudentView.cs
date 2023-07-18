@@ -1,4 +1,4 @@
-﻿using InternHub.Model.Common;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace InternHub.Model
 {
-    public class Student : User, IStudent
+    public class StudentView : User
     {
-        public Student() { }
-        public Guid StudyAreaId { get; set; }
         public StudyArea StudyArea { get; set; }
+        public Guid StudyAreaId { get; set; }
         public string Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -21,10 +20,11 @@ namespace InternHub.Model
         public string Description { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
-
         public Guid CountyId { get; set; }
 
-        public Student(string id, string firstName, string lastName, string email, string phoneNumber, string address, string description, DateTime dateCreated, DateTime dateUpdated, Guid countyId, bool isActive, Guid studyAreaId)
+        public bool IsActive { get; set; }
+
+        public StudentView(string id, string firstName, string lastName, string email, string phoneNumber, string address, string description, DateTime dateCreated, DateTime dateUpdated, Guid countyId, bool isActive, StudyArea studyArea)
         {
             Id = id;
             FirstName = firstName;
@@ -36,8 +36,8 @@ namespace InternHub.Model
             DateCreated = dateCreated;
             DateUpdated = dateUpdated;
             CountyId = countyId;
-            StudyAreaId = studyAreaId;
             IsActive = isActive;
+            StudyArea = studyArea;
         }
     }
 }

@@ -45,6 +45,7 @@
     <Compile Include="INotificationRepository.cs" />
     <Compile Include="ICompanyRepository.cs" />
     <Compile Include="IStateRepository.cs" />
+    <Compile Include="IStudentRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

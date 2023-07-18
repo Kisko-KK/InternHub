@@ -132,6 +132,7 @@
     <Compile Include="Role.cs" />
     <Compile Include="State.cs" />
     <Compile Include="Student.cs" />
+    <Compile Include="StudentView.cs" />
     <Compile Include="StudyArea.cs" />
     <Compile Include="User.cs" />
   </ItemGroup>
