@@ -15,7 +15,7 @@ namespace InternHub.Service
     {
         public IInternshipApplicationRepository _repo;
 
-        public InternshipApplicationService(IInternshipApplicationRepository internshipApplicationRepository) 
+        public InternshipApplicationService(IInternshipApplicationRepository internshipApplicationRepository)
         {
             _repo = internshipApplicationRepository;
         }
@@ -25,22 +25,24 @@ namespace InternHub.Service
 
 
         public async Task<InternshipApplication> GetInternshipApplicationByIdAsync(Guid id) => await _repo.GetInternshipApplicationByIdAsync(id);
-       
-        public async Task<bool> PostInternshipApplicationAsync(InternshipApplication internshipApplication,string currentUserId)
+
+        public async Task<bool> PostInternshipApplicationAsync(InternshipApplication internshipApplication, string currentUserId)
         {
-            if(currentUserId == null) {
+            if (currentUserId == null)
+            {
                 return false;
-                            
+
             }
             if (internshipApplication == null)
             {
                 return false;
 
             }
+            internshipApplication.DateCreated = DateTime.Now;
+            internshipApplication.DateUpdated = DateTime.Now;
+            internshipApplication.CreatedByUserId = currentUserId;
+            internshipApplication.UpdatedByUserId = currentUserId;
             return await _repo.PostInternshipApplicationAsync(internshipApplication);
         }
-
-       
-
     }
 }

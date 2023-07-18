@@ -135,6 +135,7 @@
     <Compile Include="Student.cs" />
     <Compile Include="StudentView.cs" />
     <Compile Include="StudyArea.cs" />
+    <Compile Include="StudyAreaView.cs" />
     <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>

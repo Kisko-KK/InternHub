@@ -127,6 +127,7 @@
     <Compile Include="ServiceModule.cs" />
     <Compile Include="StateService.cs" />
     <Compile Include="StudentService.cs" />
+    <Compile Include="StudyAreaService.cs" />
     <Compile Include="UserManager.cs" />
     <Compile Include="StudentService.cs" />
   </ItemGroup>

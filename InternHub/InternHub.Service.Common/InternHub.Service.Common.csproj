@@ -95,6 +95,7 @@
     <Compile Include="IInternshipApplicationService.cs" />
     <Compile Include="IStateService.cs" />
     <Compile Include="IStudentService.cs" />
+    <Compile Include="IStudyAreaService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

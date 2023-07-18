@@ -2,6 +2,7 @@
 using InternHub.Common.Filter;
 using InternHub.Model;
 using InternHub.Service.Common;
+using InternHub.WebApi.Models;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
@@ -15,17 +16,18 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
+    [Authorize]
     public class InternshipApplicationController : ApiController
     {
-        protected IInternshipApplicationService _internshipApplicationService { get; set; }  
+        protected IInternshipApplicationService _internshipApplicationService { get; set; }
 
-        public InternshipApplicationController(IInternshipApplicationService internshipApplicationService) 
+        public InternshipApplicationController(IInternshipApplicationService internshipApplicationService)
         {
             _internshipApplicationService = internshipApplicationService;
-            
+
         }
-        [Authorize]
-        public async Task<HttpResponseMessage> GetAll(int? currentPage=null, int? pageSize=null, string sortBy=null, string sortOrder=null, string stateName=null, string internshipName=null)
+
+        public async Task<HttpResponseMessage> GetAllAsync(int? currentPage = null, int? pageSize = null, string sortBy = null, string sortOrder = null, string stateName = null, string internshipName = null)
         {
             try
             {
@@ -34,27 +36,30 @@ namespace InternHub.WebApi.Controllers
                 {
                     sorting.SortBy = sortBy;
                 }
-                if(sortOrder != null)
+                if (sortOrder != null)
                 {
-                    sorting.SortOrder = sortOrder;  
+                    sorting.SortOrder = sortOrder;
                 }
                 Paging paging = new Paging();
 
-                if(currentPage != null) {
+                if (currentPage != null)
+                {
                     paging.CurrentPage = (int)currentPage;
                 }
-                if(pageSize != null) {
+                if (pageSize != null)
+                {
                     paging.PageSize = (int)pageSize;
                 }
-              
+
                 InternshipApplicationFilter filter = new InternshipApplicationFilter();
                 if (stateName != null)
                 {
-                    filter.StateName = stateName;   
+                    filter.StateName = stateName;
                 }
-                if(internshipName!=null) {
-                    filter.InternshipName=internshipName;   
-                }    
+                if (internshipName != null)
+                {
+                    filter.InternshipName = internshipName;
+                }
 
                 PagedList<InternshipApplication> internshipApplications = await _internshipApplicationService.GetAllInternshipApplicationsAsync(paging, sorting, filter);
                 if (internshipApplications == null)
@@ -79,13 +84,12 @@ namespace InternHub.WebApi.Controllers
             }
         }
 
-        [Authorize]
-        public async Task<HttpResponseMessage> GetById(Guid id)
+        public async Task<HttpResponseMessage> GetByIdAsync(Guid id)
         {
             try
             {
-                
-                if(id==null) return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+                if (id == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
                 InternshipApplication internshipApplication = await _internshipApplicationService.GetInternshipApplicationByIdAsync(id);
 
                 if (internshipApplication == null) return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -97,37 +101,30 @@ namespace InternHub.WebApi.Controllers
             }
         }
 
-      
+
         //
-        [Authorize]
-        public async Task<HttpResponseMessage> Post([FromBody]InternshipApplicationView internshipApplication)
+        [Authorize(Roles = "Student")]
+        public async Task<HttpResponseMessage> PostAsync([FromBody] PutInternshipApplication internshipApplication)
         {
             string currentUserId = User.Identity.GetUserId();
             try
             {
-                if (internshipApplication == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
-
                 InternshipApplication newInternshipApplication = new InternshipApplication()
                 {
                     Id = Guid.NewGuid(),
-                    DateCreated = internshipApplication.DateCreated,
-                    DateUpdated = internshipApplication.DateUpdated,
-                    CreatedByUserId = currentUserId,
-                    UpdatedByUserId = currentUserId,
-                    IsActive = true,
-                   
+                    InternshipId = internshipApplication.InternshipId,
+                    StudentId = currentUserId
+
                 };
-                bool success = await _internshipApplicationService.PostInternshipApplicationAsync(newInternshipApplication,currentUserId);
+                if (internshipApplication == null) { return Request.CreateResponse(HttpStatusCode.BadRequest); }
+                bool success = await _internshipApplicationService.PostInternshipApplicationAsync(newInternshipApplication, currentUserId);
                 if (!success) return Request.CreateResponse(HttpStatusCode.BadRequest);
                 return Request.CreateResponse(HttpStatusCode.OK, new InternshipApplicationView(newInternshipApplication));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
-
-        }    
-
-
+        }
     }
 }

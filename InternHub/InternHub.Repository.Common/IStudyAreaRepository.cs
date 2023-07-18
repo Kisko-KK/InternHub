@@ -10,10 +10,10 @@ namespace InternHub.Repository.Common
 {
     public interface IStudyAreaRepository
     {
-        Task<PagedList<StudyArea>> GetAllStudyAreasAsync(Paging paging, Sorting sorting, StudyAreaFilter studyAreaFilter);
-        Task<StudyArea> GetStudyAreaByIdAsync(Guid id);
-        Task<bool> PostStudyAreaByAsync(StudyArea studyArea);
-        Task<bool> PutStudyAreaByAsync(StudyArea studyArea);
-        Task<bool> DeleteStudyAreaByAsync(Guid id);
+        Task<List<StudyArea>> GetAllAsync();
+        Task<StudyArea> GetByIdAsync(Guid id);
+        Task<bool> AddAsync(StudyArea studyArea);
+        Task<bool> UpdateAsync(StudyArea studyArea);
+        Task<bool> RemoveAsync(StudyArea studyArea);
     }
 }

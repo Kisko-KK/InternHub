@@ -35,7 +35,7 @@ namespace InternHub.Repository
                 command.Parameters.AddWithValue("@pageSize", paging.PageSize);
                 command.Parameters.AddWithValue("@skip", (paging.CurrentPage - 1) * paging.PageSize);
 
-                string sortBy = (sorting.SortBy.ToLower() == "Id".ToLower() ? "" : "ia.") + "\"" + sorting.SortBy + "\"";
+                string sortBy = (sorting.SortBy.ToLower() == "Id".ToLower() ? "s" : "ia") + ".\"" + sorting.SortBy + "\"";
 
                 List<string> parameters = new List<string>();
 
@@ -55,7 +55,7 @@ namespace InternHub.Repository
 
                 }
                 string selectQuery = "SELECT * FROM \"InternshipApplication\" ia INNER JOIN \"Student\" s ON ia.\"StudentId\" = s.\"Id\" INNER JOIN \"State\" sta ON ia.\"StateId\" = sta.\"Id\" inner join \"Internship\" i on i.\"Id\"=ia.\"InternshipId\"" +
-                    (parameters.Count == 0 ? "" : "WHERE ia.\"IsActive\"=true " + string.Join(" AND ", parameters)) + $" ORDER BY ia.{sortBy} {(sorting.SortOrder.ToLower() == "asc" ? "ASC" : "DESC")} LIMIT @pageSize OFFSET @skip";
+                    (parameters.Count == 0 ? "" : "WHERE ia.\"IsActive\"=true " + string.Join(" AND ", parameters)) + $" ORDER BY {sortBy} {(sorting.SortOrder.ToLower() == "asc" ? "ASC" : "DESC")} LIMIT @pageSize OFFSET @skip";
 
                 string countQuery = "SELECT COUNT (*) FROM \"InternshipApplication\"" + (parameters.Count == 0 ? "" : " WHERE " + string.Join(" AND ", parameters));
 
@@ -71,22 +71,18 @@ namespace InternHub.Repository
 
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
-                if (countResult == null || !reader.HasRows) return null;
+                if (countResult == null) return pagedList;
 
                 while (reader.HasRows && await reader.ReadAsync())
                 {
-                    pagedList.Data.Add(ReadInternshipApplication(reader));
+                    InternshipApplication internshipApplication = ReadInternshipApplication(reader);
+                    if(internshipApplication != null) pagedList.Data.Add(internshipApplication);
                 }
                 pagedList.CurrentPage = paging.CurrentPage;
                 pagedList.PageSize = paging.PageSize;
                 pagedList.DatabaseRecordsCount = Convert.ToInt32(countResult);
                 pagedList.LastPage = Convert.ToInt32(pagedList.DatabaseRecordsCount / paging.PageSize) + (pagedList.DatabaseRecordsCount % paging.PageSize != 0 ? 1 : 0);
-
-
-
             }
-
-
             return pagedList;
 
         }
@@ -124,11 +120,6 @@ namespace InternHub.Repository
             {
                 connection.Open();
 
-                Guid stateId = await GetStateIdAsync(internshipApplication.State.Id, connection);
-                string studentId = await GetStudentIdAsync(internshipApplication.Student.Id, connection);
-                Guid internshipId = await GetInternshipIdAsync(internshipApplication.Internship.Id, connection);
-
-
                 string applicationQuery = "INSERT INTO \"InternshipApplication\" VALUES (@id,@dateCreated,@dateUpdated,@createdByUserId,@updatedByUserId,@isActive,@stateId" +
                     "@studentId,@internshipId);";
 
@@ -143,19 +134,9 @@ namespace InternHub.Repository
                 applicationCommand.Parameters.AddWithValue("@studentId", internshipApplication.StudentId);
                 applicationCommand.Parameters.AddWithValue("@internshipId", internshipApplication.InternshipId);
 
-               
-                NpgsqlTransaction transaction = connection.BeginTransaction();
-                applicationCommand.Transaction = transaction;
-
                 int applicationResult = await applicationCommand.ExecuteNonQueryAsync();
 
-                if (applicationResult != 0) 
-                {
-                    success= true;
-                    transaction.Commit();
-                }
-                else {  success= false; transaction.Rollback(); }   
-
+                success = applicationResult != 0;
             }
             return success;
         }
@@ -179,37 +160,8 @@ namespace InternHub.Repository
                     InternshipId = (Guid)reader["InternshipId"]
 
                 };
-
             }
             catch { return null; }
-
-
-
         }
-
-        private async Task<Guid> GetStateIdAsync(Guid stateId, NpgsqlConnection connection)
-        {
-            string query = "SELECT \"Id\" FROM \"State\" WHERE \"Id\" = @stateId;";
-            NpgsqlCommand command = new NpgsqlCommand(query, connection);
-            command.Parameters.AddWithValue("@stateId", stateId);
-            return (Guid)await command.ExecuteScalarAsync();
-        }
-
-        private async Task<string> GetStudentIdAsync(string studentId, NpgsqlConnection connection)
-        {
-            string query = "SELECT \"Id\" FROM \"Student\" WHERE \"Id\" = @studentId;";
-            NpgsqlCommand command = new NpgsqlCommand(query, connection);
-            command.Parameters.AddWithValue("@studentId", studentId);
-            return (string)await command.ExecuteScalarAsync();
-        }
-
-        private async Task<Guid> GetInternshipIdAsync(Guid internshipId, NpgsqlConnection connection)
-        {
-            string query = "SELECT \"Id\" FROM \"Internship\" WHERE \"Id\" = @internshipId;";
-            NpgsqlCommand command = new NpgsqlCommand(query, connection);
-            command.Parameters.AddWithValue("@internshipId", internshipId);
-            return (Guid)await command.ExecuteScalarAsync();
-        }
-
     }
 }

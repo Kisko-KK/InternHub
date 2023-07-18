@@ -277,6 +277,7 @@
     <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\StateController.cs" />
     <Compile Include="Controllers\StudentController.cs" />
+    <Compile Include="Controllers\StudyAreaController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -289,6 +290,7 @@
     <Compile Include="Models\Identity\UserInfoViewModel.cs" />
     <Compile Include="Models\Identity\UserLoginInfoViewModel.cs" />
     <Compile Include="Models\NotificationView.cs" />
+    <Compile Include="Models\PutInternshipApplication.cs" />
     <Compile Include="Models\PutNotification.cs" />
     <Compile Include="Models\PostStudent.cs" />
     <Compile Include="Models\StateView.cs" />
