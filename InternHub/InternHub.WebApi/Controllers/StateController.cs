@@ -12,7 +12,6 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class StateController : ApiController
     {
         public IStateService StateService { get; set; }
@@ -49,7 +48,8 @@ namespace InternHub.WebApi.Controllers
         }
 
         // POST: api/State
-        public async Task<HttpResponseMessage> PostASync([FromBody] StateView state)
+        [Authorize(Roles = "Admin")]
+        public async Task<HttpResponseMessage> PostASync([FromBody] StatePut state)
         {
             try
             {
@@ -67,7 +67,8 @@ namespace InternHub.WebApi.Controllers
         }
 
         // PUT: api/State/5
-        public async Task<HttpResponseMessage> PutAsync(Guid id, [FromBody] StateView state)
+        [Authorize(Roles = "Admin")]
+        public async Task<HttpResponseMessage> PutAsync(Guid id, [FromBody] StatePut state)
         {
             try
             {
@@ -84,6 +85,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // DELETE: api/State/5
+        [Authorize(Roles = "Admin")]
         public async Task<HttpResponseMessage> DeleteAsync(Guid id)
         {
             try

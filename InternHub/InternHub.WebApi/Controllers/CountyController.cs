@@ -12,7 +12,6 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class CountyController : ApiController
     {
         public ICountyService CountyService { get; }
@@ -51,7 +50,8 @@ namespace InternHub.WebApi.Controllers
         }
 
         // POST: api/County
-        public async Task<HttpResponseMessage> PostAsync([FromBody] CountyView county)
+        [Authorize(Roles = "Admin")]
+        public async Task<HttpResponseMessage> PostAsync([FromBody] CountyPut county)
         {
             try
             {
@@ -72,7 +72,8 @@ namespace InternHub.WebApi.Controllers
         }
 
         // PUT: api/County/5
-        public async Task<HttpResponseMessage> PutAsync(Guid id, [FromBody] CountyView county)
+        [Authorize(Roles = "Admin")]
+        public async Task<HttpResponseMessage> PutAsync(Guid id, [FromBody] CountyPut county)
         {
             try
             {
@@ -91,6 +92,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // DELETE: api/County/5
+        [Authorize(Roles = "Admin")]
         public async Task<HttpResponseMessage> DeleteAsync(Guid id)
         {
             try

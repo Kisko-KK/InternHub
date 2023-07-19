@@ -134,7 +134,7 @@ namespace InternHub.Repository
                     selectCommand.Parameters.AddWithValue("@endDate", filter.EndDate);
                     countCommand.Parameters.AddWithValue("@endDate", filter.EndDate);
                 }
-                if(filter.Counties != null)
+                if(filter.Counties != null && filter.Counties.Count > 0)
                 {
                     filterQueryBuilder.Append(" AND u.\"CountyId\" IN (");
 

@@ -17,6 +17,7 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
+    [Authorize]
     public class NotificationController : ApiController
     {
         public INotificationService NotificationService { get; }
@@ -28,22 +29,11 @@ namespace InternHub.WebApi.Controllers
             UserManager = userManager;
         }
 
-        public async Task<HttpResponseMessage> GetAsync(string sortBy = null, string sortOrder = null, int? currentPage = null, int? pageSize = null)
+        public async Task<HttpResponseMessage> GetAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] NotificationFilter filter = null)
         {
             try
             {
-                Sorting sorting = new Sorting();
-                if (sortBy != null) sorting.SortBy = sortBy;
-                if (sortOrder != null) sorting.SortOrder = sortOrder;
-
-                Paging paging = new Paging();
-                if (pageSize != null) paging.PageSize = pageSize.Value;
-                if (currentPage != null) paging.CurrentPage = currentPage.Value;
-
-                NotificationFilter filter = new NotificationFilter();
-
                 PagedList<Notification> pagedList = await NotificationService.GetAllAsync(sorting, paging, filter);
-
 
                 PagedList<NotificationView> notifications = new PagedList<NotificationView>()
                 {
@@ -52,6 +42,7 @@ namespace InternHub.WebApi.Controllers
                     LastPage = pagedList.LastPage,
                     PageSize = pagedList.PageSize
                 };
+
                 foreach (Notification notification in pagedList.Data) notifications.Data.Add(new NotificationView(notification));
 
                 return Request.CreateResponse(HttpStatusCode.OK, notifications);

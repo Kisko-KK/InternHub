@@ -13,46 +13,21 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Mvc;
+using System.Web.Security;
 
 namespace InternHub.WebApi.Controllers
 {
+    [Authorize]
     public class InternshipController : ApiController
     {
         private IInternshipService InternshipService { get; set; }
         public InternshipController(IInternshipService internshipService) {
             InternshipService = internshipService;
         }
+
         // GET api/<controller>
-        public async Task<HttpResponseMessage> Get(string sortBy = "Name", string orderBy = "Asc", int currentPage = 1, int pageSize = 10, bool? isActive = null, string counties = null, string name = null, DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<HttpResponseMessage> GetAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] InternshipFilter filter = null)
         {
-            Sorting sorting = new Sorting();
-            sorting.SortBy = sortBy;
-            sorting.SortOrder = orderBy;
-
-            Paging paging = new Paging();
-            paging.PageSize = pageSize;
-            paging.CurrentPage = currentPage;
-
-            List<Guid> countyIds = null;
-            if(counties != null)
-            {
-                countyIds = new List<Guid>();
-                foreach (string county in counties.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    Guid? id = null;
-                    try
-                    {
-                        id = Guid.Parse(county);
-                    }
-                    catch { }
-                    if (id != null) countyIds.Add(id.Value);
-                }
-            }
-            
-
-            InternshipFilter filter = new InternshipFilter(countyIds, startDate, endDate, name, isActive);
-
             PagedList<Internship> pagedList = await InternshipService.GetAsync(sorting, paging, filter);
             PagedList<InternshipView> pagedListView = new PagedList<InternshipView>
             {
@@ -110,7 +85,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // GET api/<controller>/5
-        public async Task<HttpResponseMessage> Get(Guid id)
+        public async Task<HttpResponseMessage> GetAsync(Guid id)
         {
             Internship internship = await InternshipService.GetAsync(id);
 
@@ -138,7 +113,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // POST api/<controller>
-        public async Task<HttpResponseMessage> Post([FromBody] InternshipUpdate internshipUpdate)
+        public async Task<HttpResponseMessage> PostAsync([FromBody] InternshipUpdate internshipUpdate)
         {
             string currentUserId = User.Identity.GetUserId();
             Internship internship = new Internship
@@ -160,7 +135,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // PUT api/<controller>/5
-        public async Task<HttpResponseMessage> Put(Guid id, [FromBody] InternshipUpdate updatedInternship)
+        public async Task<HttpResponseMessage> PutASync(Guid id, [FromBody] InternshipUpdate updatedInternship)
         {
             Internship internship = await InternshipService.GetAsync(id);
             string currentUserId = User.Identity.GetUserId();
@@ -183,7 +158,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // DELETE api/<controller>/5
-        public async Task<HttpResponseMessage> Delete(Guid id)
+        public async Task<HttpResponseMessage> DeleteAsync(Guid id)
         {
             Internship existingInternship = await InternshipService.GetInternshipAsync(id);
             string currentUserId = User.Identity?.GetUserId();

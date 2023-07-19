@@ -8,12 +8,14 @@ namespace InternHub.Model
 {
     public class StudyAreaView
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
 
         public StudyAreaView() { }
 
         public StudyAreaView(StudyArea studyArea)
         {
+            Id = studyArea.Id;
             Name = studyArea.Name;
         }
     }

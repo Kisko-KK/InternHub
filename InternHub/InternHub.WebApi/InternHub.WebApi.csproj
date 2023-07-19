@@ -345,9 +345,11 @@
     <Compile Include="Models\NotificationView.cs" />
     <Compile Include="Models\PutInternshipApplication.cs" />
     <Compile Include="Models\PostStudent.cs" />
+    <Compile Include="Models\StatePut.cs" />
     <Compile Include="Models\StateView.cs" />
     <Compile Include="Models\StudentPut.cs" />
     <Compile Include="Models\StudentView.cs" />
+    <Compile Include="Models\StudyAreaPut.cs" />
     <Compile Include="Models\StudyAreaView.cs" />
     <Compile Include="Models\UserView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
