@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace InternHub.Repository
@@ -56,19 +57,35 @@ namespace InternHub.Repository
                     " i.\"Description\"," +
                     " i.\"Address\"," +
                     " i.\"StartDate\"," +
-                    " i.\"EndDate\"" +
+                    " i.\"EndDate\"," +
+                    " COUNT(ia.\"Id\") AS \"ApplicationsCount\" " +
                     " FROM public.\"Internship\" i" +
                     " INNER JOIN public.\"StudyArea\" sa ON i.\"StudyAreaId\" = sa.\"Id\"" +
                     " INNER JOIN public.\"Company\" cv ON i.\"CompanyId\" = cv.\"Id\"" +
                     " INNER JOIN dbo.\"AspNetUsers\" u ON cv.\"Id\" = u.\"Id\"" +
-                    " INNER JOIN public.\"County\" c ON c.\"Id\" = u.\"CountyId\"";
+                    " INNER JOIN public.\"County\" c ON c.\"Id\" = u.\"CountyId\"" +
+                    " LEFT JOIN public.\"InternshipApplication\" ia ON i.\"Id\" = ia.\"InternshipId\" AND ia.\"IsActive\" = true";
 
-            string countQuery = "SELECT COUNT(*)"+ 
+
+            string countQuery = "SELECT COUNT(DISTINCT i.\"Id\")" +
                     " FROM public.\"Internship\" i" +
                     " INNER JOIN public.\"StudyArea\" sa ON i.\"StudyAreaId\" = sa.\"Id\"" +
                     " INNER JOIN public.\"Company\" cv ON i.\"CompanyId\" = cv.\"Id\"" +
                     " INNER JOIN dbo.\"AspNetUsers\" u ON cv.\"Id\" = u.\"Id\"" +
-                    " INNER JOIN public.\"County\" c ON c.\"Id\" = u.\"CountyId\"";
+                    " INNER JOIN public.\"County\" c ON c.\"Id\" = u.\"CountyId\" " +
+                    " LEFT JOIN public.\"InternshipApplication\" ia ON i.\"Id\" = ia.\"InternshipId\" AND ia.\"IsActive\" = true";
+
+
+            string groupByQuery = " GROUP BY i.\"Id\"," +
+                                    " i.\"StudyAreaId\"," +
+                                    " sa.\"Name\"," +
+                                    " i.\"CompanyId\"," +
+                                    " cv.\"Name\"," +
+                                    " i.\"Name\"," +
+                                    " i.\"Description\"," +
+                                    " i.\"Address\"," +
+                                    " i.\"StartDate\"," +
+                                    " i.\"EndDate\" ";
 
             StringBuilder selectQueryBuilder = new StringBuilder();
             StringBuilder countQueryBuilder = new StringBuilder();
@@ -84,7 +101,6 @@ namespace InternHub.Repository
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
                 connection.Open();
-
 
                 string filterQuery = " WHERE 1=1 ";
                 string sortingQuery = $" ORDER BY {sortBy} {sorting.SortOrder} ";
@@ -142,6 +158,7 @@ namespace InternHub.Repository
 
                 selectQueryBuilder.Append(selectQuery);
                 selectQueryBuilder.Append(filterQueryBuilder.ToString());
+                selectQueryBuilder.Append(groupByQuery);
                 selectQueryBuilder.Append(sortingQuery);
                 selectQueryBuilder.Append(pagingQuery);
                 
@@ -153,7 +170,10 @@ namespace InternHub.Repository
                 while (selectReader.HasRows && selectReader.Read())
                 {
                     Internship internship = ReadInternship(selectReader);
-                    if (internship != null) internships.Add(internship);
+                    if (internship != null) {
+                        internship.ApplicationsCount = (long)selectReader["ApplicationsCount"];
+                        internships.Add(internship);
+                    };
                 }
                 selectReader.Close();
 
@@ -209,7 +229,6 @@ namespace InternHub.Repository
 
                     reader.Read();
                     internship = ReadInternship(reader);
-                   
                     reader.Close();
                 }
                 

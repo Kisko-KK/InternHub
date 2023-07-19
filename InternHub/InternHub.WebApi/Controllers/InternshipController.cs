@@ -66,6 +66,49 @@ namespace InternHub.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, pagedListView);
         }
 
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("api/Internship/GetCompanyViewInternship")]
+        public async Task<HttpResponseMessage> GetCompanyViewInternship(string sortBy = "Name", string orderBy = "Asc", int currentPage = 1, int pageSize = 10, bool? isActive = null, string counties = null, string name = null, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            Sorting sorting = new Sorting();
+            sorting.SortBy = sortBy;
+            sorting.SortOrder = orderBy;
+
+            Paging paging = new Paging();
+            paging.PageSize = pageSize;
+            paging.CurrentPage = currentPage;
+
+            List<Guid> countyIds = null;
+            if (counties != null)
+            {
+                countyIds = new List<Guid>();
+                foreach (string county in counties.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    Guid? id = null;
+                    try
+                    {
+                        id = Guid.Parse(county);
+                    }
+                    catch { }
+                    if (id != null) countyIds.Add(id.Value);
+                }
+            }
+            InternshipFilter filter = new InternshipFilter(countyIds, startDate, endDate, name, isActive);
+
+            PagedList<Internship> pagedList = await InternshipService.GetAsync(sorting, paging, filter);
+            PagedList<CompanyHomeInternshipView> pagedListView = new PagedList<CompanyHomeInternshipView>
+            {
+                CurrentPage = pagedList.CurrentPage,
+                PageSize = pagedList.PageSize,
+                DatabaseRecordsCount = pagedList.DatabaseRecordsCount,
+                Data = pagedList.Data.Select(intership => new CompanyHomeInternshipView(intership)).ToList(),
+                LastPage = pagedList.LastPage
+            };
+
+            return Request.CreateResponse(HttpStatusCode.OK, pagedListView);
+        }
+
         // GET api/<controller>/5
         public async Task<HttpResponseMessage> Get(Guid id)
         {
