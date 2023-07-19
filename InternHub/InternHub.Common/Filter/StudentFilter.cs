@@ -8,19 +8,10 @@ namespace InternHub.Common.Filter
 {
     public class StudentFilter
     {
-        public List<Guid> StudyAreas { get; set; }
-        public List<Guid> Counties { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public bool IsActive { get; set; }
-
-        public StudentFilter(string firstName, string lastName, List<Guid> studyAreas, List<Guid> counties, bool isActive)
-        {
-            StudyAreas = studyAreas;
-            Counties = counties;
-            FirstName = firstName;
-            LastName = lastName;
-            IsActive = isActive;
-        }
+        public List<Guid> StudyAreas { get; set; } = null;
+        public List<Guid> Counties { get; set; } = null;
+        public string FirstName { get; set; } = null;
+        public string LastName { get; set; } = null;
+        public bool? IsActive { get; set; } = null;
     }
 }

@@ -53,7 +53,7 @@ namespace InternHub.WebApi.Controllers
                     Data = students
                 };
 
-                return Request.CreateResponse(HttpStatusCode.OK, mappedStudents);
+                return Request.CreateResponse(HttpStatusCode.OK, pagedStudents);
             }
 
             catch (Exception ex)
@@ -64,51 +64,11 @@ namespace InternHub.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/admin/students")]
-        public async Task<HttpResponseMessage> GetStudentViewAsAdmin(string orderBy = null, string sortOrder = null, int? pageSize = null, int? pageCount = null, string studyAreas = null, string counties = null, string firstName = null, string lastName = null, bool isActive = true)
+        [Route("api/student/admin")]
+        public async Task<HttpResponseMessage> GetStudentViewAsAdmin([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] StudentFilter filter = null)
         {
             try
             {
-                Sorting sorting = new Sorting();
-                if (orderBy != null) sorting.SortBy = orderBy;
-                if (sortOrder != null) sorting.SortOrder = sortOrder;
-
-                Paging paging = new Paging();
-                if (pageSize != null) paging.PageSize = pageSize.Value;
-                if (pageCount != null) paging.CurrentPage = pageCount.Value;
-
-                List<Guid> studyAreaIds = new List<Guid>();
-                if (studyAreas != null)
-                {
-                    foreach (string studyArea in studyAreas.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        Guid? id = null;
-                        try
-                        {
-                            id = Guid.Parse(studyArea);
-                        }
-                        catch { }
-                        if (id != null) studyAreaIds.Add(id.Value);
-                    }
-                }
-
-                List<Guid> countyIds = new List<Guid>();
-                if (counties != null)
-                {
-                    foreach (string county in counties.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        Guid? id = null;
-                        try
-                        {
-                            id = Guid.Parse(county);
-                        }
-                        catch { }
-                        if (id != null) countyIds.Add(id.Value);
-                    }
-                }
-
-                StudentFilter filter = new StudentFilter(firstName, lastName, studyAreaIds, countyIds, isActive);
-
                 List<StudentShortView> students = new List<StudentShortView>();
 
                 PagedList<Student> mappedStudents = await StudentService.GetAllAsync(sorting, paging, filter);

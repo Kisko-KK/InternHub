@@ -1,5 +1,4 @@
-﻿
-using InternHub.Common;
+﻿using InternHub.Common;
 using InternHub.Common.Filter;
 using InternHub.Model;
 using InternHub.Service;
@@ -15,12 +14,11 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
-    [Authorize]
     public class CompanyController : ApiController
     {
-        private ICompanyService CompanyService { get; set; }
-        public INotificationService NotificationService { get; set; }
-        public RoleManager RoleManager { get; set; }
+        private ICompanyService CompanyService { get; }
+        private INotificationService NotificationService { get; }
+        private RoleManager RoleManager { get; }
 
         public CompanyController(ICompanyService companyService, RoleManager roleManager, INotificationService notificationService)
         {
@@ -29,6 +27,7 @@ namespace InternHub.WebApi.Controllers
             NotificationService = notificationService;
         }
 
+        [Authorize]
         public async Task<HttpResponseMessage> GetAsync([FromUri] Paging paging = null, [FromUri] Sorting sorting = null, [FromUri] CompanyFilter filter = null)
         {
             PagedList<Company> pagedList = await CompanyService.GetAsync(sorting, paging, filter);
@@ -46,6 +45,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // GET api/<controller>/5
+        [Authorize]
         public async Task<HttpResponseMessage> GetAsync(string id)
         {
             Company existingCompany = await CompanyService.GetAsync(id);
@@ -116,7 +116,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // DELETE api/<controller>/5
-        [Authorize(Roles = "Company,Admin")]
+        [Authorize(Roles = "Admin,Company")]
         public async Task<HttpResponseMessage> DeleteAsync(string id)
         {
             Company existingCompany = await CompanyService.GetAsync(id);

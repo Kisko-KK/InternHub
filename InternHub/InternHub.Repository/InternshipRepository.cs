@@ -31,7 +31,7 @@ namespace InternHub.Repository
                 {
                     string companyQuery = $"UPDATE public.\"Internship\" SET \"IsActive\" = false, \"UpdatedByUserId\" = @updatedByUserId WHERE \"Id\" = @id";
 
-                    
+
                     NpgsqlCommand command = new NpgsqlCommand(companyQuery, connection);
                     command.Parameters.AddWithValue("@updatedByUserId", internship.UpdatedByUserId);
                     command.Parameters.AddWithValue("@id", internship.Id);
@@ -45,6 +45,10 @@ namespace InternHub.Repository
 
         public async Task<PagedList<Internship>> GetAsync(Sorting sorting, Paging paging, InternshipFilter filter)
         {
+            if (sorting == null) sorting = new Sorting();
+            if (paging == null) paging = new Paging();
+            if(filter == null) filter = new InternshipFilter();
+
             List<Internship> internships = new List<Internship>();
             PagedList<Internship> pagedList = new PagedList<Internship>();
 
@@ -53,6 +57,9 @@ namespace InternHub.Repository
                     " sa.\"Name\" AS \"StudyAreaName\"," +
                     " i.\"CompanyId\"," +
                     " cv.\"Name\" AS \"CompanyViewName\"," +
+                    " cv.\"Website\" AS \"CompanyWebsite\"," +
+                    " u.\"Address\" AS \"CompanyAddress\"," +
+                    " cv.\"Id\" AS \"CompanyId\"," +
                     " i.\"Name\"," +
                     " i.\"Description\"," +
                     " i.\"Address\"," +
@@ -81,6 +88,10 @@ namespace InternHub.Repository
                                     " sa.\"Name\"," +
                                     " i.\"CompanyId\"," +
                                     " cv.\"Name\"," +
+                                    " cv.\"Name\"," +
+                                    " cv.\"Website\"," +
+                                    " u.\"Address\"," +
+                                    " cv.\"Id\"," +
                                     " i.\"Name\"," +
                                     " i.\"Description\"," +
                                     " i.\"Address\"," +
@@ -94,7 +105,7 @@ namespace InternHub.Repository
             string sortBy;
             switch (sorting.SortBy.ToLower())
             {
-                case "counties": sortBy = "c.\"" + sorting.SortBy + "\""; break;  
+                case "counties": sortBy = "c.\"" + sorting.SortBy + "\""; break;
                 default: sortBy = "i.\"" + sorting.SortBy + "\""; break;
             }
 
@@ -122,7 +133,7 @@ namespace InternHub.Repository
                     selectCommand.Parameters.AddWithValue("@name", filter.Name);
                     countCommand.Parameters.AddWithValue("@name", filter.Name);
                 }
-                if(filter.StartDate != null)
+                if (filter.StartDate != null)
                 {
                     filterQueryBuilder.Append(" AND i.\"StartDate\" >= @startDate ");
                     selectCommand.Parameters.AddWithValue("@startDate", filter.StartDate);
@@ -134,7 +145,7 @@ namespace InternHub.Repository
                     selectCommand.Parameters.AddWithValue("@endDate", filter.EndDate);
                     countCommand.Parameters.AddWithValue("@endDate", filter.EndDate);
                 }
-                if(filter.Counties != null && filter.Counties.Count > 0)
+                if (filter.Counties != null && filter.Counties.Count > 0)
                 {
                     filterQueryBuilder.Append(" AND u.\"CountyId\" IN (");
 
@@ -143,10 +154,11 @@ namespace InternHub.Repository
                         string parameterName = $"@countyId{i}";
                         filterQueryBuilder.Append(parameterName);
 
-                        if (i < filter.Counties.Count - 1) {
+                        if (i < filter.Counties.Count - 1)
+                        {
                             filterQueryBuilder.Append(", ");
                         }
-                            
+
                         selectCommand.Parameters.AddWithValue(parameterName, filter.Counties[i]);
                         countCommand.Parameters.AddWithValue(parameterName, filter.Counties[i]);
 
@@ -161,16 +173,17 @@ namespace InternHub.Repository
                 selectQueryBuilder.Append(groupByQuery);
                 selectQueryBuilder.Append(sortingQuery);
                 selectQueryBuilder.Append(pagingQuery);
-                
 
-                
+
+
                 selectCommand.CommandText = selectQueryBuilder.ToString();
 
                 NpgsqlDataReader selectReader = await selectCommand.ExecuteReaderAsync();
                 while (selectReader.HasRows && selectReader.Read())
                 {
                     Internship internship = ReadInternship(selectReader);
-                    if (internship != null) {
+                    if (internship != null)
+                    {
                         internship.ApplicationsCount = (long)selectReader["ApplicationsCount"];
                         internships.Add(internship);
                     };
@@ -180,10 +193,10 @@ namespace InternHub.Repository
 
                 countQueryBuilder.Append(countQuery);
                 countQueryBuilder.Append(filterQueryBuilder.ToString());
-                
+
                 countCommand.CommandText = countQueryBuilder.ToString();
                 var scalarCount = await countCommand.ExecuteScalarAsync();
-                
+
                 int totalDatabaseRecords = Int32.Parse(scalarCount.ToString());
 
                 pagedList.Data = internships;
@@ -213,6 +226,9 @@ namespace InternHub.Repository
                                 " sa.\"Name\" AS \"StudyAreaName\", " +
                                 " i.\"CompanyId\"," +
                                 " cv.\"Name\" AS \"CompanyViewName\"," +
+                                " cv.\"Website\" AS \"CompanyWebsite\"" +
+                                " u.\"Address\" AS \"CompanyAddress\"" +
+                                " cv.\"Id\" AS \"CompanyId\"" +
                                 " i.\"Name\"," +
                                 " i.\"Description\", " +
                                 " i.\"Address\"," +
@@ -231,7 +247,7 @@ namespace InternHub.Repository
                     internship = ReadInternship(reader);
                     reader.Close();
                 }
-                
+
                 return internship;
             }
             catch (Exception) { return null; }
@@ -265,7 +281,7 @@ namespace InternHub.Repository
                 int rowsUpdated = await command.ExecuteNonQueryAsync();
                 return rowsUpdated > 0;
             }
-           
+
         }
 
         public async Task<bool> PutAsync(Internship internship)
@@ -313,7 +329,10 @@ namespace InternHub.Repository
 
                     Company = new Company
                     {
-                        Name = (string)reader["CompanyViewName"]
+                        Name = (string)reader["CompanyViewName"],
+                        Id = (string)reader["CompanyId"],
+                        Website = (string)reader["CompanyWebsite"],
+                        Address = (string)reader["CompanyAddress"]
                     },
                 };
             }

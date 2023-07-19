@@ -42,35 +42,10 @@ namespace InternHub.WebApi.Controllers
         }
 
 
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("api/Internship/GetCompanyViewInternship")]
-        public async Task<HttpResponseMessage> GetCompanyViewInternship(string sortBy = "Name", string orderBy = "Asc", int currentPage = 1, int pageSize = 10, bool? isActive = null, string counties = null, string name = null, DateTime? startDate = null, DateTime? endDate = null)
+        [HttpGet]
+        [Route("api/Internship/GetCompanyViewInternship")]
+        public async Task<HttpResponseMessage> GetCompanyViewInternshipAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] InternshipFilter filter = null)
         {
-            Sorting sorting = new Sorting();
-            sorting.SortBy = sortBy;
-            sorting.SortOrder = orderBy;
-
-            Paging paging = new Paging();
-            paging.PageSize = pageSize;
-            paging.CurrentPage = currentPage;
-
-            List<Guid> countyIds = null;
-            if (counties != null)
-            {
-                countyIds = new List<Guid>();
-                foreach (string county in counties.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    Guid? id = null;
-                    try
-                    {
-                        id = Guid.Parse(county);
-                    }
-                    catch { }
-                    if (id != null) countyIds.Add(id.Value);
-                }
-            }
-            InternshipFilter filter = new InternshipFilter(countyIds, startDate, endDate, name, isActive);
-
             PagedList<Internship> pagedList = await InternshipService.GetAsync(sorting, paging, filter);
             PagedList<CompanyHomeInternshipView> pagedListView = new PagedList<CompanyHomeInternshipView>
             {
@@ -93,15 +68,11 @@ namespace InternHub.WebApi.Controllers
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Not found!");
             }
-            CompanyView companyView = new CompanyView
-            {
-                Name = internship.Company.Name
-            };
             InternshipView internshipView = new InternshipView {
                 StudyAreaId = internship.StudyAreaId,
-                StudyArea = internship.StudyArea,
+                StudyArea = new StudyAreaView(internship.StudyArea),
                 CompanyId = internship.CompanyId,
-                CompanyView = companyView,
+                Company = new CompanyView(internship.Company),
                 Name = internship.Name,
                 Description = internship.Description,
                 Address = internship.Address,
@@ -135,7 +106,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // PUT api/<controller>/5
-        public async Task<HttpResponseMessage> PutASync(Guid id, [FromBody] InternshipUpdate updatedInternship)
+        public async Task<HttpResponseMessage> PutAsync(Guid id, [FromBody] InternshipUpdate updatedInternship)
         {
             Internship internship = await InternshipService.GetAsync(id);
             string currentUserId = User.Identity.GetUserId();

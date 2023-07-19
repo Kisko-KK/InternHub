@@ -16,7 +16,7 @@ namespace InternHub.WebApi.Models
 
         public StudentView(Student student) : base(student)
         {
-            StudyArea = new StudyAreaView(student.StudyArea);
+            if(student.StudyArea != null) StudyArea = new StudyAreaView(student.StudyArea);
         }
     }
 }

@@ -9,28 +9,25 @@ namespace InternHub.WebApi.Models
 {
     public class InternshipView
     {
-        public InternshipView()
-        {
-        }
+        public InternshipView() { }
+
         public InternshipView(Internship internship)
         {
             StudyAreaId = internship.StudyAreaId;
-            StudyArea = internship.StudyArea;
+            StudyArea = new StudyAreaView(internship.StudyArea);
             CompanyId = internship.CompanyId;
-            CompanyView = new CompanyView
-            {
-                Name = internship.Company.Name
-            };
+            Company = new CompanyView(internship.Company);
             Name = internship.Name;
             Description = internship.Description;
             Address = internship.Address;
             StartDate = internship.StartDate;
             EndDate = internship.EndDate;
         }
+
         public Guid StudyAreaId { get; set; }
-        public StudyArea StudyArea { get; set; }
+        public StudyAreaView StudyArea { get; set; }
         public string CompanyId { get; set; }
-        public CompanyView CompanyView { get; set; }
+        public CompanyView Company { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string Address { get; set; }

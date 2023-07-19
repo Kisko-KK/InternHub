@@ -27,7 +27,7 @@ namespace InternHub.WebApi.Models
             Email = user.Email;
             PhoneNumber = user.PhoneNumber;
             Description = user.Description;
-            County = new CountyView(user.County);
+            if(user.County != null) County = new CountyView(user.County);
         }
     }
 }

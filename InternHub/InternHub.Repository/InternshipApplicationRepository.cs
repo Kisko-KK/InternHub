@@ -51,9 +51,6 @@ namespace InternHub.Repository
                         command.Parameters.AddWithValue("@internshipName", "%" + internshipApplicationFilter.InternshipName + "%");
                     }
                 }
-
-
-                }
                 string selectQuery = @"
                      SELECT 
                     ia.""Id"",
