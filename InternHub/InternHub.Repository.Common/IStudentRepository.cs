@@ -12,7 +12,7 @@ namespace InternHub.Repository.Common
     public interface IStudentRepository
     {
         Task<PagedList<Student>> GetStudentsAsync(Sorting sorting, Paging paging, StudentFilter filter);
-
+        Task<PagedList<Student>> GetStudentViewAsAdminAsync(Sorting sorting, Paging paging, StudentFilter filter);
         Task<Student> GetStudentByIdAsync(string id);
 
         Task<int> PostAsync(Student student);

@@ -33,5 +33,13 @@ namespace InternHub.Model
             StudyAreaId = studyAreaId;
             IsActive = isActive;
         }
+
+        public Student (string id, string firstName, string lastName, string email)
+        {
+            Id = id;
+            FirstName = firstName;
+            LastName = lastName;
+            Email = email;
+        }
     }
 }

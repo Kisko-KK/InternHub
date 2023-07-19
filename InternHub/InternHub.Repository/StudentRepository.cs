@@ -20,6 +20,133 @@ namespace InternHub.Repository
             _connectionString = connectionString;
         }
 
+        public async Task<PagedList<Student>> GetStudentViewAsAdminAsync(Sorting sorting, Paging paging, StudentFilter filter)
+        {
+            PagedList<Student> pagedStudents = new PagedList<Student>()
+            {
+                CurrentPage = paging.CurrentPage,
+                PageSize = paging.PageSize,
+            };
+
+            StringBuilder selectQueryBuilder = new StringBuilder();
+            StringBuilder countQueryBuilder = new StringBuilder();
+            StringBuilder filterQueryBuilder = new StringBuilder();
+
+            List<Student> students = new List<Student>();
+
+            int totalCount;
+
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name.Replace("\"", "")))
+            {
+                await connection.OpenAsync();
+
+                string selectQuery = "SELECT * FROM public.\"Student\" s inner join dbo.\"AspNetUsers\" u on u.\"Id\" = s.\"Id\" ";
+                string countQuery = "SELECT COUNT(*) FROM public.\"Student\" s inner join dbo.\"AspNetUsers\" u on u.\"Id\" = s.\"Id\" ";
+                string initialFilterCondition = " WHERE u.\"IsActive\" = true ";
+
+                selectQueryBuilder.Append(selectQuery);
+                selectQueryBuilder.Append(initialFilterCondition);
+
+                countQueryBuilder.Append(countQuery);
+                countQueryBuilder.Append(initialFilterCondition);
+
+
+                if (string.IsNullOrEmpty(filter.FirstName) == false)
+                {
+                    filterQueryBuilder.Append($" AND u.\"FirstName\" LIKE '{filter.FirstName}%'");
+                }
+
+                if (string.IsNullOrEmpty(filter.LastName) == false)
+                {
+                    filterQueryBuilder.Append($" AND u.\"LastName\" LIKE '{filter.LastName}%'");
+                }
+
+
+                if (filter.Counties.Count != 0)
+                {
+                    filterQueryBuilder.Append("AND u.\"CountyId\" IN (");
+
+                    for (int i = 0; i < filter.Counties.Count; i++)
+                    {
+                        filterQueryBuilder.Append($"'{filter.Counties[i]}'");
+
+                        if (i != filter.Counties.Count - 1)
+                        {
+                            filterQueryBuilder.Append(",");
+                        }
+                    }
+
+                    filterQueryBuilder.Append(") ");
+                }
+
+                if (filter.StudyAreas.Count != 0)
+                {
+                    filterQueryBuilder.Append("AND s.\"StudyAreaId\" IN (");
+
+                    for (int counter = 0; counter < filter.StudyAreas.Count; counter++)
+                    {
+                        filterQueryBuilder.Append($"'{filter.StudyAreas[counter]}'");
+
+                        if (counter != filter.StudyAreas.Count - 1)
+                        {
+                            filterQueryBuilder.Append(",");
+                        }
+
+                    }
+                    filterQueryBuilder.Append(") ");
+
+                }
+
+                string sortingQuery = $" ORDER BY u.\"{sorting.SortBy}\" {sorting.SortOrder} ";
+                string pagingQuery = $" LIMIT {paging.PageSize} OFFSET {(paging.CurrentPage - 1) * paging.PageSize}";
+
+                selectQueryBuilder.Append(filterQueryBuilder.ToString());
+                selectQueryBuilder.Append(sortingQuery);
+                selectQueryBuilder.Append(pagingQuery);
+
+
+                string sql = selectQueryBuilder.ToString();
+
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, connection);
+
+                NpgsqlDataReader dr = await cmd.ExecuteReaderAsync();
+
+                if (dr.HasRows)
+                {
+                    while (await dr.ReadAsync())
+                    {
+                        Student student = ReadStudentAsAdmin(dr);
+                        students.Add(student);
+                    }
+                }
+                dr.Close();
+                countQueryBuilder.Append(filterQueryBuilder.ToString());
+                string s = countQueryBuilder.ToString();
+                NpgsqlCommand countCommand = new NpgsqlCommand(countQueryBuilder.ToString(), connection);
+                var countScalar = await countCommand.ExecuteScalarAsync();
+                totalCount = Convert.ToInt32(countScalar);
+
+                connection.Close();
+            }
+
+            pagedStudents.Data = students;
+            pagedStudents.DatabaseRecordsCount = totalCount;
+            pagedStudents.LastPage = Convert.ToInt32(pagedStudents.DatabaseRecordsCount / paging.PageSize) + (pagedStudents.DatabaseRecordsCount % paging.PageSize != 0 ? 1 : 0);
+
+            return pagedStudents;
+
+        }
+        private Student ReadStudentAsAdmin(NpgsqlDataReader dr)
+        {
+            string id = dr.GetString(dr.GetOrdinal("Id"));
+            string firstName = dr.GetString(dr.GetOrdinal("FirstName"));
+            string lastName = dr.GetString(dr.GetOrdinal("LastName"));
+            string email = dr.GetString(dr.GetOrdinal("Email"));
+
+
+            return new Student(id, firstName, lastName, email);
+        }
         public async Task<PagedList<Student>> GetStudentsAsync(Sorting sorting, Paging paging, StudentFilter filter)
         {
             PagedList<Student> pagedStudents = new PagedList<Student>()
@@ -138,6 +265,7 @@ namespace InternHub.Repository
 
             return pagedStudents;
         }
+       
 
         private Student ReadStudent(NpgsqlDataReader dr)
         {
