@@ -284,6 +284,8 @@
     <Compile Include="Models\Identity\ManageInfoViewModel.cs" />
     <Compile Include="Models\Identity\UserInfoViewModel.cs" />
     <Compile Include="Models\Identity\UserLoginInfoViewModel.cs" />
+    <Compile Include="Models\InternshipUpdate.cs" />
+    <Compile Include="Models\InternshipView.cs" />
     <Compile Include="Models\NotificationView.cs" />
     <Compile Include="Models\PutNotification.cs" />
     <Compile Include="Models\StateView.cs" />

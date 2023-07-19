@@ -6,6 +6,11 @@ DROP CONSTRAINT IF EXISTS "FK_Company_State_StateId";
 ALTER TABLE public."Company"
 DROP COLUMN IF EXISTS "StateId";
 
+ALTER TABLE public."Internship"
+ALTER COLUMN "CreatedByUserId" TYPE VARCHAR(128),
+ALTER COLUMN "UpdatedByUserId" TYPE VARCHAR(128);
+
+
 
 
 -- Insert into County table

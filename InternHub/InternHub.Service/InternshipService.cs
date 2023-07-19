@@ -15,14 +15,16 @@ namespace InternHub.Service
         {
             InternshipRepository = internshipRepository;
         }
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Internship internship, string userId)
         {
-            return await InternshipRepository.DeleteAsync(id);
+            internship.UpdatedByUserId = userId;
+            internship.DateUpdated = DateTime.Now;
+            return await InternshipRepository.DeleteAsync(internship);
         }
 
-        public Task<PagedList<Internship>> GetAsync(Sorting sorting, Paging paging, CompanyFilter filter)
+        public async Task<PagedList<Internship>> GetAsync(Sorting sorting, Paging paging, InternshipFilter filter)
         {
-            throw new NotImplementedException();
+            return await InternshipRepository.GetAsync(sorting, paging, filter);
         }
 
         public async Task<Internship> GetAsync(Guid id)
@@ -41,13 +43,16 @@ namespace InternHub.Service
             internship.DateCreated = DateTime.Now;
             internship.DateUpdated = DateTime.Now;
             internship.CreatedByUserId = userId;
+            internship.UpdatedByUserId = userId;
 
             return await InternshipRepository.PostAsync(internship); 
         }
 
-        public Task<bool> PutAsync(Internship internship, string userId)
+        public async Task<bool> PutAsync(Internship internship, string userId)
         {
-            throw new NotImplementedException();
+            internship.UpdatedByUserId = userId;
+            internship.DateUpdated = DateTime.Now;
+            return await InternshipRepository.PutAsync(internship);
         }
     }
 }

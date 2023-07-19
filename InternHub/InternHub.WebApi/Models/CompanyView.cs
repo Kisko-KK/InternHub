@@ -1,9 +1,5 @@
 ﻿using InternHub.Model;
-using Microsoft.Owin.BuilderProperties;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+
 
 namespace InternHub.WebApi.Models
 {
@@ -15,6 +11,7 @@ namespace InternHub.WebApi.Models
             Address = company.Address;
             Id = company.Id;
         }
+        public CompanyView() { }
         public string Name { get; set; }
         public string Website { get; set; }
         public string Address { get; set; }
