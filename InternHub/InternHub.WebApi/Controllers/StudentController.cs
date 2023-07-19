@@ -20,60 +20,20 @@ namespace InternHub.WebApi.Controllers
     public class StudentController : ApiController
     {
         private IStudentService StudentService { get; }
-        private UserManager UserManager { get; set; }
+        private RoleManager RoleManager { get; set; }
 
         // GET: Student
-        public StudentController(IStudentService studentService, UserManager userManager)
+        public StudentController(IStudentService studentService, RoleManager roleManager)
         {
             StudentService = studentService;
-            UserManager = userManager;
+            RoleManager = roleManager;
         }
 
         [HttpGet]
-        public async Task<HttpResponseMessage> Get(string orderBy = null, string sortOrder = null, int? pageSize = null, int? pageCount = null, string studyAreas = null, string counties = null, string firstName = null, string lastName = null, bool isActive = true)
+        public async Task<HttpResponseMessage> GetAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] StudentFilter filter = null)
         {
             try
             {
-                Sorting sorting = new Sorting();
-                if (orderBy != null) sorting.SortBy = orderBy;
-                if (sortOrder != null) sorting.SortOrder = sortOrder;
-
-                Paging paging = new Paging();
-                if (pageSize != null) paging.PageSize = pageSize.Value;
-                if (pageCount != null) paging.CurrentPage = pageCount.Value;
-
-                List<Guid> studyAreaIds = new List<Guid>();
-                if (studyAreas != null)
-                {
-                    foreach (string studyArea in studyAreas.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        Guid? id = null;
-                        try
-                        {
-                            id = Guid.Parse(studyArea);
-                        }
-                        catch { }
-                        if (id != null) studyAreaIds.Add(id.Value);
-                    }
-                }
-
-                List<Guid> countyIds = new List<Guid>();
-                if (counties != null)
-                {
-                    foreach (string county in counties.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        Guid? id = null;
-                        try
-                        {
-                            id = Guid.Parse(county);
-                        }
-                        catch { }
-                        if (id != null) countyIds.Add(id.Value);
-                    }
-                }
-
-                StudentFilter filter = new StudentFilter(firstName, lastName, studyAreaIds, countyIds, isActive);
-
                 List<StudentView> students = new List<StudentView>();
 
                 PagedList<Student> mappedStudents = await StudentService.GetAllAsync(sorting, paging, filter);
@@ -93,62 +53,22 @@ namespace InternHub.WebApi.Controllers
                     Data = students
                 };
 
-                return Request.CreateResponse(HttpStatusCode.OK, mappedStudents);
+                return Request.CreateResponse(HttpStatusCode.OK, pagedStudents);
             }
 
             catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "GRESKA", ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error", ex);
             }
 
         }
 
         [HttpGet]
-        [Route("api/admin/students")]
-        public async Task<HttpResponseMessage> GetStudentViewAsAdmin(string orderBy = null, string sortOrder = null, int? pageSize = null, int? pageCount = null, string studyAreas = null, string counties = null, string firstName = null, string lastName = null, bool isActive = true)
+        [Route("api/student/admin")]
+        public async Task<HttpResponseMessage> GetStudentViewAsAdmin([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] StudentFilter filter = null)
         {
             try
             {
-                Sorting sorting = new Sorting();
-                if (orderBy != null) sorting.SortBy = orderBy;
-                if (sortOrder != null) sorting.SortOrder = sortOrder;
-
-                Paging paging = new Paging();
-                if (pageSize != null) paging.PageSize = pageSize.Value;
-                if (pageCount != null) paging.CurrentPage = pageCount.Value;
-
-                List<Guid> studyAreaIds = new List<Guid>();
-                if (studyAreas != null)
-                {
-                    foreach (string studyArea in studyAreas.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        Guid? id = null;
-                        try
-                        {
-                            id = Guid.Parse(studyArea);
-                        }
-                        catch { }
-                        if (id != null) studyAreaIds.Add(id.Value);
-                    }
-                }
-
-                List<Guid> countyIds = new List<Guid>();
-                if (counties != null)
-                {
-                    foreach (string county in counties.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        Guid? id = null;
-                        try
-                        {
-                            id = Guid.Parse(county);
-                        }
-                        catch { }
-                        if (id != null) countyIds.Add(id.Value);
-                    }
-                }
-
-                StudentFilter filter = new StudentFilter(firstName, lastName, studyAreaIds, countyIds, isActive);
-
                 List<StudentShortView> students = new List<StudentShortView>();
 
                 PagedList<Student> mappedStudents = await StudentService.GetAllAsync(sorting, paging, filter);
@@ -203,6 +123,7 @@ namespace InternHub.WebApi.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
+            PasswordHasher passwordHasher = new PasswordHasher();
 
             Guid generatedId = Guid.NewGuid();
 
@@ -217,15 +138,19 @@ namespace InternHub.WebApi.Controllers
                 Description = student.Description,
                 CountyId = student.CountyId,
                 StudyAreaId = student.StudyAreaId,
+                Password = passwordHasher.HashPassword(student.Password)
             };
+
+            Role role = await RoleManager.FindByNameAsync("Student");
+            if (role == null) return Request.CreateResponse(HttpStatusCode.InternalServerError);
+
+            mappedStudent.RoleId = role.Id;
 
             int rowsAffected = await StudentService.PostAsync(mappedStudent);
 
             if (rowsAffected <= 0) return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't create new student");
 
-            UserManager.AddToRole(mappedStudent.Id, "Student");
-
-            return Request.CreateResponse(HttpStatusCode.OK, mappedStudent);
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         public async Task<HttpResponseMessage> DeleteAsync(string id)
@@ -249,6 +174,8 @@ namespace InternHub.WebApi.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(id) || student == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
+
                 Student existingStudent = await StudentService.GetStudentByIdAsync(id);
 
                 if (existingStudent == null)
@@ -304,7 +231,7 @@ namespace InternHub.WebApi.Controllers
                 }
                 else
                 {
-                    return Request.CreateResponse(HttpStatusCode.OK, existingStudent);
+                    return Request.CreateResponse(HttpStatusCode.OK);
                 }
             }
             catch (Exception ex)

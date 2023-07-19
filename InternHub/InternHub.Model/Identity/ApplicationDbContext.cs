@@ -19,7 +19,7 @@ namespace InternHub.Model.Identity
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>().Ignore(x => x.Password);
+            modelBuilder.Entity<User>().Ignore(x => x.Password).Ignore(x => x.RoleId);
             modelBuilder.Entity<Student>().Ignore(x => x.StudyArea).Ignore(x => x.StudyAreaId);
             modelBuilder.Entity<Company>().Ignore(x => x.Website).Ignore(x => x.IsAccepted).Ignore(x => x.Name);
             modelBuilder.Ignore<StudyArea>();

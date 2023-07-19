@@ -136,7 +136,7 @@ namespace InternHub.Repository
                 {
                     try
                     {
-                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\", \"Discriminator\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, '@email', false, 'hashed_password', 'security_stamp', '', false, false, null, false, 0, @username, 'User');";
+                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\", \"Discriminator\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, @email, false, @password, 'security_stamp', '', false, false, null, false, 0, @username, 'User');";
                         string insertCompanyQuery = "INSERT INTO public.\"Company\" (\"Id\", \"Name\", \"Website\", \"IsAccepted\") VALUES(@id, @name, @website, false);";
 
                         NpgsqlCommand userCommand = new NpgsqlCommand(insertUserQuery, connection);
@@ -155,21 +155,30 @@ namespace InternHub.Repository
                         userInsertCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
                         userInsertCommand.Parameters.AddWithValue("@email", company.Email);
                         userInsertCommand.Parameters.AddWithValue("@username", company.Email);
+                        userInsertCommand.Parameters.AddWithValue("@password", company.Password);
 
 
                         companyInsertCommand.Parameters.AddWithValue("@id", company.Id);
                         companyInsertCommand.Parameters.AddWithValue("@name", company.Name);
                         companyInsertCommand.Parameters.AddWithValue("@website", company.Website);
 
+                        string userRoleQuery = "INSERT INTO dbo.\"AspNetUserRoles\" VALUES (@userId, @roleId)";
+                        NpgsqlCommand userRoleCommand = new NpgsqlCommand(userRoleQuery, connection);
+                        userRoleCommand.Parameters.AddWithValue("@userId", company.Id);
+                        userRoleCommand.Parameters.AddWithValue("@roleId", company.RoleId);
+
                         int userRowsAffectedCount = await userInsertCommand.ExecuteNonQueryAsync();
                         int companyRowsAffectedCount = await companyInsertCommand.ExecuteNonQueryAsync();
+                        int userRoleRowsAffectedCount = await userRoleCommand.ExecuteNonQueryAsync();
 
-                        if (userRowsAffectedCount * companyRowsAffectedCount > 0)
+                        int result = userRowsAffectedCount * companyRowsAffectedCount * userRoleRowsAffectedCount;
+
+                        if (result > 0)
                             await transaction.CommitAsync();
                         else
                             await transaction.RollbackAsync();
 
-                        return userRowsAffectedCount * companyRowsAffectedCount > 0;
+                        return result > 0;
                     }
                     catch
                     {

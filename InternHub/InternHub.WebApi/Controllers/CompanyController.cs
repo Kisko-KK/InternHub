@@ -1,5 +1,4 @@
-﻿
-using InternHub.Common;
+﻿using InternHub.Common;
 using InternHub.Common.Filter;
 using InternHub.Model;
 using InternHub.Service;
@@ -15,33 +14,22 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
-    [Authorize]
     public class CompanyController : ApiController
     {
-        private ICompanyService CompanyService { get; set; }
-        public INotificationService NotificationService { get; set; }
-        public UserManager UserManager { get; set; }
+        private ICompanyService CompanyService { get; }
+        private INotificationService NotificationService { get; }
+        private RoleManager RoleManager { get; }
 
-        public CompanyController(ICompanyService companyService, UserManager userManager, INotificationService notificationService)
+        public CompanyController(ICompanyService companyService, RoleManager roleManager, INotificationService notificationService)
         {
             CompanyService = companyService;
-            UserManager = userManager;
+            RoleManager = roleManager;
             NotificationService = notificationService;
         }
 
-        public async Task<HttpResponseMessage> GetAsync(int? pageSize = null, int? currentPage = null, string sortBy = null, string sortOrder = null, bool? isActive = null, bool? isAccepted = null, string name = null)
+        [Authorize]
+        public async Task<HttpResponseMessage> GetAsync([FromUri] Paging paging = null, [FromUri] Sorting sorting = null, [FromUri] CompanyFilter filter = null)
         {
-            Sorting sorting = new Sorting();
-            if(sortBy != null) sorting.SortBy = sortBy;
-            if(sortOrder != null) sorting.SortOrder = sortOrder;
-            Paging paging = new Paging();
-            if(pageSize != null) paging.PageSize = pageSize.Value;
-            if(currentPage != null) paging.CurrentPage = currentPage.Value;
-            CompanyFilter filter = new CompanyFilter();
-            filter.IsActive = isActive;
-            filter.IsAccepted = isAccepted;
-            filter.Name = name;
-
             PagedList<Company> pagedList = await CompanyService.GetAsync(sorting, paging, filter);
 
             PagedList<CompanyView> pagedListView = new PagedList<CompanyView>
@@ -57,6 +45,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // GET api/<controller>/5
+        [Authorize]
         public async Task<HttpResponseMessage> GetAsync(string id)
         {
             Company existingCompany = await CompanyService.GetAsync(id);
@@ -69,30 +58,37 @@ namespace InternHub.WebApi.Controllers
         }
 
         // POST api/<controller>
-        public async Task<HttpResponseMessage> PostAsync([FromBody] CompanyPost updatedCompany)
+        [AllowAnonymous]
+        public async Task<HttpResponseMessage> PostAsync([FromBody] CompanyPost company)
         {
-            if (updatedCompany == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
+            if (company == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
 
-            Company company = new Company
+            PasswordHasher passwordHasher = new PasswordHasher();
+
+            Company newCompany = new Company
             {
-                Name = updatedCompany.Name,
-                Website = updatedCompany.Website,
-                FirstName = updatedCompany.FirstName,
-                LastName = updatedCompany.LastName,
-                Address = updatedCompany.Address,
-                Description = updatedCompany.Description,
-                CountyId = updatedCompany.CountyId,
-                Email = updatedCompany.Email
+                Name = company.Name,
+                Website = company.Website,
+                FirstName = company.FirstName,
+                LastName = company.LastName,
+                Address = company.Address,
+                Description = company.Description,
+                CountyId = company.CountyId,
+                Email = company.Email,
+                Password = passwordHasher.HashPassword(company.Password)
             };
 
-            if (await CompanyService.PostAsync(company) == false)
+            Role role = await RoleManager.FindByNameAsync("Company");
+            if (role == null) return Request.CreateResponse(HttpStatusCode.InternalServerError);
+
+            newCompany.RoleId = role.Id;
+
+            if (await CompanyService.PostAsync(newCompany) == false)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Bad Request");
             }
 
-            IdentityResult result = await UserManager.AddToRoleAsync(company.Id, "Company");
-
-            return Request.CreateResponse(HttpStatusCode.OK, company);
+            return Request.CreateResponse(HttpStatusCode.OK, newCompany);
         }
 
         // PUT api/<controller>/5
@@ -120,7 +116,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // DELETE api/<controller>/5
-        [Authorize(Roles = "Company,Admin")]
+        [Authorize(Roles = "Admin,Company")]
         public async Task<HttpResponseMessage> DeleteAsync(string id)
         {
             Company existingCompany = await CompanyService.GetAsync(id);

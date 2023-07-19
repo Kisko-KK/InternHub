@@ -328,6 +328,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CountyPut.cs" />
     <Compile Include="Models\StudentShortView.cs" />
     <Compile Include="Models\CompanyHomeInternshipView.cs" />
     <Compile Include="Models\CompanyPost.cs" />
@@ -345,9 +346,11 @@
     <Compile Include="Models\NotificationView.cs" />
     <Compile Include="Models\PutInternshipApplication.cs" />
     <Compile Include="Models\PostStudent.cs" />
+    <Compile Include="Models\StatePut.cs" />
     <Compile Include="Models\StateView.cs" />
     <Compile Include="Models\StudentPut.cs" />
     <Compile Include="Models\StudentView.cs" />
+    <Compile Include="Models\StudyAreaPut.cs" />
     <Compile Include="Models\StudyAreaView.cs" />
     <Compile Include="Models\UserView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -358,7 +361,6 @@
   <ItemGroup>
     <Content Include="App_Data\Scripts\Script1.txt" />
     <Content Include="App_Data\Scripts\Script2.txt" />
-    <Content Include="App_Data\Scripts\Script3.txt" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />

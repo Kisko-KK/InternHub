@@ -6,6 +6,7 @@ using InternHub.WebApi.Models;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -27,19 +28,15 @@ namespace InternHub.WebApi.Controllers
         [Authorize]
         public async Task<HttpResponseMessage> GetAllAsync()
         {
-           
-
             try
             {
-
-
                 List<StudyArea> studyAreas = await StudyAreaService.GetAllAsync();
                 if (studyAreas == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.BadRequest);
                 }
 
-                return Request.CreateResponse(HttpStatusCode.OK, studyAreas);
+                return Request.CreateResponse(HttpStatusCode.OK, studyAreas.Select(x => new StudyAreaView(x)));
             }
             catch (Exception ex) { return Request.CreateResponse(HttpStatusCode.InternalServerError, ex); }
         }
@@ -61,7 +58,8 @@ namespace InternHub.WebApi.Controllers
         }
 
         // POST: api/StudyArea
-        public async Task<HttpResponseMessage> PostAsync([FromBody] StudyAreaView studyArea)
+        [Authorize(Roles = "Admin")]
+        public async Task<HttpResponseMessage> PostAsync([FromBody] StudyAreaPut studyArea)
         {
             try
             {
@@ -82,7 +80,8 @@ namespace InternHub.WebApi.Controllers
         }
 
         // PUT: api/StudyArea/5
-        public async Task<HttpResponseMessage> PutAsync(Guid id, [FromBody] StudyAreaView studyArea)
+        [Authorize(Roles = "Admin")]
+        public async Task<HttpResponseMessage> PutAsync(Guid id, [FromBody] StudyAreaPut studyArea)
         {
             try
             {
@@ -101,6 +100,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // DELETE: api/StudyArea/5
+        [Authorize(Roles = "Admin")]
         public async Task<HttpResponseMessage> DeleteAsync(Guid id)
         {
             try

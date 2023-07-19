@@ -28,40 +28,10 @@ namespace InternHub.WebApi.Controllers
             StateService = stateService;
         }
 
-        public async Task<HttpResponseMessage> GetAllAsync(int? currentPage = null, int? pageSize = null, string sortBy = null, string sortOrder = null, string stateName = null, string internshipName = null)
+        public async Task<HttpResponseMessage> GetAllAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] InternshipApplicationFilter filter = null)
         {
             try
             {
-                Sorting sorting = new Sorting();
-                if (sortBy != null)
-                {
-                    sorting.SortBy = sortBy;
-                }
-                if (sortOrder != null)
-                {
-                    sorting.SortOrder = sortOrder;
-                }
-                Paging paging = new Paging();
-
-                if (currentPage != null)
-                {
-                    paging.CurrentPage = (int)currentPage;
-                }
-                if (pageSize != null)
-                {
-                    paging.PageSize = (int)pageSize;
-                }
-
-                InternshipApplicationFilter filter = new InternshipApplicationFilter();
-                if (stateName != null)
-                {
-                    filter.StateName = stateName;
-                }
-                if (internshipName != null)
-                {
-                    filter.InternshipName = internshipName;
-                }
-
                 PagedList<InternshipApplication> internshipApplications = await InternshipApplicationService.GetAllInternshipApplicationsAsync(paging, sorting, filter);
                 if (internshipApplications == null)
                 {
