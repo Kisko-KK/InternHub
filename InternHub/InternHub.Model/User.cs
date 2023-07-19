@@ -26,6 +26,8 @@ namespace InternHub.Model
         public County County { get; set; }
         [NotMapped]
         public string Password { get; set; } = "";
+        [NotMapped]
+        public string RoleId { get; set; } = "";
 
         public string GetFullName() => FirstName + " " + LastName;
 

@@ -323,7 +323,7 @@ namespace InternHub.Repository
                 {
                     try
                     {
-                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\", \"Discriminator\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, @email, false, 'hashed_password', 'security_stamp', '', false, false, null, false, 0, @username, 'User')";
+                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\", \"Discriminator\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, @email, false, @password, 'security_stamp', '', false, false, null, false, 0, @username, 'User')";
                         string insertStudentQuery = "INSERT INTO public.\"Student\" (\"Id\", \"StudyAreaId\") VALUES (@id, @studyAreaId)";
 
 
@@ -341,19 +341,28 @@ namespace InternHub.Repository
                         userInsertCommand.Parameters.AddWithValue("@email", student.Email);
                         userInsertCommand.Parameters.AddWithValue("@username", student.Email);
                         userInsertCommand.Parameters.AddWithValue("@isActive", student.IsActive = true);
+                        userInsertCommand.Parameters.AddWithValue("@password", student.Password);
 
                         studentInsertCommand.Parameters.AddWithValue("@id", student.Id);
                         studentInsertCommand.Parameters.AddWithValue("@studyAreaId", student.StudyAreaId);
 
+                        string userRoleQuery = "INSERT INTO dbo.\"AspNetUserRoles\" VALUES (@userId, @roleId)";
+                        NpgsqlCommand userRoleCommand = new NpgsqlCommand(userRoleQuery, connection);
+                        userRoleCommand.Parameters.AddWithValue("@userId", student.Id);
+                        userRoleCommand.Parameters.AddWithValue("@roleId", student.RoleId);
+
                         int numberOfUserRowsAffected = await userInsertCommand.ExecuteNonQueryAsync();
                         int numberOfStudentRowsAffected = await studentInsertCommand.ExecuteNonQueryAsync();
+                        int userRoleRowsAffected = await userRoleCommand.ExecuteNonQueryAsync();
 
-                        if (numberOfUserRowsAffected * numberOfStudentRowsAffected > 0)
+                        int result = numberOfUserRowsAffected * numberOfStudentRowsAffected * userRoleRowsAffected;
+
+                        if (result > 0)
                             await transaction.CommitAsync();
                         else
                             await transaction.RollbackAsync();
 
-                        return numberOfStudentRowsAffected * numberOfUserRowsAffected;
+                        return result;
                     }
                     catch
                     {

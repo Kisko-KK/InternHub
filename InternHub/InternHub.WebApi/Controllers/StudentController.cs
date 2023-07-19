@@ -20,13 +20,13 @@ namespace InternHub.WebApi.Controllers
     public class StudentController : ApiController
     {
         private IStudentService StudentService { get; }
-        private UserManager UserManager { get; set; }
+        private RoleManager RoleManager { get; set; }
 
         // GET: Student
-        public StudentController(IStudentService studentService, UserManager userManager)
+        public StudentController(IStudentService studentService, RoleManager roleManager)
         {
             StudentService = studentService;
-            UserManager = userManager;
+            RoleManager = roleManager;
         }
 
         [HttpGet]
@@ -203,6 +203,7 @@ namespace InternHub.WebApi.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
+            PasswordHasher passwordHasher = new PasswordHasher();
 
             Guid generatedId = Guid.NewGuid();
 
@@ -217,13 +218,17 @@ namespace InternHub.WebApi.Controllers
                 Description = student.Description,
                 CountyId = student.CountyId,
                 StudyAreaId = student.StudyAreaId,
+                Password = passwordHasher.HashPassword(student.Password)
             };
+
+            Role role = await RoleManager.FindByNameAsync("Student");
+            if (role == null) return Request.CreateResponse(HttpStatusCode.InternalServerError);
+
+            mappedStudent.RoleId = role.Id;
 
             int rowsAffected = await StudentService.PostAsync(mappedStudent);
 
             if (rowsAffected <= 0) return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't create new student");
-
-            UserManager.AddToRole(mappedStudent.Id, "Student");
 
             return Request.CreateResponse(HttpStatusCode.OK, mappedStudent);
         }
