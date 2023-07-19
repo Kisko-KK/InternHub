@@ -6,7 +6,6 @@ using InternHub.Repository.Common;
 using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Remoting;
 using System.Threading.Tasks;
 
 namespace InternHub.Repository
@@ -54,7 +53,50 @@ namespace InternHub.Repository
 
 
                 }
-                string selectQuery = "SELECT * FROM \"InternshipApplication\" ia INNER JOIN \"Student\" s ON ia.\"StudentId\" = s.\"Id\" INNER JOIN \"State\" sta ON ia.\"StateId\" = sta.\"Id\" inner join \"Internship\" i on i.\"Id\"=ia.\"InternshipId\"" +
+                string selectQuery = @"
+                     SELECT 
+                    ia.""Id"",
+                    ia.""DateCreated"",
+                    ia.""DateUpdated"",
+                    ia.""CreatedByUserId"",
+                    ia.""UpdatedByUserId"",
+                    ia.""IsActive"",
+                    ia.""StateId"",
+                    ia.""StudentId"",
+                    ia.""InternshipId"",
+                    u.""FirstName"" as ""StudentFirstName"",
+                    u.""LastName"" as ""StudentLastName"",
+                    u.""Email"" as ""StudentEmail"",
+                    u.""PhoneNumber"" as ""StudentPhoneNumber"",
+                    u.""Address"" as ""StudentAddress"",
+                    u.""Description"" as ""StudentDescription"",
+                    c.""Name"" AS ""StudentCounty"",
+                    sas.""Name"" AS ""StudentStudyArea"",
+                    sa.""Id"" as ""InternshipStudyAreaId"",
+                    sa.""Name"" AS ""InternshipStudyArea"",
+                    i.""Id"" as ""InternshipId"",
+                    i.""CompanyId"",
+                    comp.""Name"" AS ""CompanyName"",
+                    comp.""Website"" as ""CompanyWebsite"",
+                    i.""Name"" AS ""InternshipName"",
+                    i.""Description"" AS ""InternshipDescription"",
+                    i.""Address"" AS ""InternshipAddress"",
+                    i.""StartDate"",
+                    i.""EndDate"",
+                    sta.""Name"" AS ""InternshipApplicationStateName""
+                FROM 
+                    ""InternshipApplication"" ia
+                    INNER JOIN ""Student"" s ON ia.""StudentId"" = s.""Id""
+                    INNER JOIN ""State"" sta ON ia.""StateId"" = sta.""Id""
+                    INNER JOIN dbo.""AspNetUsers"" u ON u.""Id"" = s.""Id""
+                    INNER JOIN ""County"" c ON c.""Id"" = u.""CountyId""
+                    INNER JOIN ""Internship"" i ON i.""Id"" = ia.""InternshipId""
+                    INNER JOIN ""Company"" comp ON i.""CompanyId"" = comp.""Id""
+                    inner join ""StudyArea"" sa on i.""StudyAreaId"" =sa.""Id""
+                    inner join ""StudyArea"" sas on s.""StudyAreaId""=sas.""Id"" 
+                                " +
+                    
+                  
                     (parameters.Count == 0 ? "" : "WHERE ia.\"IsActive\"=true " + string.Join(" AND ", parameters)) + $" ORDER BY {sortBy} {(sorting.SortOrder.ToLower() == "asc" ? "ASC" : "DESC")} LIMIT @pageSize OFFSET @skip";
 
                 string countQuery = "SELECT COUNT (*) FROM \"InternshipApplication\"" + (parameters.Count == 0 ? "" : " WHERE " + string.Join(" AND ", parameters));
@@ -76,7 +118,7 @@ namespace InternHub.Repository
                 while (reader.HasRows && await reader.ReadAsync())
                 {
                     InternshipApplication internshipApplication = ReadInternshipApplication(reader);
-                    if(internshipApplication != null) pagedList.Data.Add(internshipApplication);
+                    if (internshipApplication != null) pagedList.Data.Add(internshipApplication);
                 }
                 pagedList.CurrentPage = paging.CurrentPage;
                 pagedList.PageSize = paging.PageSize;
@@ -94,14 +136,54 @@ namespace InternHub.Repository
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
             {
                 //student, state i internship
-                string query = "SELECT * FROM \"InternshipApplication\" ia INNER JOIN \"State\" sta ON ia.\"StateId\" =sta.\"Id\"  INNER JOIN \"Student\" s ON ia.\"StudentId\" =s.\"Id\"  " +
-                    " INNER JOIN \"Internship\" i ON ia.\"InternshipId\"=i.\"Id\" WHERE ia.\"Id\" = @id";
+                string query = @"
+                     SELECT 
+                    ia.""Id"",
+                    ia.""DateCreated"",
+                    ia.""DateUpdated"",
+                    ia.""CreatedByUserId"",
+                    ia.""UpdatedByUserId"",
+                    ia.""IsActive"",
+                    ia.""StateId"",
+                    ia.""StudentId"",
+                    ia.""InternshipId"",
+                    u.""FirstName"" as ""StudentFirstName"",
+                    u.""LastName"" as ""StudentLastName"",
+                    u.""Email"" as ""StudentEmail"",
+                    u.""PhoneNumber"" as ""StudentPhoneNumber"",
+                    u.""Address"" as ""StudentAddress"",
+                    u.""Description"" as ""StudentDescription"",
+                    c.""Name"" AS ""StudentCounty"",
+                    sas.""Name"" AS ""StudentStudyArea"",
+                    sa.""Id"" as ""InternshipStudyAreaId"",
+                    sa.""Name"" AS ""InternshipStudyArea"",
+                    i.""Id"" as ""InternshipId"",
+                    i.""CompanyId"",
+                    comp.""Name"" AS ""CompanyName"",
+                    comp.""Website"" as ""CompanyWebsite"",
+                    i.""Name"" AS ""InternshipName"",
+                    i.""Description"" AS ""InternshipDescription"",
+                    i.""Address"" AS ""InternshipAddress"",
+                    i.""StartDate"",
+                    i.""EndDate"",
+                    sta.""Name"" AS ""InternshipApplicationStateName""
+                FROM 
+                    ""InternshipApplication"" ia
+                    INNER JOIN ""Student"" s ON ia.""StudentId"" = s.""Id""
+                    INNER JOIN ""State"" sta ON ia.""StateId"" = sta.""Id""
+                    INNER JOIN dbo.""AspNetUsers"" u ON u.""Id"" = s.""Id""
+                    INNER JOIN ""County"" c ON c.""Id"" = u.""CountyId""
+                    INNER JOIN ""Internship"" i ON i.""Id"" = ia.""InternshipId""
+                    INNER JOIN ""Company"" comp ON i.""CompanyId"" = comp.""Id""
+                    inner join ""StudyArea"" sa on i.""StudyAreaId"" =sa.""Id""
+                    inner join ""StudyArea"" sas on s.""StudyAreaId""=sas.""Id"" 
+                                ";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
                 command.Parameters.AddWithValue("@id", id);
                 await connection.OpenAsync();
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
-                if(reader.HasRows && await reader.ReadAsync())
+                if (reader.HasRows && await reader.ReadAsync())
                 {
                     internshipApplication = ReadInternshipApplication(reader);
                 }
@@ -113,18 +195,19 @@ namespace InternHub.Repository
 
         public async Task<bool> PostInternshipApplicationAsync(InternshipApplication internshipApplication)
         {
-            
+
             bool success = false;
 
-            using(NpgsqlConnection connection=new NpgsqlConnection(_connectionString.Name))
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
             {
+                //message
                 connection.Open();
 
                 string applicationQuery = "INSERT INTO \"InternshipApplication\" VALUES (@id,@dateCreated,@dateUpdated,@createdByUserId,@updatedByUserId,@isActive,@stateId" +
                     "@studentId,@internshipId);";
 
-                NpgsqlCommand applicationCommand = new NpgsqlCommand(applicationQuery, connection); 
-                applicationCommand.Parameters.AddWithValue("@id",internshipApplication.Id);
+                NpgsqlCommand applicationCommand = new NpgsqlCommand(applicationQuery, connection);
+                applicationCommand.Parameters.AddWithValue("@id", internshipApplication.Id);
                 applicationCommand.Parameters.AddWithValue("@dateCreated", internshipApplication.DateCreated);
                 applicationCommand.Parameters.AddWithValue("@dateUpdated", internshipApplication.DateUpdated);
                 applicationCommand.Parameters.AddWithValue("@createdByUserId", internshipApplication.CreatedByUserId);
@@ -141,7 +224,7 @@ namespace InternHub.Repository
             return success;
         }
 
-        
+
 
         public InternshipApplication ReadInternshipApplication(NpgsqlDataReader reader)
         {
@@ -158,6 +241,38 @@ namespace InternHub.Repository
                     StateId = (Guid)reader["StateId"],
                     StudentId = (string)reader["StudentId"],
                     InternshipId = (Guid)reader["InternshipId"],
+                    Student = new Student()
+                    {
+                        Id = (string)reader["StudentId"],
+                        FirstName = (string)reader["StudentFirstName"],
+                        LastName = (string)reader["StudentLastName"],
+                        Email = (string)reader["StudentEmail"],
+                        PhoneNumber = (string)reader["StudentPhoneNumber"],
+                        Address = (string)reader["StudentAddress"],
+                        Description = (string)reader["StudentDescription"],
+                        County = new County { Name = (string)reader["StudentCounty"] },
+                        StudyArea = new StudyArea { Name = (string)reader["StudentStudyArea"] },
+                    },
+                    Internship = new Internship()
+                    {
+                        Id = (Guid)reader["InternshipId"],
+                        StudyAreaId = (Guid)reader["InternshipStudyAreaId"],
+                        StudyArea=new StudyArea { Name = (string)reader["InternshipStudyArea"] },
+                        CompanyId = (string)reader["CompanyId"],
+                        Company = new Company { Name = (string)reader["CompanyName"], Website = (string)reader["CompanyWebsite"] },
+                        Name = (string)reader["InternshipName"],
+                        Description = (string)reader["InternshipDescription"],
+                        Address = (string)reader["InternshipAddress"],
+                        StartDate = (DateTime)reader["StartDate"],
+                        EndDate = (DateTime)reader["EndDate"]
+                    },
+                    State = new State()
+                    {
+                        Id = (Guid)reader["StateId"],
+                        Name = (string)reader["InternshipApplicationStateName"],
+                    },
+                    
+
                 };
             }
             catch { return null; }

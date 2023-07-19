@@ -17,5 +17,7 @@ namespace InternHub.Model
         public Guid InternshipId { get; set; }
         public Internship Internship { get; set; }
 
+        public string Message { get; set; } 
+
     }
 }
