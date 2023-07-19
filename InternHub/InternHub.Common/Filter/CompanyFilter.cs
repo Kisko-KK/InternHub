@@ -8,7 +8,8 @@ namespace InternHub.Common.Filter
 {
     public class CompanyFilter
     {
-        public bool IsActive { get; set; }
-        public bool IsAccepted { get; set; }
+        public string Name { get; set; } = null;
+        public bool? IsActive { get; set; } = null;
+        public bool? IsAccepted { get; set; } = null;
     }
 }

@@ -18,12 +18,14 @@ namespace InternHub.Model
         public string LastName { get; set; } = "";
         public string Address { get; set; } = "";
         public string Description { get; set; } = "";
+        public bool IsActive { get; set; } = true;
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
         public Guid CountyId { get; set; }
         [NotMapped]
         public County County { get; set; }
-        public bool IsActive { get; set; } = true;
-        public DateTime DateCreated { get; set; } = DateTime.Now;
-        public DateTime DateUpdated { get; set; } = DateTime.Now;
+        [NotMapped]
+        public string Password { get; set; } = "";
 
         public string GetFullName() => FirstName + " " + LastName;
 

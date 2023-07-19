@@ -5,7 +5,8 @@ namespace InternHub.WebApi.Models
 {
     public class CompanyView
     {
-        public CompanyView(Company company) {
+        public CompanyView(Company company)
+        {
             Name = company.Name;
             Website = company.Website;
             Address = company.Address;

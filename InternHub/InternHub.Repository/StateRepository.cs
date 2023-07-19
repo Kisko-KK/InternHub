@@ -63,6 +63,29 @@ namespace InternHub.Repository
             return state;
         }
 
+        public async Task<State> GetByNameAsync(string name)
+        {
+            State state = null;
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString.Name))
+            {
+                string query = "SELECT * FROM public.\"State\" where \"IsActive\" = true and \"Name\" ilike @name;";
+                NpgsqlCommand command = new NpgsqlCommand(query, connection);
+                command.Parameters.AddWithValue("@name", name);
+
+                await connection.OpenAsync();
+
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+
+                if (reader.HasRows && await reader.ReadAsync())
+                {
+                    state = ReadState(reader);
+                }
+            }
+
+            return state;
+        }
+
         public async Task<bool> AddAsync(State state)
         {
             int numberOfAffectedRows = 0;

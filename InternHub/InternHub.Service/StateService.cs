@@ -28,6 +28,11 @@ namespace InternHub.Service
             return await Repo.GetByIdAsync(id);
         }
 
+        public async Task<State> GetByNameAsync(string name)
+        {
+            return await Repo.GetByNameAsync(name);
+        }
+
         public async Task<bool> AddAsync(State state, string currentUserId)
         {
             state.DateCreated = state.DateUpdated = DateTime.UtcNow;

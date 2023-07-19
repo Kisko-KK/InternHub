@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace InternHub.Repository
 {
+    //if filter.isactive!=null;
     public class CountyRepository : ICountyRepository
     {
         public IConnectionString ConnectionString { get; set; }

@@ -12,6 +12,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternHub.Service.Common", "InternHub.Service.Common\InternHub.Service.Common.csproj", "{90230DF2-828B-4368-8D34-4EC2A66B6870}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternHub.Service", "InternHub.Service\InternHub.Service.csproj", "{A1D5841E-D2A0-4A2E-95A4-9A8256E58DC4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6A1B5CFD-7140-4ECE-87A5-1D150B9016D0} = {6A1B5CFD-7140-4ECE-87A5-1D150B9016D0}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternHub.Model", "InternHub.Model\InternHub.Model.csproj", "{A1603186-460C-4EFD-813E-0636612D117C}"
 EndProject
