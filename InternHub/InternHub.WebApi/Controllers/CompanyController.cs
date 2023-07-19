@@ -2,10 +2,10 @@
 using InternHub.Common;
 using InternHub.Common.Filter;
 using InternHub.Model;
+using InternHub.Service;
 using InternHub.Service.Common;
 using InternHub.WebApi.Models;
 using Microsoft.AspNet.Identity;
-using Microsoft.Owin.Security.Provider;
 using System;
 using System.Linq;
 using System.Net;
@@ -15,25 +15,32 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
+    [Authorize]
     public class CompanyController : ApiController
     {
         private ICompanyService CompanyService { get; set; }
+        public INotificationService NotificationService { get; set; }
+        public UserManager UserManager { get; set; }
 
-        public CompanyController(ICompanyService companyService)
+        public CompanyController(ICompanyService companyService, UserManager userManager, INotificationService notificationService)
         {
             CompanyService = companyService;
+            UserManager = userManager;
+            NotificationService = notificationService;
         }
-        public async Task<HttpResponseMessage> Get(int pageSize = 2, int currentPage = 1, string sortBy = "Id", string sortOrder = "ASC", bool isActive = true, bool isAccepted = true)
+
+        public async Task<HttpResponseMessage> GetAsync(int? pageSize = null, int? currentPage = null, string sortBy = null, string sortOrder = null, bool? isActive = null, bool? isAccepted = null, string name = null)
         {
             Sorting sorting = new Sorting();
-            sorting.SortBy = sortBy;
-            sorting.SortOrder = sortOrder;
+            if(sortBy != null) sorting.SortBy = sortBy;
+            if(sortOrder != null) sorting.SortOrder = sortOrder;
             Paging paging = new Paging();
-            paging.PageSize = pageSize;
-            paging.CurrentPage = currentPage;
+            if(pageSize != null) paging.PageSize = pageSize.Value;
+            if(currentPage != null) paging.CurrentPage = currentPage.Value;
             CompanyFilter filter = new CompanyFilter();
             filter.IsActive = isActive;
             filter.IsAccepted = isAccepted;
+            filter.Name = name;
 
             PagedList<Company> pagedList = await CompanyService.GetAsync(sorting, paging, filter);
 
@@ -50,11 +57,11 @@ namespace InternHub.WebApi.Controllers
         }
 
         // GET api/<controller>/5
-        public async Task<HttpResponseMessage> Get(string id)
+        public async Task<HttpResponseMessage> GetAsync(string id)
         {
             Company existingCompany = await CompanyService.GetAsync(id);
 
-            if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any compayn with that id!"); }
+            if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
 
             CompanyView companyView = new CompanyView(existingCompany);
 
@@ -62,8 +69,10 @@ namespace InternHub.WebApi.Controllers
         }
 
         // POST api/<controller>
-        public async Task<HttpResponseMessage> Post([FromBody] CompanyUpdate updatedCompany)
+        public async Task<HttpResponseMessage> PostAsync([FromBody] CompanyPost updatedCompany)
         {
+            if (updatedCompany == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
+
             Company company = new Company
             {
                 Name = updatedCompany.Name,
@@ -80,11 +89,15 @@ namespace InternHub.WebApi.Controllers
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Bad Request");
             }
+
+            IdentityResult result = await UserManager.AddToRoleAsync(company.Id, "Company");
+
             return Request.CreateResponse(HttpStatusCode.OK, company);
         }
 
         // PUT api/<controller>/5
-        public async Task<HttpResponseMessage> Put(string id, [FromBody] CompanyUpdate updatedCompany)
+        [Authorize(Roles = "Company,Admin")]
+        public async Task<HttpResponseMessage> PutAsync(string id, [FromBody] CompanyPut updatedCompany)
         {
             Company existingCompany = await CompanyService.GetAsync(id);
 
@@ -92,33 +105,29 @@ namespace InternHub.WebApi.Controllers
 
             if (updatedCompany.Website != null) existingCompany.Website = updatedCompany.Website;
             if (updatedCompany.Name != null) existingCompany.Name = updatedCompany.Name;
-
             if (updatedCompany.FirstName != null) existingCompany.FirstName = updatedCompany.FirstName;
             if (updatedCompany.LastName != null) existingCompany.LastName = updatedCompany.LastName;
             if (updatedCompany.Address != null) existingCompany.Address = updatedCompany.Address;
             if (updatedCompany.Description != null) existingCompany.Description = updatedCompany.Description;
             if (updatedCompany.Email != null) existingCompany.Email = updatedCompany.Email;
-
-
-
+            if (updatedCompany.CountyId != null) existingCompany.CountyId = updatedCompany.CountyId.Value;
 
             if (await CompanyService.PutAsync(existingCompany) == false)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't update it!");
             }
             return Request.CreateResponse(HttpStatusCode.OK, "Updated");
-
-
         }
 
         // DELETE api/<controller>/5
-        public async Task<HttpResponseMessage> Delete(string id)
+        [Authorize(Roles = "Company,Admin")]
+        public async Task<HttpResponseMessage> DeleteAsync(string id)
         {
             Company existingCompany = await CompanyService.GetAsync(id);
 
             if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
 
-            if (await CompanyService.DeleteAsync(id) == false)
+            if (await CompanyService.DeleteAsync(existingCompany) == false)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't delete company!");
             }
@@ -127,15 +136,19 @@ namespace InternHub.WebApi.Controllers
 
 
         [HttpPut, Route("api/Company/Approve/{id}")]
-        public async Task<HttpResponseMessage> ApproveCompany(string id)
+        [Authorize(Roles = "Admin")]
+        public async Task<HttpResponseMessage> ApproveAsync(string id)
         {
             Company existingCompany = await CompanyService.GetAsync(id);
             if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
 
-            if (await CompanyService.AcceptAsync(id) == false)
+            if (await CompanyService.AcceptAsync(existingCompany) == false)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't approve company!");
             }
+
+            await NotificationService.AddAsync("Vaš račun je prihvaćen", "Poštovani " + existingCompany.GetFullName() + "!\n\nVaša prijava za tvrtku " + existingCompany.Name + " na platformi InternHub je odobrena. Od sada možete neometano objavljivati vaše prakse!" + " \n\nVaša InternHub ekipa", existingCompany);
+
             return Request.CreateResponse(HttpStatusCode.OK, "Company accepted!");
         }
     }

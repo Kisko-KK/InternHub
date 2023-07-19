@@ -157,8 +157,7 @@ namespace InternHub.Repository
                     IsActive = (bool)reader["IsActive"],
                     StateId = (Guid)reader["StateId"],
                     StudentId = (string)reader["StudentId"],
-                    InternshipId = (Guid)reader["InternshipId"]
-
+                    InternshipId = (Guid)reader["InternshipId"],
                 };
             }
             catch { return null; }

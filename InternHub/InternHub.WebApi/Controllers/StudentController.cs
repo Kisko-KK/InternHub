@@ -13,31 +13,34 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Web.Mvc;
 
 namespace InternHub.WebApi.Controllers
 {
+    [Authorize]
     public class StudentController : ApiController
     {
-        IStudentService studentService;
+        private IStudentService StudentService { get; }
+        private UserManager UserManager { get; set; }
+
         // GET: Student
-        public StudentController(IStudentService _studentService)
+        public StudentController(IStudentService studentService, UserManager userManager)
         {
-            studentService = _studentService;
+            StudentService = studentService;
+            UserManager = userManager;
         }
 
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public async Task<HttpResponseMessage> Get(string orderBy = null, string sortOrder = null, int? pageSize = null, int? pageCount = null, string studyAreas = null, string counties = null, string firstName = null, string lastName = null, bool isActive = true)
         {
             try
             {
                 Sorting sorting = new Sorting();
-                if(orderBy != null) sorting.SortBy = orderBy;
+                if (orderBy != null) sorting.SortBy = orderBy;
                 if (sortOrder != null) sorting.SortOrder = sortOrder;
 
                 Paging paging = new Paging();
                 if (pageSize != null) paging.PageSize = pageSize.Value;
-                if(pageCount != null) paging.CurrentPage = pageCount.Value;
+                if (pageCount != null) paging.CurrentPage = pageCount.Value;
 
                 List<Guid> studyAreaIds = new List<Guid>();
                 if (studyAreas != null)
@@ -73,13 +76,22 @@ namespace InternHub.WebApi.Controllers
 
                 List<StudentView> students = new List<StudentView>();
 
-                PagedList<Student> mappedStudents = await studentService.GetAllAsync(sorting, paging, filter);
+                PagedList<Student> mappedStudents = await StudentService.GetAllAsync(sorting, paging, filter);
 
                 mappedStudents.Data.ForEach(student =>
                 {
-                    StudentView studentView = new StudentView(student.Id, student.FirstName, student.LastName, student.Email, student.PhoneNumber, student.Address, student.Description, student.DateCreated, student.DateUpdated, student.CountyId, student.IsActive, student.StudyArea);
+                    StudentView studentView = new StudentView(student);
                     students.Add(studentView);
                 });
+
+                PagedList<StudentView> pagedStudents = new PagedList<StudentView>()
+                {
+                    CurrentPage = mappedStudents.CurrentPage,
+                    DatabaseRecordsCount = mappedStudents.DatabaseRecordsCount,
+                    LastPage = mappedStudents.LastPage,
+                    PageSize = mappedStudents.PageSize,
+                    Data = students
+                };
 
                 return Request.CreateResponse(HttpStatusCode.OK, mappedStudents);
             }
@@ -91,31 +103,32 @@ namespace InternHub.WebApi.Controllers
 
         }
 
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("api/students/{id}")]
+        [HttpGet]
+        [Route("api/students/{id}")]
         public async Task<HttpResponseMessage> GetByIdAsync(string id)
         {
             if (id == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
-            Student student = await studentService.GetStudentByIdAsync(id);
+            Student student = await StudentService.GetStudentByIdAsync(id);
 
             if (student == null)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "There isn't any student with that id!");
             }
 
-            StudentView studentView = new StudentView(student.Id, student.FirstName, student.LastName, student.Email, student.PhoneNumber, student.Address, student.Description, student.DateCreated, student.DateUpdated, student.CountyId, student.IsActive, student.StudyArea);
+            StudentView studentView = new StudentView(student);
 
             return Request.CreateResponse(HttpStatusCode.OK, studentView);
         }
 
-        public async Task<HttpResponseMessage> Post([FromBody] PostStudent student)
+        [AllowAnonymous]
+        public async Task<HttpResponseMessage> PostAsync([FromBody] PostStudent student)
         {
             if (student == null)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            
+
             Guid generatedId = Guid.NewGuid();
 
             Student mappedStudent = new Student()
@@ -130,26 +143,25 @@ namespace InternHub.WebApi.Controllers
                 CountyId = student.CountyId,
                 StudyAreaId = student.StudyAreaId,
             };
-            
-            int rowsAffected = await studentService.PostAsync(mappedStudent);
 
-            if (rowsAffected <= 0)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't create new student");
-            }
-            else
-                return Request.CreateResponse(HttpStatusCode.OK, mappedStudent);
+            int rowsAffected = await StudentService.PostAsync(mappedStudent);
+
+            if (rowsAffected <= 0) return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't create new student");
+
+            UserManager.AddToRole(mappedStudent.Id, "Student");
+
+            return Request.CreateResponse(HttpStatusCode.OK, mappedStudent);
         }
 
         public async Task<HttpResponseMessage> DeleteAsync(string id)
         {
 
-            Student existingStudent = await studentService.GetStudentByIdAsync(id);
+            Student existingStudent = await StudentService.GetStudentByIdAsync(id);
 
 
-            if(existingStudent == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any student with that id! "); }
+            if (existingStudent == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any student with that id! "); }
 
-            if(await studentService.DeleteAsync(existingStudent) != 1)
+            if (await StudentService.DeleteAsync(existingStudent) != 1)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Unable to delete student!");
             }
@@ -158,18 +170,17 @@ namespace InternHub.WebApi.Controllers
 
         }
 
-        public async Task <HttpResponseMessage> PutAsync(string id, [FromBody]PostStudent student)
+        public async Task<HttpResponseMessage> PutAsync(string id, [FromBody] StudentPut student)
         {
             try
             {
-                
-                Student existingStudent = await studentService.GetStudentByIdAsync(id);
+                Student existingStudent = await StudentService.GetStudentByIdAsync(id);
 
-                if(existingStudent == null)
+                if (existingStudent == null)
                 {
                     return Request.CreateErrorResponse(HttpStatusCode.NotFound, $"Student with id: {id} is not found");
                 }
-               
+
 
                 if (!string.IsNullOrEmpty(student.FirstName))
                 {
@@ -201,16 +212,16 @@ namespace InternHub.WebApi.Controllers
                     existingStudent.Description = student.Description;
 
                 }
-                if (student.StudyAreaId != Guid.Empty)
+                if (student.StudyAreaId != null)
                 {
-                    existingStudent.StudyAreaId = student.StudyAreaId;
+                    existingStudent.StudyAreaId = student.StudyAreaId.Value;
                 }
-                if (student.CountyId != Guid.Empty)
+                if (student.CountyId != null)
                 {
-                    existingStudent.CountyId = student.CountyId;
+                    existingStudent.CountyId = student.CountyId.Value;
                 }
 
-                int rowsAffected = await studentService.PutAsync(existingStudent);
+                int rowsAffected = await StudentService.PutAsync(existingStudent);
 
                 if (rowsAffected <= 0)
                 {
@@ -225,10 +236,6 @@ namespace InternHub.WebApi.Controllers
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
-
-
-
         }
-
     }
 }

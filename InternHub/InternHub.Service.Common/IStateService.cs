@@ -11,6 +11,7 @@ namespace InternHub.Service.Common
     {
         Task<List<State>> GetAllAsync();
         Task<State> GetByIdAsync(Guid id);
+        Task<State> GetByNameAsync(string name);
         Task<bool> AddAsync(State state, string currentUserId);
         Task<bool> UpdateAsync(State state, string currentUserId);
         Task<bool> RemoveAsync(State state, string currentUserId);

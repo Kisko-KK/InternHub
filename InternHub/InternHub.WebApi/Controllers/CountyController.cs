@@ -24,7 +24,7 @@ namespace InternHub.WebApi.Controllers
 
         // GET: api/County
         [Authorize]
-        public async Task<HttpResponseMessage> Get()
+        public async Task<HttpResponseMessage> GetAsync()
         {
             try
             {
@@ -36,7 +36,7 @@ namespace InternHub.WebApi.Controllers
 
         // GET: api/County/5
         [Authorize]
-        public async Task<HttpResponseMessage> Get(Guid id)
+        public async Task<HttpResponseMessage> GetAsync(Guid id)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // POST: api/County
-        public async Task<HttpResponseMessage> Post([FromBody] CountyView county)
+        public async Task<HttpResponseMessage> PostAsync([FromBody] CountyView county)
         {
             try
             {
@@ -72,7 +72,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // PUT: api/County/5
-        public async Task<HttpResponseMessage> Put(Guid id, [FromBody] CountyView county)
+        public async Task<HttpResponseMessage> PutAsync(Guid id, [FromBody] CountyView county)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // DELETE: api/County/5
-        public async Task<HttpResponseMessage> Delete(Guid id)
+        public async Task<HttpResponseMessage> DeleteAsync(Guid id)
         {
             try
             {

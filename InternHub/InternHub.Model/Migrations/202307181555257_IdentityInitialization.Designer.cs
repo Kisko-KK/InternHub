@@ -6,14 +6,14 @@ namespace InternHub.Model.Migrations
     using System.Data.Entity.Migrations.Infrastructure;
     using System.Resources;
     
-    [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
+    [GeneratedCode("EntityFramework.Migrations", "6.4.0")]
     public sealed partial class IdentityInitialization : IMigrationMetadata
     {
         private readonly ResourceManager Resources = new ResourceManager(typeof(IdentityInitialization));
         
         string IMigrationMetadata.Id
         {
-            get { return "202307141117120_IdentityInitialization"; }
+            get { return "202307181555257_IdentityInitialization"; }
         }
         
         string IMigrationMetadata.Source

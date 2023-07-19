@@ -48,6 +48,7 @@
                     SecurityStamp = "",
                     PhoneNumber = "",
                     IsActive = true,
+                    CountyId = Guid.Parse("517bf28e-8064-4731-b9b9-099eb8d39f2f"),
                     PasswordHash = new PasswordHasher().HashPassword("123456")
                 };
                 user.Id = "0c2ba6ff-9145-43cf-ac48-ccf7effea536";

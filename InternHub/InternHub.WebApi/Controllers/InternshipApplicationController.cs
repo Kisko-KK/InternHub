@@ -19,12 +19,13 @@ namespace InternHub.WebApi.Controllers
     [Authorize]
     public class InternshipApplicationController : ApiController
     {
-        protected IInternshipApplicationService _internshipApplicationService { get; set; }
+        private IInternshipApplicationService InternshipApplicationService { get; }
+        private IStateService StateService { get; }
 
-        public InternshipApplicationController(IInternshipApplicationService internshipApplicationService)
+        public InternshipApplicationController(IInternshipApplicationService internshipApplicationService, IStateService stateService)
         {
-            _internshipApplicationService = internshipApplicationService;
-
+            InternshipApplicationService = internshipApplicationService;
+            StateService = stateService;
         }
 
         public async Task<HttpResponseMessage> GetAllAsync(int? currentPage = null, int? pageSize = null, string sortBy = null, string sortOrder = null, string stateName = null, string internshipName = null)
@@ -61,7 +62,7 @@ namespace InternHub.WebApi.Controllers
                     filter.InternshipName = internshipName;
                 }
 
-                PagedList<InternshipApplication> internshipApplications = await _internshipApplicationService.GetAllInternshipApplicationsAsync(paging, sorting, filter);
+                PagedList<InternshipApplication> internshipApplications = await InternshipApplicationService.GetAllInternshipApplicationsAsync(paging, sorting, filter);
                 if (internshipApplications == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.BadRequest);
@@ -90,7 +91,7 @@ namespace InternHub.WebApi.Controllers
             {
 
                 if (id == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
-                InternshipApplication internshipApplication = await _internshipApplicationService.GetInternshipApplicationByIdAsync(id);
+                InternshipApplication internshipApplication = await InternshipApplicationService.GetInternshipApplicationByIdAsync(id);
 
                 if (internshipApplication == null) return Request.CreateResponse(HttpStatusCode.NotFound);
                 return Request.CreateResponse(HttpStatusCode.OK, new InternshipApplicationView(internshipApplication));
@@ -101,23 +102,27 @@ namespace InternHub.WebApi.Controllers
             }
         }
 
-
-        //
         [Authorize(Roles = "Student")]
         public async Task<HttpResponseMessage> PostAsync([FromBody] PutInternshipApplication internshipApplication)
         {
+            if (internshipApplication == null) { return Request.CreateResponse(HttpStatusCode.BadRequest); }
             string currentUserId = User.Identity.GetUserId();
             try
             {
+                State state = await StateService.GetByNameAsync("U procesu");
+
+                if (state == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
+
                 InternshipApplication newInternshipApplication = new InternshipApplication()
                 {
                     Id = Guid.NewGuid(),
                     InternshipId = internshipApplication.InternshipId,
-                    StudentId = currentUserId
-
+                    StudentId = currentUserId,
+                    StateId = state.Id
                 };
-                if (internshipApplication == null) { return Request.CreateResponse(HttpStatusCode.BadRequest); }
-                bool success = await _internshipApplicationService.PostInternshipApplicationAsync(newInternshipApplication, currentUserId);
+
+                bool success = await InternshipApplicationService.PostInternshipApplicationAsync(newInternshipApplication, currentUserId);
+
                 if (!success) return Request.CreateResponse(HttpStatusCode.BadRequest);
                 return Request.CreateResponse(HttpStatusCode.OK, new InternshipApplicationView(newInternshipApplication));
             }
