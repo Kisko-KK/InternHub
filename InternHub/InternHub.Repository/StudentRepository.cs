@@ -6,9 +6,6 @@ using InternHub.Repository.Common;
 using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -190,17 +187,15 @@ namespace InternHub.Repository
 
         public async Task<int> PostAsync(Student student)
         {
-            int rowsAffected = 0;
-
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
             {
-                connection.Open();
+                await connection.OpenAsync();
 
                 using (NpgsqlTransaction transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, @email, false, 'hashed_password', 'security_stamp', '', false, false, null, false, 0, @username)";
+                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\", \"Discriminator\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, @email, false, 'hashed_password', 'security_stamp', '', false, false, null, false, 0, @username, 'User')";
                         string insertStudentQuery = "INSERT INTO public.\"Student\" (\"Id\", \"StudyAreaId\") VALUES (@id, @studyAreaId)";
 
 
@@ -219,24 +214,26 @@ namespace InternHub.Repository
                         userInsertCommand.Parameters.AddWithValue("@username", student.Email);
                         userInsertCommand.Parameters.AddWithValue("@isActive", student.IsActive = true);
 
-
-
                         studentInsertCommand.Parameters.AddWithValue("@id", student.Id);
                         studentInsertCommand.Parameters.AddWithValue("@studyAreaId", student.StudyAreaId);
 
-                        rowsAffected += await userInsertCommand.ExecuteNonQueryAsync();
-                        rowsAffected += await studentInsertCommand.ExecuteNonQueryAsync();
+                        int numberOfUserRowsAffected = await userInsertCommand.ExecuteNonQueryAsync();
+                        int numberOfStudentRowsAffected = await studentInsertCommand.ExecuteNonQueryAsync();
 
-                        transaction.Commit();
+                        if (numberOfUserRowsAffected * numberOfStudentRowsAffected > 0)
+                            await transaction.CommitAsync();
+                        else
+                            await transaction.RollbackAsync();
+
+                        return numberOfStudentRowsAffected * numberOfUserRowsAffected;
                     }
                     catch
                     {
-                        transaction.Rollback();
+                        await transaction.RollbackAsync();
+                        return 0;
                     }
                 }
             }
-
-            return rowsAffected;
         }
 
         public async Task<int> DeleteAsync(Student student)
@@ -245,7 +242,7 @@ namespace InternHub.Repository
 
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
             {
-                connection.Open();
+                await connection.OpenAsync();
 
                 string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
 
@@ -263,11 +260,9 @@ namespace InternHub.Repository
 
         public async Task<int> PutAsync(Student student)
         {
-            int rowsAffected = 0;
-
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
             {
-                connection.Open();
+                await connection.OpenAsync();
                 using (NpgsqlTransaction transaction = connection.BeginTransaction())
                 {
                     try
@@ -290,24 +285,23 @@ namespace InternHub.Repository
                         updateUserCommand.Parameters.AddWithValue("@email", student.Email);
                         updateUserCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
 
+                        int numberOfUserRowsAffected = await updateStudentCommand.ExecuteNonQueryAsync();
+                        int numberOfStudentRowsAffected = await updateUserCommand.ExecuteNonQueryAsync();
 
+                        if (numberOfUserRowsAffected * numberOfStudentRowsAffected > 0)
+                            await transaction.CommitAsync();
+                        else
+                            await transaction.RollbackAsync();
 
-                        rowsAffected += await updateStudentCommand.ExecuteNonQueryAsync();
-                        rowsAffected += await updateUserCommand.ExecuteNonQueryAsync();
-                        
-
-                        await transaction.CommitAsync();
+                        return numberOfStudentRowsAffected * numberOfUserRowsAffected;
                     }
                     catch
                     {
                         await transaction.RollbackAsync();
-
+                        return 0;
                     }
                 }
             }
-
-            return rowsAffected;
-            
         }
     }
 

@@ -120,7 +120,8 @@ namespace InternHub.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, studentView);
         }
 
-        public async Task<HttpResponseMessage> Post([FromBody] PostStudent student)
+        [AllowAnonymous]
+        public async Task<HttpResponseMessage> PostAsync([FromBody] PostStudent student)
         {
             if (student == null)
             {

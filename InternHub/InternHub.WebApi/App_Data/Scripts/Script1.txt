@@ -20,10 +20,10 @@ CREATE TABLE dbo."AspNetUsers" (
 	"LastName" text NULL,
 	"Address" text NULL,
 	"Description" text NULL,
-	"CountyId" uuid NOT NULL,
 	"IsActive" bool NOT NULL,
 	"DateCreated" timestamp NOT NULL,
 	"DateUpdated" timestamp NOT NULL,
+	"CountyId" uuid NOT NULL,
 	"Email" varchar(256) NULL,
 	"EmailConfirmed" bool NOT NULL,
 	"PasswordHash" text NULL,
@@ -35,11 +35,13 @@ CREATE TABLE dbo."AspNetUsers" (
 	"LockoutEnabled" bool NOT NULL,
 	"AccessFailedCount" int4 NOT NULL,
 	"UserName" varchar(256) NOT NULL,
+	"StudyAreaId" uuid NULL,
 	"Discriminator" varchar(128) NOT NULL,
 	CONSTRAINT "PK_dbo.AspNetUsers" PRIMARY KEY ("Id"),
 	CONSTRAINT "FK_AspNetUsers_County_CountyId" foreign key("CountyId") references public."County"("Id")
 );
 CREATE UNIQUE INDEX "AspNetUsers_UserNameIndex" ON dbo."AspNetUsers" USING btree ("UserName");
+
 
 -- dbo."AspNetRoles" definition
 
@@ -89,7 +91,6 @@ CREATE TABLE dbo."AspNetUserLogins" (
 );
 CREATE INDEX "AspNetUserLogins_IX_UserId" ON dbo."AspNetUserLogins" USING btree ("UserId");
 
-
 -- dbo."AspNetUserLogins" foreign keys
 
 ALTER TABLE dbo."AspNetUserLogins" ADD CONSTRAINT "FK_dbo.AspNetUserLogins_dbo.AspNetUsers_UserId" FOREIGN KEY ("UserId") REFERENCES dbo."AspNetUsers"("Id") ON DELETE CASCADE;
@@ -113,7 +114,6 @@ CREATE INDEX "AspNetUserRoles_IX_UserId" ON dbo."AspNetUserRoles" USING btree ("
 
 ALTER TABLE dbo."AspNetUserRoles" ADD CONSTRAINT "FK_dbo.AspNetUserRoles_dbo.AspNetRoles_RoleId" FOREIGN KEY ("RoleId") REFERENCES dbo."AspNetRoles"("Id") ON DELETE CASCADE;
 ALTER TABLE dbo."AspNetUserRoles" ADD CONSTRAINT "FK_dbo.AspNetUserRoles_dbo.AspNetUsers_UserId" FOREIGN KEY ("UserId") REFERENCES dbo."AspNetUsers"("Id") ON DELETE CASCADE;
-
 
 -- dbo."__MigrationHistory" definition
 
@@ -202,6 +202,7 @@ create table public."InternshipApplication" (
     "StateId" uuid NOT NULL,
     "StudentId" varchar(128) NOT NULL,
     "InternshipId" uuid NOT NULL,
+    "Message" text NOT NULL,
     "DateCreated" TIMESTAMP NOT NULL, 
     "DateUpdated" TIMESTAMP NOT NULL,
     "CreatedByUserId" varchar(128) NOT NULL,
