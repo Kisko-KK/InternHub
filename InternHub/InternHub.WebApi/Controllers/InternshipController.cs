@@ -17,7 +17,8 @@ using System.Web.Security;
 
 namespace InternHub.WebApi.Controllers
 {
-    [Authorize]
+    //[Authorize]
+    [RoutePrefix("api/Internship")]
     public class InternshipController : ApiController
     {
         private IInternshipService InternshipService { get; set; }

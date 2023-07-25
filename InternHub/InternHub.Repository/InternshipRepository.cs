@@ -47,7 +47,7 @@ namespace InternHub.Repository
         {
             if (sorting == null) sorting = new Sorting();
             if (paging == null) paging = new Paging();
-            if(filter == null) filter = new InternshipFilter();
+            if (filter == null) filter = new InternshipFilter();
 
             List<Internship> internships = new List<Internship>();
             PagedList<Internship> pagedList = new PagedList<Internship>();
@@ -226,18 +226,21 @@ namespace InternHub.Repository
                                 " sa.\"Name\" AS \"StudyAreaName\", " +
                                 " i.\"CompanyId\"," +
                                 " cv.\"Name\" AS \"CompanyViewName\"," +
-                                " cv.\"Website\" AS \"CompanyWebsite\"" +
-                                " u.\"Address\" AS \"CompanyAddress\"" +
-                                " cv.\"Id\" AS \"CompanyId\"" +
+                                " cv.\"Website\" AS \"CompanyWebsite\"," +
+                                " u.\"Address\" AS \"CompanyAddress\"," +
+                                " cv.\"Id\" AS \"CompanyId\"," +
                                 " i.\"Name\"," +
                                 " i.\"Description\", " +
                                 " i.\"Address\"," +
                                 " i.\"StartDate\"," +
                                 " i.\"EndDate\"" +
-                            " FROM public.\"Internship\" i" +
-                            " INNER JOIN public.\"StudyArea\" sa ON i.\"StudyAreaId\" = sa.\"Id\"" +
-                            " INNER JOIN public.\"Company\" cv ON i.\"CompanyId\" = cv.\"Id\"" +
-                            " where i.\"Id\" = @id";
+                                " FROM public.\"Internship\" i" +
+                                " INNER JOIN public.\"StudyArea\" sa ON i.\"StudyAreaId\" = sa.\"Id\"" +
+                                " INNER JOIN public.\"Company\" cv ON i.\"CompanyId\" = cv.\"Id\"" +
+                                " INNER JOIN dbo.\"AspNetUsers\" u ON cv.\"Id\" = u.\"Id\"" +
+                                " INNER JOIN public.\"County\" c ON c.\"Id\" = u.\"CountyId\"" +
+                                " LEFT JOIN public.\"InternshipApplication\" ia ON i.\"Id\" = ia.\"InternshipId\" AND ia.\"IsActive\" = true" +
+                                " where i.\"Id\" = @id";
                     NpgsqlCommand command = new NpgsqlCommand(query, connection);
 
                     command.Parameters.AddWithValue("@id", id);
