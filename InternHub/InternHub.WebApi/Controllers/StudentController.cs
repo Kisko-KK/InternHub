@@ -16,7 +16,7 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class StudentController : ApiController
     {
         private IStudentService StudentService { get; }
