@@ -9,7 +9,6 @@ export class CountyService {
       const response = await axios.get(urlPrefix, {
         headers: HttpHeader.get(),
       });
-      console.log(response);
       if (response.status !== 200) return [];
       return response.data.map((data) => County.fromJson(data));
     } catch {

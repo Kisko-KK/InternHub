@@ -41,7 +41,6 @@ export default function StudentRegisterPage() {
       <Form
         onSubmit={async (e) => {
           e.preventDefault();
-          console.log(e);
           var student = new Student({
             firstName: e.target.firstName.value,
             lastName: e.target.lastName.value,

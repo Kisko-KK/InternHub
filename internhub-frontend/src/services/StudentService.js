@@ -1,20 +1,28 @@
 import axios from "axios";
 import { Server } from "../models";
 import { HttpHeader } from "../models/HttpHeader";
+import { PagedList } from "../models/PagedList";
 import { Student } from "../models/Student";
 
 const urlPrefix = Server.url + "Student";
 
 export class StudentService {
-  async getAsync() {
+  async getAsync(pageNumber) {
     try {
-      const response = await axios.get(urlPrefix, {
-        headers: HttpHeader.get(),
-      });
+      const response = await axios.get(
+        urlPrefix + `?CurrentPage=${pageNumber}&pageSize=5`,
+        {
+          headers: HttpHeader.get(),
+        }
+      );
       if (response.status !== 200) return [];
-      return response.data["Data"].map((data) => Student.fromJson(data));
+      const dataList = response.data["Data"].map((data) =>
+        Student.fromJson(data)
+      );
+      const pagedList = PagedList.fromJson(response.data, dataList);
+      return pagedList;
     } catch {
-      return [];
+      return new PagedList({});
     }
   }
 

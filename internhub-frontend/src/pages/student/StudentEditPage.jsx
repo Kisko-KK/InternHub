@@ -51,7 +51,6 @@ export default function StudentEditPage() {
       <h1 className="text-light">Edit student page</h1>
       <Form
         onSubmit={async (e) => {
-          console.log(e);
           var newStudent = new Student({
             firstName: e.target.firstName.value,
             lastName: e.target.lastName.value,

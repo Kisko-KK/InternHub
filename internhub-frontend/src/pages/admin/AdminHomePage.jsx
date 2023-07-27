@@ -1,21 +1,27 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { AdminNavigation, Button, StudentsList } from "../../components";
+import {
+  AdminNavigation,
+  Button,
+  Paging,
+  StudentsList,
+} from "../../components";
+import { PagedList } from "../../models";
 import { StudentService } from "../../services";
 
 export default function AdminHomePage() {
   const studentService = new StudentService();
-  const [students, setStudents] = useState([]);
+  const [pagedStudents, setPagedStudents] = useState(new PagedList({}));
   const navigate = useNavigate();
 
-  async function refreshStudents() {
-    const data = await studentService.getAsync();
-    setStudents(data);
+  async function refreshStudents(pageNumber) {
+    const data = await studentService.getAsync(pageNumber);
+    setPagedStudents(data);
   }
 
   useEffect(() => {
-    refreshStudents();
+    refreshStudents(1);
   }, []);
 
   return (
@@ -31,12 +37,21 @@ export default function AdminHomePage() {
         New student
       </Button>
       <StudentsList
-        students={students}
+        students={pagedStudents.data}
         onEdit={(id) => {
           navigate(`/student/edit/${id}`);
         }}
         onRemove={() => {
           refreshStudents();
+        }}
+      />
+      <Paging
+        currentPage={pagedStudents.currentPage}
+        lastPage={pagedStudents.lastPage}
+        onPageChanged={(page) => {
+          refreshStudents(page);
+          // console.log(page);
+          // setCurrentPage(page);
         }}
       />
     </div>
