@@ -308,7 +308,7 @@ namespace InternHub.Repository
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
             {
                 string query = @"
-                SELECT s.*, u.*, sa.""Name"" AS StudyAreaName
+                SELECT s.*, u.*, c.""Name"" as ""CountyName"", sa.""Name"" as ""StudyAreaName""
                 FROM public.""Student"" s
                 INNER JOIN public.""StudyArea"" sa ON s.""StudyAreaId"" = sa.""Id"" inner join dbo.""AspNetUsers"" u on s.""Id"" = u.""Id""
                 INNER JOIN public.""County"" c on u.""CountyId"" = c.""Id""
@@ -340,7 +340,7 @@ namespace InternHub.Repository
                 {
                     try
                     {
-                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\", \"Discriminator\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, @email, false, @password, 'security_stamp', '', false, false, null, false, 0, @username, 'User')";
+                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\", \"Discriminator\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, @email, false, @password, 'security_stamp', @phoneNumber, false, false, null, false, 0, @username, 'User')";
                         string insertStudentQuery = "INSERT INTO public.\"Student\" (\"Id\", \"StudyAreaId\") VALUES (@id, @studyAreaId)";
 
 
@@ -356,6 +356,7 @@ namespace InternHub.Repository
                         userInsertCommand.Parameters.AddWithValue("@dateCreated", student.DateCreated);
                         userInsertCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
                         userInsertCommand.Parameters.AddWithValue("@email", student.Email);
+                        userInsertCommand.Parameters.AddWithValue("@phoneNumber", student.PhoneNumber);
                         userInsertCommand.Parameters.AddWithValue("@username", student.Email);
                         userInsertCommand.Parameters.AddWithValue("@isActive", student.IsActive = true);
                         userInsertCommand.Parameters.AddWithValue("@password", student.Password);
@@ -423,7 +424,7 @@ namespace InternHub.Repository
                     {
                         string updateStudentQuery = "UPDATE public.\"Student\" SET \"StudyAreaId\" = @studyAreaId WHERE \"Id\" = @id ";
 
-                        string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"FirstName\" = @firstName, \"LastName\" = @lastName, \"Address\" = @address, \"Description\" = @description, \"Email\" = @email, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
+                        string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"FirstName\" = @firstName, \"LastName\" = @lastName, \"Address\" = @address, \"Description\" = @description, \"PhoneNumber\" = @phoneNumber, \"Email\" = @email, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
 
                         NpgsqlCommand updateStudentCommand = new NpgsqlCommand(updateStudentQuery, connection);
                         NpgsqlCommand updateUserCommand = new NpgsqlCommand(updateUserQuery, connection);
@@ -436,6 +437,7 @@ namespace InternHub.Repository
                         updateUserCommand.Parameters.AddWithValue("@lastName", student.LastName);
                         updateUserCommand.Parameters.AddWithValue("@address", student.Address);
                         updateUserCommand.Parameters.AddWithValue("@description", student.Description);
+                        updateUserCommand.Parameters.AddWithValue("@phoneNumber", student.PhoneNumber);
                         updateUserCommand.Parameters.AddWithValue("@email", student.Email);
                         updateUserCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
 

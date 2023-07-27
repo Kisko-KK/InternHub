@@ -9,6 +9,7 @@ namespace InternHub.WebApi.Models
 {
     public class UserView
     {
+        public string Id { get; set; } = "";
         public string FirstName { get; set; } = "";
         public string LastName { get; set; } = "";
         public string Address { get; set; } = "";
@@ -21,6 +22,7 @@ namespace InternHub.WebApi.Models
 
         public UserView(User user)
         {
+            Id = user.Id;
             FirstName = user.FirstName;
             LastName = user.LastName;
             Address = user.Address;

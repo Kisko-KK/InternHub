@@ -1,4 +1,4 @@
-﻿namespace InternHub.Model.Migrations
+﻿namespace InternHub.Repository.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
@@ -55,7 +55,6 @@
                         LockoutEnabled = c.Boolean(nullable: false),
                         AccessFailedCount = c.Int(nullable: false),
                         UserName = c.String(nullable: false, maxLength: 256),
-                        StudyAreaId = c.Guid(),
                         Discriminator = c.String(nullable: false, maxLength: 128),
                     })
                 .PrimaryKey(t => t.Id)

@@ -19,6 +19,7 @@ using InternHub.WebApi.Results;
 using InternHub.WebApi.Models.Identity;
 using InternHub.Model.Identity;
 using InternHub.Service;
+using System.Web.Security;
 
 namespace InternHub.WebApi.Controllers
 {
@@ -257,7 +258,9 @@ namespace InternHub.WebApi.Controllers
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
-                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.UserName);
+                IList<string> roles = await UserManager.GetRolesAsync(user.Id);
+
+                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user, roles.Count == 0 ? "" : roles[0]);
                 Authentication.SignIn(properties, oAuthIdentity, cookieIdentity);
             }
             else
