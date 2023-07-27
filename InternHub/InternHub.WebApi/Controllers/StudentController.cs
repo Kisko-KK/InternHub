@@ -16,19 +16,20 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
-    //[Authorize]
+    [Authorize]
+    [RoutePrefix("api/Student")]
     public class StudentController : ApiController
     {
         private IStudentService StudentService { get; }
         private RoleManager RoleManager { get; set; }
 
-        // GET: Student
         public StudentController(IStudentService studentService, RoleManager roleManager)
         {
             StudentService = studentService;
             RoleManager = roleManager;
         }
 
+        // GET: Student
         [HttpGet]
         public async Task<HttpResponseMessage> GetAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] StudentFilter filter = null)
         {
@@ -55,12 +56,10 @@ namespace InternHub.WebApi.Controllers
 
                 return Request.CreateResponse(HttpStatusCode.OK, pagedStudents);
             }
-
             catch (Exception ex)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error", ex);
             }
-
         }
 
         [HttpGet]
@@ -99,7 +98,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/students/{id}")]
+        [Authorize]
         public async Task<HttpResponseMessage> GetByIdAsync(string id)
         {
             if (id == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
@@ -115,6 +114,7 @@ namespace InternHub.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, studentView);
         }
 
+        [HttpPost]
         [AllowAnonymous]
         public async Task<HttpResponseMessage> PostAsync([FromBody] PostStudent student)
         {
@@ -153,6 +153,7 @@ namespace InternHub.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.OK);
         }
 
+        [HttpDelete]
         public async Task<HttpResponseMessage> DeleteAsync(string id)
         {
 
@@ -170,7 +171,8 @@ namespace InternHub.WebApi.Controllers
 
         }
 
-        public async Task<HttpResponseMessage> PutAsync(string id, [FromBody] StudentPut student)
+        [HttpPut]
+        public async Task<HttpResponseMessage> PutAsync([FromUri] string id, [FromBody] StudentPut student)
         {
             try
             {

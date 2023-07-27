@@ -12,6 +12,8 @@ using Microsoft.Owin.Security.OAuth;
 using InternHub.WebApi.Models;
 using InternHub.Service;
 using InternHub.Model;
+using Newtonsoft.Json;
+using System.Web.Security;
 
 namespace InternHub.WebApi.Providers
 {
@@ -47,7 +49,9 @@ namespace InternHub.WebApi.Providers
             ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(UserManager,
                 CookieAuthenticationDefaults.AuthenticationType);
 
-            AuthenticationProperties properties = CreateProperties(user.UserName);
+            IList<string> roles = await UserManager.GetRolesAsync(user.Id);
+
+            AuthenticationProperties properties = CreateProperties(user, roles.Count == 0 ? "" : roles[0]);
             AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
             context.Validated(ticket);
             context.Request.Context.Authentication.SignIn(cookiesIdentity);
@@ -89,11 +93,14 @@ namespace InternHub.WebApi.Providers
             return Task.FromResult<object>(null);
         }
 
-        public static AuthenticationProperties CreateProperties(string userName)
+        public static AuthenticationProperties CreateProperties(User user, string role)
         {
             IDictionary<string, string> data = new Dictionary<string, string>
             {
-                { "userName", userName }
+                { "email", user.Email },
+                { "fullName", user.GetFullName() },
+                { "role", role },
+
             };
             return new AuthenticationProperties(data);
         }
