@@ -1,4 +1,5 @@
 import LoginPage from "./LoginPage";
+import HomePage from "./HomePage";
 
 import AdminHomePage from "./admin/AdminHomePage";
 
@@ -11,6 +12,7 @@ import StudentRegisterPage from "./student/StudentRegisterPage";
 
 export {
   LoginPage,
+  HomePage,
   AdminHomePage,
   CompanyHomePage,
   StudentHomePage,

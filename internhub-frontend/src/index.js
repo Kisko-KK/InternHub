@@ -4,17 +4,17 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {
-  AdminHomePage,
+  HomePage,
   LoginPage,
   StudentDetailsPage,
   StudentEditPage,
   StudentRegisterPage,
-} from "./pages/index";
+} from "./pages";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AdminHomePage />,
+    element: <HomePage />,
   },
   {
     path: "/login",

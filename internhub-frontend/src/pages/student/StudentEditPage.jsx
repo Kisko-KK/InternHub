@@ -72,51 +72,33 @@ export default function StudentEditPage() {
           }
         }}
       >
-        <div className="mb-3 mt-3 w-50">
-          <Input
-            name="firstName"
-            text="First name:"
-            value={student.firstName}
-          />
-        </div>
-
-        <div className="mb-3 mt-3 w-50">
-          <Input name="lastName" text="Last name:" value={student.lastName} />
-        </div>
-        <div className="mb-3 mt-3 w-50">
-          <Input
-            name="phoneNumber"
-            text="Phone number:"
-            value={student.phoneNumber}
-          />
-        </div>
-        <div className="mb-3 mt-3 w-50">
-          <SelectDropdown
-            text={"Županija:"}
-            placeholder={"Odaberite županiju"}
-            name={"county"}
-            list={counties}
-          />
-        </div>
-        <div className="mb-3 mt-3 w-50">
-          <Input name="address" text="Address:" value={student.address} />
-        </div>
-
-        <div className="mb-3 mt-3 w-50">
-          <Input
-            name="description"
-            text="Description:"
-            value={student.description}
-          />
-          <div className="mb-3 mt-3 w-50">
-            <SelectDropdown
-              text={"Područje obrazovanja:"}
-              placeholder={"Odaberite područje obrazovanja"}
-              name={"studyArea"}
-              list={studyArea}
-            />
-          </div>
-        </div>
+        <Input name="firstName" text="First name:" value={student.firstName} />
+        <Input name="lastName" text="Last name:" value={student.lastName} />
+        <Input
+          name="phoneNumber"
+          text="Phone number:"
+          value={student.phoneNumber}
+        />
+        <SelectDropdown
+          text={"Županija:"}
+          placeholder={"Odaberite županiju"}
+          name={"county"}
+          list={counties}
+          selectedId={student.countyId}
+        />
+        <Input name="address" text="Address:" value={student.address} />
+        <Input
+          name="description"
+          text="Description:"
+          value={student.description}
+        />
+        <SelectDropdown
+          text={"Područje obrazovanja:"}
+          placeholder={"Odaberite područje obrazovanja"}
+          name={"studyArea"}
+          list={studyArea}
+          selectedId={student.studyAreaId}
+        />
         <br></br>
         <Button buttonColor="primary" type="submit">
           Save
