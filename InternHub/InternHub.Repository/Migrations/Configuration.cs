@@ -1,4 +1,4 @@
-﻿namespace InternHub.Model.Migrations
+﻿namespace InternHub.Repository.Migrations
 {
     using Microsoft.AspNet.Identity.EntityFramework;
     using Microsoft.AspNet.Identity;
@@ -6,15 +6,16 @@
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using InternHub.Model;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<InternHub.Model.Identity.ApplicationDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<InternHub.Repository.ApplicationDbContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(InternHub.Model.Identity.ApplicationDbContext context)
+        protected override void Seed(InternHub.Repository.ApplicationDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 
