@@ -1,23 +1,31 @@
 import React from "react";
 import "../styles/student.css"
 
-export default function Internship({buttonText}) {
+export default function Internship({buttonText, internship, hasApplicationsCount, redirectTo}) {
+
+    const convertToShorterDate = (fullDate) =>{
+        const date = new Date(fullDate);
+        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+    }
+    internship.startDate = convertToShorterDate(internship.startDate);
+    internship.endDate = convertToShorterDate(internship.endDate);
+
     return (
         <div id = "outer-container">
             <div id = "internship-container">
-            <h3>Mono softwer praksa</h3>
+            <h3>{internship.name}</h3>
 
             <div className="p-button-flex">
-                <p id="description">Ovo je dobra prskj fhkjskjd fd fdf d ggd ggd g dg gddg d dggd  dg g dgd gd</p>
-                <button>{buttonText}</button>
+                <p id="description">{internship.description}</p>
+                <button onClick={() => redirectTo()}>{buttonText}</button>
             </div>
             
-            <p className="duration">Duration: 15.2.2002. - 3.7.2001.</p>
+            <p className="duration">Duration: {internship.startDate}  -   {internship.endDate}</p>
 
             <div className="p-flex">
-                <p>Mono d.o.o</p>
-                <p>Eurodom</p>
-                <p>Broj prijavljenih: 23 ili </p>
+                <p>{internship.company.name}</p>
+                <p>{internship.company.address}</p>
+                {hasApplicationsCount && <p>Number of applications: {internship.applicationsCount}</p>}
             </div>
             </div>
         </div>
