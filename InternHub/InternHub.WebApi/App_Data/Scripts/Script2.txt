@@ -24,9 +24,9 @@ VALUES
 
 INSERT INTO public."State" ("Id", "Name", "DateCreated", "DateUpdated", "CreatedByUserId", "UpdatedByUserId", "IsActive")
 VALUES
-    ('45ba9671-60e0-4368-b6f7-aa094bcff23e', 'Prihvaćeno', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
-    ('80879fa0-c082-49ff-8722-f45f4017e834', 'U procesu', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
-    ('d9355afe-8866-47d4-a636-0914201cb139', 'Odbijeno', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true);
+    ('45ba9671-60e0-4368-b6f7-aa094bcff23e', 'Accepted', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('80879fa0-c082-49ff-8722-f45f4017e834', 'Processing', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true),
+    ('d9355afe-8866-47d4-a636-0914201cb139', 'Declined', NOW(), NOW(), '0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0c2ba6ff-9145-43cf-ac48-ccf7effea536', true);
 
 INSERT INTO public."StudyArea" ("Id", "Name", "DateCreated", "DateUpdated", "CreatedByUserId", "UpdatedByUserId", "IsActive")
 VALUES

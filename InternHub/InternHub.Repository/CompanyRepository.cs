@@ -267,13 +267,35 @@ namespace InternHub.Repository
             {
                 await connection.OpenAsync();
 
-                NpgsqlCommand command = new NpgsqlCommand("UPDATE public.\"Company\" SET \"IsAccepted\" = true, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id", connection);
-                command.Parameters.AddWithValue("@id", company.Id);
-                command.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
+                using(NpgsqlTransaction transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        NpgsqlCommand companyCommand = new NpgsqlCommand("UPDATE public.\"Company\" SET \"IsAccepted\" = true WHERE \"Id\" = @id", connection, transaction);
+                        companyCommand.Parameters.AddWithValue("@id", company.Id);
 
-                int rowsAffected = await command.ExecuteNonQueryAsync();
+                        NpgsqlCommand userCommand = new NpgsqlCommand("UPDATE dbo.\"AspNetUsers\" SET \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id", connection, transaction);
+                        userCommand.Parameters.AddWithValue("@id", company.Id);
+                        userCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
 
-                return rowsAffected > 0;
+                        int companyResult = await companyCommand.ExecuteNonQueryAsync();
+                        int userResult = await userCommand.ExecuteNonQueryAsync();
+
+                        int result = companyResult * userResult;
+
+                        if (result > 0) await transaction.CommitAsync();
+                        else await transaction.RollbackAsync();
+
+                        return result > 0;
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                    }
+
+
+                }
+                return false;
             }
         }
 

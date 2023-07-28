@@ -1,16 +1,48 @@
 import axios from "axios";
-import { Server } from "../models";
-import { HttpHeader } from "../models/HttpHeader";
-import { PagedList } from "../models/PagedList";
-import { Student } from "../models/Student";
+import { PagedList, Server, Student } from "../models";
+import { HttpHeader } from "../models";
 
 const urlPrefix = Server.url + "Student";
 
 export class StudentService {
-  async getAsync(pageNumber) {
+  getUrlQuery({ pageNumber = 1, pageSize = 10, ...filter }) {
+    const counties = filter.counties
+      ? "&" + filter.counties.map((county) => `counties=${county}`).join("&")
+      : "";
+    const studyAreas = filter.studyAreas
+      ? "&" +
+        filter.studyAreas
+          .map((studyArea) => `studyAreas=${studyArea}`)
+          .join("&")
+      : "";
+    const urlQuery = `?CurrentPage=${pageNumber}&pageSize=${pageSize}&isActive=${
+      filter.isActive
+    }&firstName=${filter.firstName || ""}&lastName=${
+      filter.lastName || ""
+    }${counties}${studyAreas}`;
+    return urlQuery;
+  }
+
+  async getAsync(params) {
+    try {
+      const response = await axios.get(urlPrefix + this.getUrlQuery(params), {
+        headers: HttpHeader.get(),
+      });
+      if (response.status !== 200) return [];
+      const dataList = response.data["Data"].map((data) =>
+        Student.fromJson(data)
+      );
+      const pagedList = PagedList.fromJson(response.data, dataList);
+      return pagedList;
+    } catch {
+      return new PagedList({});
+    }
+  }
+
+  async getAdminAsync(params) {
     try {
       const response = await axios.get(
-        urlPrefix + `?CurrentPage=${pageNumber}&pageSize=5`,
+        urlPrefix + "/admin" + this.getUrlQuery(params),
         {
           headers: HttpHeader.get(),
         }

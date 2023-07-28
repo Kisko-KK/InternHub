@@ -97,6 +97,7 @@ namespace InternHub.WebApi.Providers
         {
             IDictionary<string, string> data = new Dictionary<string, string>
             {
+                { "userId", user.Id },
                 { "email", user.Email },
                 { "fullName", user.GetFullName() },
                 { "role", role },

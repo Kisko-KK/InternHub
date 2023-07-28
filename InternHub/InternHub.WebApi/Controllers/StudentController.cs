@@ -63,7 +63,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/student/admin")]
+        [Route("admin")]
         public async Task<HttpResponseMessage> GetStudentViewAsAdmin([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] StudentFilter filter = null)
         {
             try

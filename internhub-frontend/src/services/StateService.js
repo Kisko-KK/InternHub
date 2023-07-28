@@ -3,7 +3,7 @@ import { HttpHeader, Server, State } from "../models";
 
 const urlPrefix = Server.url + "State";
 
-export class CountyService {
+export class StateService {
   async getAsync() {
     try {
       const response = await axios.get(urlPrefix, {

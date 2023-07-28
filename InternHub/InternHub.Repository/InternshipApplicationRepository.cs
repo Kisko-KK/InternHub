@@ -42,12 +42,12 @@ namespace InternHub.Repository
                 {
                     if (internshipApplicationFilter.StateName != null)
                     {
-                        parameters.Add("(sta.\"Name\") ILIKE @stateName");
+                        parameters.Add("sta.\"Name\" ILIKE @stateName");
                         command.Parameters.AddWithValue("@stateName", "%" + internshipApplicationFilter.StateName + "%");
                     }
                     if (internshipApplicationFilter.InternshipName != null)
                     {
-                        parameters.Add("(i.\"Name\") ILIKE @internshipName");
+                        parameters.Add("i.\"Name\" ILIKE @internshipName");
                         command.Parameters.AddWithValue("@internshipName", "%" + internshipApplicationFilter.InternshipName + "%");
                     }
                 }
@@ -93,9 +93,9 @@ namespace InternHub.Repository
                     inner join ""StudyArea"" sa on i.""StudyAreaId"" =sa.""Id""
                     inner join ""StudyArea"" sas on s.""StudyAreaId""=sas.""Id"" 
                                 " +
-                    
-                  
-                    (parameters.Count == 0 ? "" : "WHERE ia.\"IsActive\"=true " + string.Join(" AND ", parameters)) + $" ORDER BY {sortBy} {(sorting.SortOrder.ToLower() == "asc" ? "ASC" : "DESC")} LIMIT @pageSize OFFSET @skip";
+
+                "WHERE ia.\"IsActive\" = true " +
+                    (parameters.Count == 0 ? "" : "AND " + string.Join(" AND ", parameters)) + $" ORDER BY {sortBy} {(sorting.SortOrder.ToLower() == "asc" ? "ASC" : "DESC")} LIMIT @pageSize OFFSET @skip";
 
                 string countQuery = "SELECT COUNT(*) FROM \"InternshipApplication\" ia INNER JOIN \"Student\" s ON ia.\"StudentId\" = s.\"Id\" INNER JOIN \"State\" sta ON ia.\"StateId\" = sta.\"Id\" inner join \"Internship\" i on i.\"Id\"=ia.\"InternshipId\" WHERE ia.\"IsActive\" = true " + (parameters.Count == 0 ? "" : "AND " + string.Join(" AND ", parameters));
 

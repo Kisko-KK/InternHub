@@ -4,6 +4,8 @@ import "./styles/index.css";
 import reportWebVitals from "./reportWebVitals";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {
+  AdminCompaniesPage,
+  AdminStudentsPage,
   HomePage,
   LoginPage,
   StudentDetailsPage,
@@ -19,6 +21,14 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/students",
+    element: <AdminStudentsPage />,
+  },
+  {
+    path: "/companies",
+    element: <AdminCompaniesPage />,
   },
   {
     path: "/student/register",

@@ -1,12 +1,12 @@
 import React from "react";
+import Table from "../Table";
 import StudentComponent from "./StudentComponent";
 
 export default function StudentsList({ students, onEdit, onRemove }) {
   return (
-    <table className="table table-dark table-striped">
+    <Table>
       <thead>
         <tr>
-          <td>Id</td>
           <td>First name</td>
           <td>Last name</td>
           <td>Email</td>
@@ -25,6 +25,6 @@ export default function StudentsList({ students, onEdit, onRemove }) {
           );
         })}
       </tbody>
-    </table>
+    </Table>
   );
 }

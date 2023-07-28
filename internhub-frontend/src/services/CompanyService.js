@@ -4,10 +4,13 @@ import { Company, HttpHeader, PagedList, Server } from "../models";
 const urlPrefix = Server.url + "Company";
 
 export class CompanyService {
-  async getAsync(pageNumber) {
+  async getAsync({ pageNumber, pageSize, ...filter }) {
     try {
       const response = await axios.get(
-        urlPrefix + `?CurrentPage=${pageNumber}&pageSize=5`,
+        urlPrefix +
+          `?CurrentPage=${pageNumber}&pageSize=${pageSize}&isAccepted=${
+            filter.isAccepted
+          }&name=${filter.name || ""}&isActive=${filter.isActive}`,
         {
           headers: HttpHeader.get(),
         }
@@ -68,16 +71,16 @@ export class CompanyService {
     }
   }
 
-  async approveAsync(id, isApproved) {
+  async approveAsync(id, isAccepted) {
     try {
       const response = await axios.put(
-        urlPrefix + `/Approve?id=${id}&isApproved=${isApproved}`,
+        urlPrefix + `/Approve?id=${id}&isAccepted=${isAccepted}`,
         null,
         {
           headers: HttpHeader.get(),
         }
       );
-      return response === 200;
+      return response.status === 200;
     } catch {
       return false;
     }

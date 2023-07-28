@@ -44,6 +44,7 @@ namespace InternHub.Repository
                 string selectQuery = "SELECT * FROM public.\"Student\" s inner join dbo.\"AspNetUsers\" u on u.\"Id\" = s.\"Id\" ";
                 string countQuery = "SELECT COUNT(*) FROM public.\"Student\" s inner join dbo.\"AspNetUsers\" u on u.\"Id\" = s.\"Id\" ";
                 string initialFilterCondition = " WHERE u.\"IsActive\" = true ";
+                //string initialFilterCondition = " WHERE 1=1 ";
 
                 selectQueryBuilder.Append(selectQuery);
                 selectQueryBuilder.Append(initialFilterCondition);
@@ -51,15 +52,19 @@ namespace InternHub.Repository
                 countQueryBuilder.Append(countQuery);
                 countQueryBuilder.Append(initialFilterCondition);
 
+                //if(filter.IsActive != null)
+                //{
+                //    filterQueryBuilder.Append($" AND u.\"IsActive\" = " + filter.IsActive.Value);
+                //}
 
                 if (string.IsNullOrEmpty(filter.FirstName) == false)
                 {
-                    filterQueryBuilder.Append($" AND u.\"FirstName\" LIKE '{filter.FirstName}%'");
+                    filterQueryBuilder.Append($" AND u.\"FirstName\" ILIKE '{filter.FirstName}%'");
                 }
 
                 if (string.IsNullOrEmpty(filter.LastName) == false)
                 {
-                    filterQueryBuilder.Append($" AND u.\"LastName\" LIKE '{filter.LastName}%'");
+                    filterQueryBuilder.Append($" AND u.\"LastName\" ILIKE '{filter.LastName}%'");
                 }
 
 
@@ -175,7 +180,8 @@ namespace InternHub.Repository
 
                 string selectQuery = "SELECT s.*, u.*, c.\"Name\" as \"CountyName\", sa.\"Name\" as \"StudyAreaName\" FROM public.\"Student\" s inner join dbo.\"AspNetUsers\" u on u.\"Id\" = s.\"Id\" inner join public.\"County\" c on c.\"Id\" = u.\"CountyId\" inner join public.\"StudyArea\" sa on sa.\"Id\" = s.\"StudyAreaId\" ";
                 string countQuery = "SELECT COUNT(*) FROM public.\"Student\" s inner join dbo.\"AspNetUsers\" u on u.\"Id\" = s.\"Id\" inner join public.\"County\" c on c.\"Id\" = u.\"CountyId\" inner join public.\"StudyArea\" sa on sa.\"Id\" = s.\"StudyAreaId\" ";
-                string initialFilterCondition = " WHERE u.\"IsActive\" = true ";
+                //string initialFilterCondition = " WHERE u.\"IsActive\" = true ";
+                string initialFilterCondition = " WHERE 1=1 ";
 
                 selectQueryBuilder.Append(selectQuery);
                 selectQueryBuilder.Append(initialFilterCondition);
@@ -183,15 +189,20 @@ namespace InternHub.Repository
                 countQueryBuilder.Append(countQuery);
                 countQueryBuilder.Append(initialFilterCondition);
 
+                if (filter.IsActive != null)
+                {
+                    filterQueryBuilder.Append($" AND u.\"IsActive\" = " + filter.IsActive.Value);
+                }
+
 
                 if (string.IsNullOrEmpty(filter.FirstName) == false)
                 {
-                    filterQueryBuilder.Append($" AND u.\"FirstName\" LIKE '{filter.FirstName}%'");
+                    filterQueryBuilder.Append($" AND u.\"FirstName\" ILIKE '{filter.FirstName}%'");
                 }
 
                 if (string.IsNullOrEmpty(filter.LastName) == false)
                 {
-                    filterQueryBuilder.Append($" AND u.\"LastName\" LIKE '{filter.LastName}%'");
+                    filterQueryBuilder.Append($" AND u.\"LastName\" ILIKE '{filter.LastName}%'");
                 }
 
 
@@ -251,7 +262,7 @@ namespace InternHub.Repository
                     while (await dr.ReadAsync())
                     {
                         Student student = ReadStudent(dr);
-                        students.Add(student);
+                        if(student != null) students.Add(student);
                     }
                 }
                 dr.Close();

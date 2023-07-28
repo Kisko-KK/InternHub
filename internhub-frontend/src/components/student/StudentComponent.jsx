@@ -8,7 +8,6 @@ export default function StudentComponent({ student, onEdit, onRemove }) {
   const navigate = useNavigate();
   return (
     <tr>
-      <td>{student.id}</td>
       <td>{student.firstName}</td>
       <td>{student.lastName}</td>
       <td>{student.email}</td>
