@@ -9,6 +9,7 @@ import {
 } from "../../components";
 import { PagedList } from "../../models";
 import { StudentService } from "../../services";
+import "../../styles/nav.css";
 
 export default function AdminHomePage() {
   const studentService = new StudentService();
