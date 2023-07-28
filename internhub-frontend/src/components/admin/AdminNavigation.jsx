@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import "../../styles/nav.css";
 export default function AdminNavigation() {
   return (
     <div className="Nav">

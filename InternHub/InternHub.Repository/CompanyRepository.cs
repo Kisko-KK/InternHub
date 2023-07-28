@@ -136,7 +136,7 @@ namespace InternHub.Repository
                 {
                     try
                     {
-                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\", \"Discriminator\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, @email, false, @password, 'security_stamp', '', false, false, null, false, 0, @username, 'User');";
+                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\", \"Discriminator\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, @email, false, @password, 'security_stamp', @phoneNumber, false, false, null, false, 0, @username, 'User');";
                         string insertCompanyQuery = "INSERT INTO public.\"Company\" (\"Id\", \"Name\", \"Website\", \"IsAccepted\") VALUES(@id, @name, @website, false);";
 
                         NpgsqlCommand userCommand = new NpgsqlCommand(insertUserQuery, connection);
@@ -153,6 +153,7 @@ namespace InternHub.Repository
                         userInsertCommand.Parameters.AddWithValue("@countyId", company.CountyId);
                         userInsertCommand.Parameters.AddWithValue("@dateCreated", company.DateCreated);
                         userInsertCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
+                        userInsertCommand.Parameters.AddWithValue("@phoneNumber", company.PhoneNumber);
                         userInsertCommand.Parameters.AddWithValue("@email", company.Email);
                         userInsertCommand.Parameters.AddWithValue("@username", company.Email);
                         userInsertCommand.Parameters.AddWithValue("@password", company.Password);
@@ -214,6 +215,7 @@ namespace InternHub.Repository
                             updateUserCommand.Parameters.AddWithValue("@lastName", company.LastName);
                             updateUserCommand.Parameters.AddWithValue("@id", company.Id);
                             updateUserCommand.Parameters.AddWithValue("@description", company.Description);
+                            updateUserCommand.Parameters.AddWithValue("@phoneNumber", company.PhoneNumber);
                             updateUserCommand.Parameters.AddWithValue("@address", company.Address);
                             updateUserCommand.Parameters.AddWithValue("@email", company.Email);
 

@@ -14,6 +14,8 @@ import StudentHomePage from "./student/StudentHomePage";
 import StudentDetailsPage from "./student/StudentDetailsPage";
 import StudentEditPage from "./student/StudentEditPage";
 import StudentRegisterPage from "./student/StudentRegisterPage";
+import CompanyRegisterPage from "./company/CompanyRegisterPage";
+import CompanyProfilePage from "./company/CompanyProfilePage";
 
 
 export {
@@ -30,4 +32,6 @@ export {
   StudentDetailsPage,
   StudentEditPage,
   StudentRegisterPage,
+  CompanyRegisterPage,
+  CompanyProfilePage,
 };

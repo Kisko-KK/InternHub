@@ -73,6 +73,7 @@ namespace InternHub.WebApi.Controllers
                 LastName = company.LastName,
                 Address = company.Address,
                 Description = company.Description,
+                PhoneNumber = company.PhoneNumber,
                 CountyId = company.CountyId,
                 Email = company.Email,
                 Password = passwordHasher.HashPassword(company.Password)
@@ -105,6 +106,7 @@ namespace InternHub.WebApi.Controllers
             if (updatedCompany.LastName != null) existingCompany.LastName = updatedCompany.LastName;
             if (updatedCompany.Address != null) existingCompany.Address = updatedCompany.Address;
             if (updatedCompany.Description != null) existingCompany.Description = updatedCompany.Description;
+            if (updatedCompany.PhoneNumber != null) existingCompany.PhoneNumber = updatedCompany.PhoneNumber;
             if (updatedCompany.Email != null) existingCompany.Email = updatedCompany.Email;
             if (updatedCompany.CountyId != null) existingCompany.CountyId = updatedCompany.CountyId.Value;
 

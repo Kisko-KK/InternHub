@@ -21,6 +21,8 @@ namespace InternHub.WebApi.Models
         [Required]
         public string Description { get; set; }
         [Required]
+        public string PhoneNumber { get; set; }
+        [Required]
         public Guid CountyId { get; set; }
         [Required]
         public string Email { get; set; }

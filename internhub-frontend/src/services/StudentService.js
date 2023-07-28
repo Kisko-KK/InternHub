@@ -75,7 +75,7 @@ export class StudentService {
       const response = await axios.post(urlPrefix, student, {
         headers: HttpHeader.get(),
       });
-      return response === 200;
+      return response.status === 200;
     } catch {
       return false;
     }
@@ -86,7 +86,7 @@ export class StudentService {
       const response = await axios.put(urlPrefix + "/" + id, student, {
         headers: HttpHeader.get(),
       });
-      return response === 200;
+      return response.status === 200;
     } catch {
       return false;
     }
@@ -97,7 +97,7 @@ export class StudentService {
       const response = await axios.delete(urlPrefix + "/" + id, {
         headers: HttpHeader.get(),
       });
-      return response === 200;
+      return response.status === 200;
     } catch {
       return false;
     }
