@@ -1,12 +1,14 @@
 import axios from "axios";
-import { Server } from "../models";
-import { HttpHeader } from "../models/HttpHeader";
-import { PagedList } from "../models/PagedList";
-import { Student } from "../models/Student";
+import {
+  InternshipApplication,
+  HttpHeader,
+  PagedList,
+  Server,
+} from "../models";
 
-const urlPrefix = Server.url + "Student";
+const urlPrefix = Server.url + "InternshipApplication";
 
-export class StudentService {
+export class InternshipApplicationService {
   async getAsync(pageNumber) {
     try {
       const response = await axios.get(
@@ -17,7 +19,7 @@ export class StudentService {
       );
       if (response.status !== 200) return [];
       const dataList = response.data["Data"].map((data) =>
-        Student.fromJson(data)
+        InternshipApplication.fromJson(data)
       );
       const pagedList = PagedList.fromJson(response.data, dataList);
       return pagedList;
@@ -32,7 +34,7 @@ export class StudentService {
         headers: HttpHeader.get(),
       });
       if (response.status !== 200) return null;
-      return Student.fromJson(response.data);
+      return InternshipApplication.fromJson(response.data);
     } catch {
       return null;
     }
@@ -41,28 +43,6 @@ export class StudentService {
   async postAsync(student) {
     try {
       const response = await axios.post(urlPrefix, student, {
-        headers: HttpHeader.get(),
-      });
-      return response === 200;
-    } catch {
-      return false;
-    }
-  }
-
-  async updateAsync(id, student) {
-    try {
-      const response = await axios.put(urlPrefix + "/" + id, student, {
-        headers: HttpHeader.get(),
-      });
-      return response === 200;
-    } catch {
-      return false;
-    }
-  }
-
-  async removeAsync(id) {
-    try {
-      const response = await axios.delete(urlPrefix + "/" + id, {
         headers: HttpHeader.get(),
       });
       return response === 200;

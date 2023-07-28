@@ -131,7 +131,7 @@ namespace InternHub.WebApi.Controllers
         }
 
 
-        [HttpPut, Route("api/Company/Approve/{id}")]
+        [HttpPut, Route("api/Company/Approve")]
         [Authorize(Roles = "Admin")]
         public async Task<HttpResponseMessage> ApproveAsync(string id)
         {

@@ -5,3 +5,8 @@ export { HttpHeader } from "./HttpHeader";
 export { Student } from "./Student";
 export { UserToken } from "./UserToken";
 export { PagedList } from "./PagedList";
+export { User } from "./User";
+export { Company } from "./Company";
+export { InternshipApplication } from "./InternshipApplication";
+export { State } from "./State";
+export { Notification } from "./Notification";
