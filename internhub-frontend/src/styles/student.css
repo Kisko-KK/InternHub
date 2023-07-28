@@ -1,0 +1,94 @@
+#internship-container {
+    position: relative; /* Add relative positioning to the container */
+    background-color: #a8bbbf;
+    height: 20vh;
+    width: 45vw;
+    margin: 10px 0px;
+    border-radius: 10px;
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  #outer-container {
+    display: grid;
+    place-items: center;
+  }
+  
+  h3 {
+    margin-left: 15px;
+    margin-bottom: 10   px;
+    font-weight: 400;
+  }
+  
+  h4 {
+    margin-left: 15px;
+    font-weight: 400;
+    font-size: 0.9em;
+  }
+  
+  p {
+    color: black;
+    font-style: italic;
+  }
+  
+  #description {
+    color: black;
+    font-style: italic;
+    /* Set the maximum number of lines to 3 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Add this to create the "..." when the text is truncated */
+  #description::after {
+    content: "...";
+  }
+  
+  .p-button-flex {
+    display: flex;
+    margin-left: 15px;
+    margin-right: 60px;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .duration{
+    margin-left: 15px;
+  }
+  
+  .p-flex {
+    position: absolute; /* Position the p-flex absolutely */
+    bottom: -5px; /* Adjust the bottom value as needed */
+    left: 15px; /* Adjust the left value as needed */
+    right: 30px; /* Adjust the right value as needed */
+    display: flex;
+    justify-content: space-between; /* Evenly distribute the items */
+    align-items: flex-end;
+  }
+
+  .p-flex p {
+    flex-grow: 1; /* First and second paragraphs will have equal flex grow */
+  }
+  
+  .p-flex p:last-child {
+    flex-grow: 12; /* Third paragraph will have twice the flex grow of the first and second */
+    text-align: right;
+  }
+  
+  button{
+    background-color: #486B73;
+    border-radius: 10px;
+    color: white;
+    margin-left: 40px;
+  }
+
+  html,
+  body {
+    background-color: #f2f2f2;
+  }
+  
