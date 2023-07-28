@@ -6,3 +6,4 @@ export { CompanyService } from "./CompanyService";
 export { InternshipApplicationService } from "./InternshipApplicationService";
 export { NotificationService } from "./NotificationService";
 export { StateService } from "./StateService";
+export { InternshipService } from "../services/InternshipService"
