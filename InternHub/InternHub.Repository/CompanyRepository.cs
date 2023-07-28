@@ -267,9 +267,10 @@ namespace InternHub.Repository
             {
                 await connection.OpenAsync();
 
-                NpgsqlCommand command = new NpgsqlCommand("UPDATE public.\"Company\" SET \"IsAccepted\" = true, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id", connection);
+                NpgsqlCommand command = new NpgsqlCommand("UPDATE public.\"Company\" SET \"IsAccepted\" = @isAccepted, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id", connection);
                 command.Parameters.AddWithValue("@id", company.Id);
                 command.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
+                command.Parameters.AddWithValue("@isAccepted", company.IsAccepted);
 
                 int rowsAffected = await command.ExecuteNonQueryAsync();
 
@@ -300,7 +301,7 @@ namespace InternHub.Repository
                     FirstName = Convert.ToString(reader["FirstName"]),
                     LastName = Convert.ToString(reader["LastName"]),
                     Id = Convert.ToString(reader["Id"]),
-                    IsAccepted = Convert.ToBoolean(reader["IsAccepted"]),
+                    IsAccepted = reader.GetFieldValue<bool?>(reader.GetOrdinal("IsAccepted")),
                     IsActive = Convert.ToBoolean(reader["IsActive"]),
                     Name = Convert.ToString(reader["Name"]),
                     PhoneNumber = Convert.ToString(reader["PhoneNumber"]),

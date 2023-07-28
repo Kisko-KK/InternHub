@@ -160,7 +160,7 @@ create table public."Company"(
 	"Id" varchar(128) primary key,
 	"Name" VARCHAR not null,
 	"Website" VARCHAR not null,
-	"IsAccepted" bool not null,
+	"IsAccepted" bool,
 	
 	CONSTRAINT "FK_Company_User_Id" FOREIGN KEY ("Id") references dbo."AspNetUsers"("Id")
 );

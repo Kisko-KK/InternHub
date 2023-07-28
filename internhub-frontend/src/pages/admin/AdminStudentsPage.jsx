@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AdminNavigation,
@@ -9,9 +8,8 @@ import {
 } from "../../components";
 import { PagedList } from "../../models";
 import { StudentService } from "../../services";
-import "../../styles/nav.css";
 
-export default function AdminHomePage() {
+export default function AdminStudentsPage() {
   const studentService = new StudentService();
   const [pagedStudents, setPagedStudents] = useState(new PagedList({}));
   const navigate = useNavigate();
@@ -28,7 +26,7 @@ export default function AdminHomePage() {
   return (
     <div className="bg-dark">
       <AdminNavigation />
-      <h1 className="text-light">HomePage</h1>
+      <h1 className="text-light">Studenti</h1>
       <Button
         buttonColor="success"
         onClick={() => {

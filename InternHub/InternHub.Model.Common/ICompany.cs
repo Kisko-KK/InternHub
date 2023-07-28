@@ -10,6 +10,6 @@ namespace InternHub.Model.Common
     {
         string Name { get; set; }
         string Website { get; set; }
-        bool IsAccepted { get; set; }
+        bool? IsAccepted { get; set; }
     }
 }

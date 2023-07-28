@@ -1,8 +1,6 @@
 import axios from "axios";
-import { Server } from "../models";
-import { HttpHeader } from "../models/HttpHeader";
-import { PagedList } from "../models/PagedList";
-import { Student } from "../models/Student";
+import { PagedList, Server, Student } from "../models";
+import { HttpHeader } from "../models";
 
 const urlPrefix = Server.url + "Student";
 
