@@ -18,6 +18,7 @@ import CheckBox from "./CheckBox";
 import CompanyList from "./company/CompanyList";
 import CompanyComponent from "./company/CompanyComponent";
 import StudentFilterComponent from "./student/StudentFilterComponent";
+import Internship from "./Internship";
 
 export {
   AdminNavigation,
@@ -40,4 +41,5 @@ export {
   CompanyList,
   CompanyComponent,
   StudentFilterComponent,
+  Internship,
 };
