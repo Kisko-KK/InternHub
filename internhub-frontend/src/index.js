@@ -5,6 +5,9 @@ import reportWebVitals from "./reportWebVitals";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {
   HomePage,
+  LandingPage,
+  CompanyRegisterPage,
+  CompanyHomePage,
   LoginPage,
   StudentDetailsPage,
   StudentEditPage,
@@ -14,7 +17,7 @@ import {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <LandingPage />,
   },
   {
     path: "/login",
@@ -32,6 +35,14 @@ const router = createBrowserRouter([
     path: "/student/details/:id",
     element: <StudentDetailsPage />,
   },
+  {
+    path: "/company/register",
+    element: <CompanyRegisterPage/>
+  },
+  {
+    path: "/company/homepage",
+    element: <CompanyHomePage/>
+  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
