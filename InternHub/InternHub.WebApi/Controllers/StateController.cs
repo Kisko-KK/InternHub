@@ -49,7 +49,7 @@ namespace InternHub.WebApi.Controllers
 
         // POST: api/State
         [Authorize(Roles = "Admin")]
-        public async Task<HttpResponseMessage> PostASync([FromBody] StatePut state)
+        public async Task<HttpResponseMessage> PostAsync([FromBody] StatePut state)
         {
             try
             {

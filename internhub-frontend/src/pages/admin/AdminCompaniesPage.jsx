@@ -3,52 +3,66 @@ import { useNavigate } from "react-router-dom";
 import {
   AdminNavigation,
   Button,
+  CompanyAdminFilter,
+  CompanyList,
   Paging,
-  StudentsList,
 } from "../../components";
 import { PagedList } from "../../models";
-import { StudentService } from "../../services";
+import { CompanyService } from "../../services";
 
 export default function AdminCompaniesPage() {
   const companyService = new CompanyService();
-  const [pagedStudents, setPagedStudents] = useState(new PagedList({}));
+  const [pagedCompanies, setPagedCompanies] = useState(new PagedList({}));
+  const [currentFilter, setCurrentFilter] = useState({});
   const navigate = useNavigate();
 
-  async function refreshStudents(pageNumber) {
-    const data = await studentService.getAsync(pageNumber);
-    setPagedStudents(data);
+  async function refreshCompanies({ pageNumber, ...filter }) {
+    const data = await companyService.getAsync({
+      pageNumber,
+      ...filter,
+    });
+    setPagedCompanies(data);
   }
 
   useEffect(() => {
-    refreshStudents(1);
+    refreshCompanies({ pageNumber: 1 });
   }, []);
 
   return (
     <div className="bg-dark">
       <AdminNavigation />
-      <h1 className="text-light">Studenti</h1>
+      <h1 className="text-light">Companies</h1>
+      <CompanyAdminFilter
+        onFilter={(filter) => {
+          refreshCompanies({ pageNumber: 1, ...filter });
+        }}
+        onClearFilter={() => {
+          setCurrentFilter({});
+          refreshCompanies({ pageNumber: 1 });
+        }}
+      />
       <Button
         buttonColor="success"
         onClick={() => {
-          navigate("/student/register");
+          navigate("/company/register");
         }}
       >
-        New student
+        New company
       </Button>
-      <StudentsList
-        students={pagedStudents.data}
-        onEdit={(id) => {
-          navigate(`/student/edit/${id}`);
-        }}
-        onRemove={() => {
-          refreshStudents();
-        }}
+      <CompanyList
+        companies={pagedCompanies.data}
+        onRemove={() =>
+          refreshCompanies({
+            pageNumber: pagedCompanies.currentPage,
+            ...currentFilter,
+          })
+        }
       />
       <Paging
-        currentPage={pagedStudents.currentPage}
-        lastPage={pagedStudents.lastPage}
+        currentPage={pagedCompanies.currentPage}
+        lastPage={pagedCompanies.lastPage}
         onPageChanged={(page) => {
-          refreshStudents(page);
+          refreshCompanies(page);
         }}
       />
     </div>

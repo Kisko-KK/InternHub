@@ -39,9 +39,9 @@ export class Student {
       phoneNumber: json["PhoneNumber"],
       description: json["Description"],
       countyId: json["County"] ? json["County"]["Id"] : null,
-      county: County.fromJson(json["County"]),
+      county: json["County"] && County.fromJson(json["County"]),
       studyAreaId: json["StudyArea"] ? json["StudyArea"]["Id"] : null,
-      studyArea: StudyArea.fromJson(json["StudyArea"]),
+      studyArea: json["StudyArea"] && StudyArea.fromJson(json["StudyArea"]),
     });
   }
 }

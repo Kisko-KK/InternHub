@@ -1,5 +1,5 @@
 import axios from "axios";
-import { HttpHeader, PagedList, Server } from "../models";
+import { HttpHeader, Notification, PagedList, Server } from "../models";
 
 const urlPrefix = Server.url + "Notification";
 

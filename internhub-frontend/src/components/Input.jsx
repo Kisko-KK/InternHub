@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Input({ name, text, value, type }) {
+export default function Input({ name, text, value, type, required = false }) {
   return (
     <div className="mb-3 mt-3 w-50">
       <label htmlFor={name} className="form-label text-light">
@@ -13,7 +13,7 @@ export default function Input({ name, text, value, type }) {
         name={name}
         defaultValue={value}
         className="form-control"
-        required
+        required={required}
       />
       <br></br>
     </div>

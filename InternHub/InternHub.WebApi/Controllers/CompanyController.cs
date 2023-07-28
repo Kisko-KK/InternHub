@@ -140,16 +140,25 @@ namespace InternHub.WebApi.Controllers
                 Company existingCompany = await CompanyService.GetAsync(id);
                 if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
 
-                existingCompany.IsAccepted = isAccepted;
 
-                if (await CompanyService.AcceptAsync(existingCompany) == false)
+                if (isAccepted)
                 {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't approve company!");
+                    if (await CompanyService.AcceptAsync(existingCompany) == false)
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't approve company!");
+                    }
+                    await NotificationService.AddAsync("Vaš račun je prihvaćen", "Poštovani " + existingCompany.GetFullName() + "!\n\nVaša prijava za tvrtku " + existingCompany.Name + " na platformi InternHub je odobrena. Od sada možete neometano objavljivati vaše prakse!" + " \n\nVaša InternHub ekipa", existingCompany);
+
+                    return Request.CreateResponse(HttpStatusCode.OK, "Company accepted!");
                 }
-
-                await NotificationService.AddAsync("Vaš račun je prihvaćen", "Poštovani " + existingCompany.GetFullName() + "!\n\nVaša prijava za tvrtku " + existingCompany.Name + " na platformi InternHub je odobrena. Od sada možete neometano objavljivati vaše prakse!" + " \n\nVaša InternHub ekipa", existingCompany);
-
-                return Request.CreateResponse(HttpStatusCode.OK, "Company accepted!");
+                else
+                {
+                    if (await CompanyService.DeleteAsync(existingCompany) == false)
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't delete company!");
+                    }
+                    return Request.CreateResponse(HttpStatusCode.OK, $"Company with id: {id} was deleted!");
+                }
             }
             catch { return Request.CreateResponse(HttpStatusCode.InternalServerError); }
         }

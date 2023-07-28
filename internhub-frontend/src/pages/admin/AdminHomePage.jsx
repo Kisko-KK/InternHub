@@ -3,54 +3,57 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AdminNavigation,
-  Button,
+  CompanyAdminList,
+  CompanyFilterComponent,
   Paging,
-  StudentsList,
 } from "../../components";
 import { PagedList } from "../../models";
-import { StudentService } from "../../services";
-import "../../styles/nav.css";
+import { CompanyService } from "../../services";
 
 export default function AdminHomePage() {
-  const studentService = new StudentService();
-  const [pagedStudents, setPagedStudents] = useState(new PagedList({}));
+  const companyService = new CompanyService();
+  const [pagedCompanies, setPagedCompanies] = useState(new PagedList({}));
+  const [currentFilter, setCurrentFilter] = useState({});
   const navigate = useNavigate();
 
-  async function refreshStudents(pageNumber) {
-    const data = await studentService.getAsync(pageNumber);
-    setPagedStudents(data);
+  async function refreshCompanies({ pageNumber, ...filter }) {
+    const data = await companyService.getAsync({
+      pageNumber,
+      ...filter,
+      isAccepted: false,
+    });
+    setPagedCompanies(data);
   }
 
   useEffect(() => {
-    refreshStudents(1);
+    refreshCompanies({ pageNumber: 1 });
   }, []);
 
   return (
     <div className="bg-dark">
       <AdminNavigation />
-      <h1 className="text-light">HomePage</h1>
-      <Button
-        buttonColor="success"
-        onClick={() => {
-          navigate("/student/register");
+      <h1 className="text-light">Unaccepted companies</h1>
+      <CompanyFilterComponent
+        onFilter={(filter) => {
+          setCurrentFilter(filter);
+          refreshCompanies({ pageNumber: 1, ...filter });
         }}
-      >
-        New student
-      </Button>
-      <StudentsList
-        students={pagedStudents.data}
-        onEdit={(id) => {
-          navigate(`/student/edit/${id}`);
-        }}
-        onRemove={() => {
-          refreshStudents();
+        onClearFilter={() => refreshCompanies({ pageNumber: 1 })}
+      />
+      <CompanyAdminList
+        companies={pagedCompanies.data}
+        onChange={() => {
+          refreshCompanies({
+            pageNumber: pagedCompanies.currentPage,
+            ...currentFilter,
+          });
         }}
       />
       <Paging
-        currentPage={pagedStudents.currentPage}
-        lastPage={pagedStudents.lastPage}
+        currentPage={pagedCompanies.currentPage}
+        lastPage={pagedCompanies.lastPage}
         onPageChanged={(page) => {
-          refreshStudents(page);
+          refreshCompanies({ pageNumber: page });
         }}
       />
     </div>

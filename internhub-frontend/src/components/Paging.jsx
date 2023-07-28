@@ -1,24 +1,35 @@
 import React from "react";
 
 export default function Paging({ currentPage, lastPage, onPageChanged }) {
+  function handlePageChange(pageNumber) {
+    if (
+      pageNumber !== currentPage &&
+      pageNumber >= 1 &&
+      pageNumber <= lastPage
+    ) {
+      onPageChanged(pageNumber);
+    }
+  }
+
   return (
     <ul className="pagination text-light">
       <li
         className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
         onClick={() => {
-          if (currentPage > 1) onPageChanged(currentPage - 1);
+          handlePageChange(currentPage - 1);
         }}
       >
-        <span className="page-link">Prijašnje</span>
+        <span className="page-link">Previous</span>
       </li>
       {lastPage <= 5 && (
         <>
           {[...Array(lastPage)].map((x, i) => (
             <li
+              key={crypto.randomUUID()}
               className={`page-item page-link${
                 currentPage === i ? " active" : ""
               }`}
-              onClick={() => onPageChanged(i + 1)}
+              onClick={() => handlePageChange(i + 1)}
             >
               {i + 1}
             </li>
@@ -31,10 +42,11 @@ export default function Paging({ currentPage, lastPage, onPageChanged }) {
             <>
               {[...Array(3)].map((x, i) => (
                 <li
+                  key={crypto.randomUUID()}
                   className={`page-item page-link${
                     currentPage === 1 + i ? " active" : ""
                   }`}
-                  onClick={() => onPageChanged(i + 1)}
+                  onClick={() => handlePageChange(i + 1)}
                 >
                   {i + 1}
                 </li>
@@ -42,7 +54,7 @@ export default function Paging({ currentPage, lastPage, onPageChanged }) {
               <li className="page-item page-link">...</li>
               <li
                 className="page-item page-link"
-                onClick={() => onPageChanged(lastPage)}
+                onClick={() => handlePageChange(lastPage)}
               >
                 {lastPage}
               </li>
@@ -52,7 +64,7 @@ export default function Paging({ currentPage, lastPage, onPageChanged }) {
             <>
               <li
                 className="page-item page-link"
-                onClick={() => onPageChanged(1)}
+                onClick={() => handlePageChange(1)}
               >
                 1
               </li>
@@ -61,10 +73,11 @@ export default function Paging({ currentPage, lastPage, onPageChanged }) {
               )}
               {[...Array(3)].map((x, i) => (
                 <li
+                  key={crypto.randomUUID()}
                   className={`page-item page-link${
                     currentPage === currentPage + i ? " active" : ""
                   }`}
-                  onClick={() => onPageChanged(currentPage - 1 + i)}
+                  onClick={() => handlePageChange(currentPage - 1 + i)}
                 >
                   {currentPage - 1 + i}
                 </li>
@@ -74,7 +87,7 @@ export default function Paging({ currentPage, lastPage, onPageChanged }) {
               )}
               <li
                 className="page-item page-link"
-                onClick={() => onPageChanged(lastPage)}
+                onClick={() => handlePageChange(lastPage)}
               >
                 {lastPage}
               </li>
@@ -84,7 +97,7 @@ export default function Paging({ currentPage, lastPage, onPageChanged }) {
             <>
               <li
                 className="page-item page-link"
-                onClick={() => onPageChanged(1)}
+                onClick={() => handlePageChange(1)}
               >
                 1
               </li>
@@ -93,10 +106,11 @@ export default function Paging({ currentPage, lastPage, onPageChanged }) {
               )}
               {[...Array(3)].map((x, i) => (
                 <li
+                  key={crypto.randomUUID()}
                   className={`page-item page-link${
                     lastPage === currentPage - 2 + i ? " active" : ""
                   }`}
-                  onClick={() => onPageChanged(lastPage - 2 + i)}
+                  onClick={() => handlePageChange(lastPage - 2 + i)}
                 >
                   {lastPage - 2 + i}
                 </li>
@@ -108,10 +122,10 @@ export default function Paging({ currentPage, lastPage, onPageChanged }) {
       <li
         className={`page-item ${currentPage === lastPage ? "disabled" : ""}`}
         onClick={() => {
-          if (currentPage < lastPage) onPageChanged(currentPage + 1);
+          if (currentPage < lastPage) handlePageChange(currentPage + 1);
         }}
       >
-        <span className="page-link">Sljedeće</span>
+        <span className="page-link">Next</span>
       </li>
     </ul>
   );

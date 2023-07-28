@@ -79,7 +79,7 @@ namespace InternHub.WebApi.Controllers
             string currentUserId = User.Identity.GetUserId();
             try
             {
-                State state = await StateService.GetByNameAsync("U procesu");
+                State state = await StateService.GetByNameAsync("Processing");
 
                 if (state == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
 
