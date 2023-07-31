@@ -1,31 +1,50 @@
 import React, { useState } from "react";
-import { CompanyFilter } from "../../models";
 import Button from "../Button";
 import Form from "../Form";
 import Input from "../Input";
 
-export default function CompanyFilterComponent({ onFilter, onClearFilter }) {
+export default function CompanyFilterComponent({
+  onFilter,
+  onClearFilter,
+  filter,
+}) {
   const [isFilterActive, setIsFilterActive] = useState(false);
+  const [name, setName] = useState(filter.name || "");
   return (
-    <Form
-      onSubmit={(e) => {
-        e.preventDefault();
-        const filter = new CompanyFilter({
-          name: e.target.name.value,
-        });
-        onFilter(filter);
-        setIsFilterActive(true);
-      }}
-    >
-      <Input text="Name" name="name" />
-      <Button type="submit" buttonColor="primary">
-        Filter
-      </Button>
-      {isFilterActive && (
-        <Button buttonColor="secondary" onClick={() => onClearFilter()}>
-          Clear filter
+    <div className="container justify-content-center align-items-center">
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const filter = {
+            name: name,
+          };
+          onFilter(filter);
+          setIsFilterActive(true);
+        }}
+      >
+        <div className="col">
+          <Input
+            text="Name"
+            name="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <Button type="submit" buttonColor="primary">
+          Filter
         </Button>
-      )}
-    </Form>
+        {isFilterActive && (
+          <Button
+            buttonColor="secondary"
+            onClick={() => {
+              setName("");
+              onClearFilter();
+            }}
+          >
+            Clear filter
+          </Button>
+        )}
+      </Form>
+    </div>
   );
 }

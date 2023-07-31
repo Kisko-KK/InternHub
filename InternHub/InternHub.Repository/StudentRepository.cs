@@ -189,10 +189,7 @@ namespace InternHub.Repository
                 countQueryBuilder.Append(countQuery);
                 countQueryBuilder.Append(initialFilterCondition);
 
-                if (filter.IsActive != null)
-                {
-                    filterQueryBuilder.Append($" AND u.\"IsActive\" = " + filter.IsActive.Value);
-                }
+                filterQueryBuilder.Append($" AND u.\"IsActive\" = " + filter.IsActive);
 
 
                 if (string.IsNullOrEmpty(filter.FirstName) == false)
@@ -208,7 +205,7 @@ namespace InternHub.Repository
 
                 if (filter.Counties != null && filter.Counties.Count != 0)
                 {
-                    filterQueryBuilder.Append("AND u.\"CountyId\" IN (");
+                    filterQueryBuilder.Append(" AND u.\"CountyId\" IN (");
 
                     for (int i = 0; i < filter.Counties.Count; i++)
                     {
@@ -225,7 +222,7 @@ namespace InternHub.Repository
 
                 if (filter.StudyAreas != null && filter.StudyAreas.Count != 0)
                 {
-                    filterQueryBuilder.Append("AND s.\"StudyAreaId\" IN (");
+                    filterQueryBuilder.Append(" AND s.\"StudyAreaId\" IN (");
 
                     for (int counter = 0; counter < filter.StudyAreas.Count; counter++)
                     {
@@ -262,7 +259,7 @@ namespace InternHub.Repository
                     while (await dr.ReadAsync())
                     {
                         Student student = ReadStudent(dr);
-                        if(student != null) students.Add(student);
+                        if (student != null) students.Add(student);
                     }
                 }
                 dr.Close();
@@ -281,7 +278,7 @@ namespace InternHub.Repository
 
             return pagedStudents;
         }
-       
+
 
         private Student ReadStudent(NpgsqlDataReader dr)
         {
@@ -298,7 +295,7 @@ namespace InternHub.Repository
             bool isActive = dr.GetBoolean(dr.GetOrdinal("IsActive"));
             Guid studyAreaId = dr.GetGuid(dr.GetOrdinal("StudyAreaId"));
 
-            Student student =  new Student(id, firstName, lastName, email, phoneNumber, address, description, dateCreated, dateUpdated, countyId, isActive, studyAreaId);
+            Student student = new Student(id, firstName, lastName, email, phoneNumber, address, description, dateCreated, dateUpdated, countyId, isActive, studyAreaId);
             student.County = new County
             {
                 Id = countyId,

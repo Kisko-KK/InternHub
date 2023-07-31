@@ -3,40 +3,57 @@ import {
   Internship,
   Paging,
   InternshipFilter,
-  StudentNavigation,
+  NavigationBar,
 } from "../../components";
 import "../../styles/student.css";
 import { PagedList } from "../../models";
 import { InternshipService } from "../../services";
 import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom/dist";
 
 export default function StudentHomePage() {
   const [pagedInternships, setPagedInternships] = useState(new PagedList({}));
-  const [filterData, setFilterData] = useState({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filterData, setFilterData] = useState({
+    pageNumber: +(searchParams.get("pageNumber") ?? 1),
+    name: searchParams.get("name"),
+    endDate: searchParams.get("endDate"),
+    startDate: searchParams.get("startDate"),
+    counties: searchParams.getAll("counties"),
+  });
   const internshipService = new InternshipService();
 
   const navigate = useNavigate();
 
-  const refreshInternships = async (currentPage, filterData) => {
-    const data = await internshipService.getAsync(currentPage, filterData);
-    setFilterData(filterData);
+  const refreshInternships = async () => {
+    const data = await internshipService.getAsync({
+      ...filterData,
+      sortBy: "Id",
+      sortOrder: "ASC",
+      pageSize: 10,
+    });
     setPagedInternships(data);
   };
 
   useEffect(() => {
-    refreshInternships(1, filterData);
-  }, []);
+    refreshInternships();
+  }, [searchParams, filterData]);
 
   return (
     <div className="container">
-      <StudentNavigation />
+      <NavigationBar />
       <div>Student Home page</div>
       <InternshipFilter
-        onFilter={(filter) => refreshInternships(1, filter)}
-        onCancel={() => {
-          refreshInternships(1, {});
+        filter={filterData}
+        onFilter={(filter) => {
+          setSearchParams({ ...filter, pageNumber: 1 });
+          setFilterData({ ...filter, pageNumber: 1 });
         }}
-      ></InternshipFilter>
+        onClearFilter={() => {
+          setSearchParams({ pageNumber: 1 });
+          setFilterData({ pageNumber: 1 });
+        }}
+      />
       {pagedInternships.data.map((internship) => (
         <Internship
           key={internship.id}
@@ -52,7 +69,8 @@ export default function StudentHomePage() {
         currentPage={pagedInternships.currentPage}
         lastPage={pagedInternships.lastPage}
         onPageChanged={(page) => {
-          refreshInternships(page, filterData);
+          setSearchParams({ ...filterData, pageNumber: page });
+          setFilterData({ ...filterData, pageNumber: page });
         }}
       />
     </div>

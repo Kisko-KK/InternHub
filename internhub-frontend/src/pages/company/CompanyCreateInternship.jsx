@@ -1,40 +1,37 @@
 import React from "react";
-import '../../styles/Company.css';
+import "../../styles/Company.css";
 import { useState, useEffect } from "react";
-import {  SelectDropdown } from "../../components";
-import {Form} from "../../components";
+import { SelectDropdown } from "../../components";
+import { Form } from "../../components";
 import { StudyAreaService } from "../../services";
 import { useNavigate } from "react-router";
 
 export default function CompanyCreateInternship() {
+  const [studyAreas, setStudyAreas] = useState([]);
+  const navigate = useNavigate();
 
-    const [studyAreas, setStudyAreas] = useState([]);
-    const navigate = useNavigate();
+  useEffect(() => {
+    fetchStudyAreas();
+  }, []);
 
-    useEffect(() => {
-        fetchStudyAreas()
-    }, []);
-
-    const fetchStudyAreas = async () => {
-        try {
-            const studyAreasData = await new StudyAreaService().getAsync();
-            setStudyAreas(studyAreasData);
-        } catch (error) {
-            console.log("Unable to fetch study areas.", error);
-        }
+  const fetchStudyAreas = async () => {
+    try {
+      const studyAreasData = await new StudyAreaService().getAsync();
+      setStudyAreas(studyAreasData);
+    } catch (error) {
+      console.log("Unable to fetch study areas.", error);
     }
-    const handleClick= () => {
-        navigate('/company/homepage')
+  };
+  const handleClick = () => {
+    navigate("/company/homepage");
+  };
 
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-    };
-    
-
-    return (
-        <div className="container">
+  return (
+    <div className="container">
       <h1 className="text-center mt-5 title">Add new internship</h1>
 
       <div className="row justify-content-center mt-3">
@@ -99,11 +96,15 @@ export default function CompanyCreateInternship() {
 
       <div className="mt-4">
         <div className="d-flex justify-content-end w-50">
-          <button type="submit" className="btn btn-primary custom-button" onClick={handleClick}>
+          <button
+            type="submit"
+            className="btn btn-primary custom-button"
+            onClick={handleClick}
+          >
             Submit
           </button>
         </div>
       </div>
     </div>
-    );
-};
+  );
+}

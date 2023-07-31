@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import Select from 'react-select';
-import { CountyService } from '../services';
+import React, { useEffect, useState } from "react";
+import Select from "react-select";
+import { CountyService } from "../services";
+import { Button, Input, MultiSelect } from "./index";
 
-const InternshipFilter = ({  onFilter, onCancel }) => {
-
-  const [counties, setCounties] = useState([]);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [name, setName] = useState('');
+const InternshipFilter = ({ onFilter, onClearFilter, filter }) => {
+  const [counties, setCounties] = useState(filter.counties || []);
+  const [startDate, setStartDate] = useState(filter.startDate || "");
+  const [endDate, setEndDate] = useState(filter.endDate || "");
+  const [name, setName] = useState(filter.name || "");
   const [countiesOptions, setCountiesOptions] = useState([]);
 
   const countyService = new CountyService();
 
   const handleFilter = () => {
     const filterData = {
-      counties: counties.map((county) => county.value), 
+      counties: counties.map((county) => county.value),
       startDate: startDate || "",
       endDate: endDate || "",
       name: name || "",
@@ -22,81 +22,89 @@ const InternshipFilter = ({  onFilter, onCancel }) => {
     onFilter(filterData);
   };
 
-  const handleCancel = () =>{
+  const handleCancel = () => {
     setCounties([]);
     setEndDate("");
     setStartDate("");
     setName("");
-    onCancel();
-  }
+    onClearFilter();
+  };
 
-  const fetchCountiesAsync = async () =>{
+  const fetchCountiesAsync = async () => {
     let counties = await countyService.getAsync();
     let mappedCounties = counties.map((county) => ({
       value: county.id,
-      label: county.name
-    }))
+      label: county.name,
+    }));
     setCountiesOptions(mappedCounties);
-  }
+    if (filter.counties) {
+      setCounties(
+        mappedCounties.filter((county) =>
+          filter.counties.includes(county.value)
+        )
+      );
+    }
+  };
+
   useEffect(() => {
     fetchCountiesAsync();
-  }, [])
-
-
+  }, []);
 
   return (
     <div className="filter-container d-flex justify-content-center align-items-center">
       <div className="row">
         <div className="col-md-3">
-          <label>Name:</label>
-          <input
-            type="text"
-            className="form-control"
+          <Input
+            text="Name:"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
         </div>
 
         <div className="col-md-3">
-          <label>Start Date:</label>
-          <input
+          <Input
             type="date"
-            className="form-control"
+            text="Start Date:"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
         </div>
 
         <div className="col-md-3">
-          <label>End Date:</label>
-          <input
+          <Input
             type="date"
-            className="form-control"
+            text="End Date:"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
 
         <div className="col-md-3">
-          <label>Counties:</label>
+          <MultiSelect
+            text="Counties:"
+            options={countiesOptions}
+            value={counties}
+            onChange={setCounties}
+          />
+          {/* <label>Counties:</label>
           <Select
             options={countiesOptions}
             isMulti
             value={counties}
             onChange={(selectedOptions) => setCounties(selectedOptions)}
-          />
+          /> */}
         </div>
       </div>
 
       <div className="mt-3">
-        <button className="btn btn-primary" onClick={handleFilter}>
+        <Button buttonColor="primary" onClick={handleFilter}>
           Filter
-        </button>
+        </Button>
       </div>
-      <div className='mt-3'>
-        <button className="btn btn-secondary" onClick={handleCancel}>
+      <div className="mt-3">
+        <Button buttonColor="secondary" onClick={handleCancel}>
           Cancel
-        </button>
+        </Button>
       </div>
     </div>
   );

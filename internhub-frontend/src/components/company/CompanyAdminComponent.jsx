@@ -15,13 +15,17 @@ export default function CompanyAdminComponent({ company, onChange }) {
     <tr>
       <td>{company.name}</td>
       <td>{company.address}</td>
-      <td>{company.website}</td>
+      <td>
+        <a href={company.website} target="_blank">
+          {company.website}
+        </a>
+      </td>
       <td>
         <Button buttonColor="success" onClick={async () => await onClick(true)}>
-          Prihvati
+          Accept
         </Button>
         <Button buttonColor="danger" onClick={async () => await onClick(false)}>
-          Odbij
+          Decline
         </Button>
       </td>
     </tr>

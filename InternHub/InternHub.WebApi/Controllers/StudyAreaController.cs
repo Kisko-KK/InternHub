@@ -35,7 +35,7 @@ namespace InternHub.WebApi.Controllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest);
                 }
 
-                return Request.CreateResponse(HttpStatusCode.OK, studyAreas.Select(x => new StudyAreaView(x)));
+                return Request.CreateResponse(HttpStatusCode.OK, studyAreas.Select(x => new StudyAreaView(x)).OrderBy(x => x.Name));
             }
             catch (Exception ex) { return Request.CreateResponse(HttpStatusCode.InternalServerError, ex); }
         }

@@ -11,7 +11,11 @@ export default function CompanyComponent({ company, onRemove }) {
     <tr>
       <td>{company.name}</td>
       <td>{company.address}</td>
-      <td>{company.website}</td>
+      <td>
+        <a href={company.website} target="_blank">
+          {company.website}
+        </a>
+      </td>
       <td>
         <Button
           buttonColor="primary"

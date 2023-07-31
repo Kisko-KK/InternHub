@@ -43,7 +43,7 @@ namespace InternHub.Repository
 
             if (sorting == null) sorting = new Sorting();
             if (paging == null) paging = new Paging();
-            if(filter == null) filter = new CompanyFilter();
+            if (filter == null) filter = new CompanyFilter();
 
             StringBuilder selectQueryBuilder = new StringBuilder();
             StringBuilder countQueryBuilder = new StringBuilder();
@@ -74,17 +74,14 @@ namespace InternHub.Repository
                 NpgsqlCommand selectCommand = new NpgsqlCommand();
 
                 filterQueryBuilder.Append(filterQuery);
-                if (filter.IsActive != null)
-                {
-                    filterQueryBuilder.Append(" AND u.\"IsActive\" = @isActive");
-                    selectCommand.Parameters.AddWithValue("@isActive", filter.IsActive.Value);
-                }
-                if(filter.IsAccepted != null)
+                filterQueryBuilder.Append(" AND u.\"IsActive\" = @isActive");
+                selectCommand.Parameters.AddWithValue("@isActive", filter.IsActive);
+                if (filter.IsAccepted != null)
                 {
                     filterQueryBuilder.Append(" AND c.\"IsAccepted\" = @isAccepted");
                     selectCommand.Parameters.AddWithValue("@isAccepted", filter.IsAccepted.Value);
                 }
-                if(filter.Name != null)
+                if (filter.Name != null)
                 {
                     filterQueryBuilder.Append(" AND c.\"Name\" ilike @name");
                     selectCommand.Parameters.AddWithValue("@name", "%" + filter.Name + "%");
@@ -269,7 +266,7 @@ namespace InternHub.Repository
             {
                 await connection.OpenAsync();
 
-                using(NpgsqlTransaction transaction = connection.BeginTransaction())
+                using (NpgsqlTransaction transaction = connection.BeginTransaction())
                 {
                     try
                     {

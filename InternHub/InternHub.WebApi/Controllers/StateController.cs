@@ -28,7 +28,7 @@ namespace InternHub.WebApi.Controllers
             try
             {
                 List<State> states = await StateService.GetAllAsync();
-                return Request.CreateResponse(HttpStatusCode.OK, states.Select(x => new StateView(x)));
+                return Request.CreateResponse(HttpStatusCode.OK, states.Select(x => new StateView(x)).OrderBy(x => x.Name));
             }
             catch { return Request.CreateResponse(HttpStatusCode.InternalServerError, "Code crash"); }
         }

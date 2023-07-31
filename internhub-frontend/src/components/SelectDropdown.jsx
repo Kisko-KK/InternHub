@@ -8,12 +8,12 @@ export default function SelectDropdown({
   text,
 }) {
   return (
-    <div className="mb-3 mt-3 w-50">
-      <label htmlFor={name} className="form-label text-light">
+    <div className="mb-3 mt-3">
+      <label htmlFor={name} className="form-label">
         {text}
       </label>
       <br></br>
-      <select name={name} id={name} required>
+      <select name={name} id={name} required className="form-control">
         <option value="" selected={selectedId ? false : true}>
           {placeholder}
         </option>

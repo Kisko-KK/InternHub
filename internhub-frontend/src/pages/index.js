@@ -1,6 +1,8 @@
 import LoginPage from "./LoginPage";
 import HomePage from "./HomePage";
 import LandingPage from "./LandingPage";
+import NotFoundPage from "./NotFoundPage";
+import RequireAuthPage from "./RequireAuthPage";
 
 import AdminHomePage from "./admin/AdminHomePage";
 import AdminCompaniesPage from "./admin/AdminCompaniesPage";
@@ -20,6 +22,8 @@ import CompanyEditPage from "./company/CompanyEditPage";
 export {
   LoginPage,
   LandingPage,
+  NotFoundPage,
+  RequireAuthPage,
   CompanyRegisterPage,
   CompanyCreateInternship,
   HomePage,
