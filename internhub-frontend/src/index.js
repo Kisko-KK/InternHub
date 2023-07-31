@@ -11,8 +11,10 @@ import {
   LoginPage,
   StudentDetailsPage,
   StudentEditPage,
+  CompanyCreateInternship,
   StudentRegisterPage,
 } from "./pages";
+
 
 const router = createBrowserRouter([
   {
@@ -42,6 +44,10 @@ const router = createBrowserRouter([
   {
     path: "/company/homepage",
     element: <CompanyHomePage/>
+  },
+  {
+    path: "company/addnewinternship",
+    element: <CompanyCreateInternship/>
   }
 ]);
 

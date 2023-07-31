@@ -6,6 +6,7 @@ import AdminHomePage from "./admin/AdminHomePage";
 
 import CompanyHomePage from "./company/CompanyHomePage";
 import CompanyRegisterPage from "./company/CompanyRegisterPage";
+import CompanyCreateInternship from "./company/CompanyCreateInternship";
 
 import StudentHomePage from "./student/StudentHomePage";
 import StudentDetailsPage from "./student/StudentDetailsPage";
@@ -17,6 +18,7 @@ export {
   LoginPage,
   LandingPage,
   CompanyRegisterPage,
+  CompanyCreateInternship,
   HomePage,
   AdminHomePage,
   CompanyHomePage,

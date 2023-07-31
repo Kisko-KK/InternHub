@@ -9,11 +9,29 @@ import {
   CompanyNavigation,
 } from "../../components";
 import { CountyService } from "../../services";
+import '../../styles/nav.css'
 
 export default function CompanyRegisterPage() {
+  const[counties, setCounties] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect (() =>{
+    fetchCounties()
+  },[])
+
+  const fetchCounties = async () =>{
+  try{
+    const countiesData = await new CountyService().getAsync();
+    setCounties(countiesData);
+     }
+  catch(error){
+    console.error("Error fetching data", error);
+  }
+}
   return (
+    <div> 
+      <CompanyNavigation/>
     <div className="companyRegisterPage">
-      <CompanyNavigation />
       <h1 className>Register company page</h1>
       <Form>
         <Input name="companyName" text="Company name:" />
@@ -25,6 +43,7 @@ export default function CompanyRegisterPage() {
           list={counties}
         />
       </Form>
+    </div>
     </div>
   );
 }
