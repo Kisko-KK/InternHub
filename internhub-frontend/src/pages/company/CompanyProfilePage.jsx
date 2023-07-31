@@ -1,7 +1,7 @@
 import { Loader, CompanyNavigation, Button } from "../../components";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { CompanyService } from "../../services/CompanyService";
+import { useParams, Link } from "react-router-dom";
+import { LoginService, CompanyService } from "../../services";
 
 export default function CompanyProfilePage() {
   const companyService = new CompanyService();
@@ -20,7 +20,6 @@ export default function CompanyProfilePage() {
     setLoading(true);
     getCompany();
   }, [params.id]);
-
   console.log("params.id:", params.id);
   console.log("Company state:", company);
   if (loading) return <Loader />;
@@ -51,7 +50,10 @@ export default function CompanyProfilePage() {
           Website: <b>{company.website}</b>
         </div>
       </div>
-      <Button>Edit</Button>
+
+      <Link to={`/company/edit/${new LoginService().getUserToken().id}`}>
+        <Button>Edit</Button>
+      </Link>
     </div>
   );
 }

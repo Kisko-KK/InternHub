@@ -16,6 +16,7 @@ import StudentEditPage from "./student/StudentEditPage";
 import StudentRegisterPage from "./student/StudentRegisterPage";
 import CompanyRegisterPage from "./company/CompanyRegisterPage";
 import CompanyProfilePage from "./company/CompanyProfilePage";
+import CompanyEditPage from "./company/CompanyEditPage";
 
 
 export {
@@ -34,4 +35,5 @@ export {
   StudentRegisterPage,
   CompanyRegisterPage,
   CompanyProfilePage,
+  CompanyEditPage,
 };

@@ -18,7 +18,9 @@ import {
   CompanyRegisterPage,
   CompanyProfilePage,
   CompanyHomePage,
+  CompanyEditPage,
 } from "./pages";
+import { Company } from "./models";
 
 
 const router = createBrowserRouter([
@@ -57,6 +59,10 @@ const router = createBrowserRouter([
   {
     path: "/company/profile/:id",
     element: <CompanyProfilePage />,
+  },
+  {
+    path: "/company/edit/:id",
+    element: <CompanyEditPage />,
   },
   {
     path: "/company",
