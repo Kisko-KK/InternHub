@@ -78,6 +78,6 @@ export default function CompanyRegisterPage() {
         <Button type="submit">Create</Button>
       </Form>
     </div>
-    </div>
+
   );
 }
