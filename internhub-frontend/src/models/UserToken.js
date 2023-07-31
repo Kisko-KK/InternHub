@@ -1,6 +1,6 @@
 export class UserToken {
   constructor(data) {
-    this.id = data.userId;
+    this.id = data.id;
     this.token = data.token;
     this.fullName = data.fullName;
     this.email = data.email;
@@ -10,7 +10,7 @@ export class UserToken {
 
   static fromResponse(json) {
     return new UserToken({
-      userId: json.userId,
+      id: json.userId,
       token: json.access_token,
       fullName: json.fullName,
       email: json.email,

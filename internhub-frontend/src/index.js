@@ -15,8 +15,10 @@ import {
   StudentEditPage,
   CompanyCreateInternship,
   StudentRegisterPage,
+  CompanyProfilePage,
+  CompanyEditPage,
 } from "./pages";
-
+import { Company } from "./models";
 
 const router = createBrowserRouter([
   {
@@ -49,16 +51,20 @@ const router = createBrowserRouter([
   },
   {
     path: "/company/register",
-    element: <CompanyRegisterPage/>
+    element: <CompanyRegisterPage />,
   },
   {
-    path: "/company/homepage",
-    element: <CompanyHomePage/>
+    path: "/company/profile/:id",
+    element: <CompanyProfilePage />,
   },
   {
-    path: "company/addnewinternship",
-    element: <CompanyCreateInternship/>
-  }
+    path: "/company/edit/:id",
+    element: <CompanyEditPage />,
+  },
+  {
+    path: "/company",
+    element: <CompanyHomePage />,
+  },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

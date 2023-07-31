@@ -31,6 +31,7 @@ export class CompanyService {
       const response = await axios.get(urlPrefix + "?id=" + id, {
         headers: HttpHeader.get(),
       });
+      console.log("API response:", response.data);
       if (response.status !== 200) return null;
       return Company.fromJson(response.data);
     } catch {
@@ -43,7 +44,7 @@ export class CompanyService {
       const response = await axios.post(urlPrefix, company, {
         headers: HttpHeader.get(),
       });
-      return response === 200;
+      return response.status === 200;
     } catch {
       return false;
     }
@@ -54,7 +55,7 @@ export class CompanyService {
       const response = await axios.put(urlPrefix + "/" + id, company, {
         headers: HttpHeader.get(),
       });
-      return response === 200;
+      return response.status === 200;
     } catch {
       return false;
     }
@@ -65,7 +66,7 @@ export class CompanyService {
       const response = await axios.delete(urlPrefix + "/" + id, {
         headers: HttpHeader.get(),
       });
-      return response === 200;
+      return response.status === 200;
     } catch {
       return false;
     }

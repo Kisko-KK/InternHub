@@ -17,5 +17,6 @@ namespace InternHub.WebApi.Models
         public string Website { get; set; }
         public string Address { get; set; }
         public string Id { get; set; }
+        
     }
 }
