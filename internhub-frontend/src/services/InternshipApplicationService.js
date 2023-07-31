@@ -45,7 +45,7 @@ export class InternshipApplicationService {
       const response = await axios.post(urlPrefix, student, {
         headers: HttpHeader.get(),
       });
-      return response === 200;
+      return response.status === 200;
     } catch {
       return false;
     }

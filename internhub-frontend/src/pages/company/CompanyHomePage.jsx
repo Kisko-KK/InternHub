@@ -1,5 +1,10 @@
 import React from "react";
+import { CompanyNavigation, Button } from "../../components";
 
 export default function CompanyHomePage() {
-  return <div>CompanyHomePage</div>;
+  return (
+    <div>
+      <CompanyNavigation />
+    </div>
+  );
 }
