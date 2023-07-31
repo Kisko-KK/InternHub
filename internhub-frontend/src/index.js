@@ -7,16 +7,21 @@ import {
   AdminCompaniesPage,
   AdminStudentsPage,
   HomePage,
+  LandingPage,
+  CompanyRegisterPage,
+  CompanyHomePage,
   LoginPage,
   StudentDetailsPage,
   StudentEditPage,
+  CompanyCreateInternship,
   StudentRegisterPage,
 } from "./pages";
+
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <LandingPage />,
   },
   {
     path: "/login",
@@ -42,6 +47,18 @@ const router = createBrowserRouter([
     path: "/student/details/:id",
     element: <StudentDetailsPage />,
   },
+  {
+    path: "/company/register",
+    element: <CompanyRegisterPage/>
+  },
+  {
+    path: "/company/homepage",
+    element: <CompanyHomePage/>
+  },
+  {
+    path: "company/addnewinternship",
+    element: <CompanyCreateInternship/>
+  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
