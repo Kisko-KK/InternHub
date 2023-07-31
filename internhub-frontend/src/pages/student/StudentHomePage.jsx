@@ -22,6 +22,7 @@ export default function StudentHomePage() {
     counties: searchParams.getAll("counties"),
   });
   const internshipService = new InternshipService();
+  const loginService = new LoginService();
 
   const navigate = useNavigate();
 

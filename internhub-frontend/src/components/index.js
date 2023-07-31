@@ -18,6 +18,9 @@ import CheckBox from "./CheckBox";
 import CompanyList from "./company/CompanyList";
 import CompanyComponent from "./company/CompanyComponent";
 import StudentFilterComponent from "./student/StudentFilterComponent";
+import Internship from "../components/internship/Internship";
+import InternshipFilter from "./internship/InternshipFilter";
+import InternshipDetails from "./internship/InternshipDetails"
 import Internship from "./Internship";
 import InternshipFilter from "./InternshipFilter";
 import NavigationBar from "./NavigationBar";
@@ -48,4 +51,6 @@ export {
   Internship,
   InternshipFilter,
   MultiSelect,
+  InternshipFilter,
+  InternshipDetails
 };

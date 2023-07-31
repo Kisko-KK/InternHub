@@ -19,6 +19,7 @@ import {
   CompanyEditPage,
   RequireAuthPage,
 } from "./pages";
+import { InternshipDetails } from "./components";
 import { Company } from "./models";
 
 const router = createBrowserRouter([
@@ -72,6 +73,10 @@ const router = createBrowserRouter([
     path: "company/addnewinternship",
     element: <CompanyCreateInternship />,
   },
+  {
+    path: "/internship/details/:internshipId/:studentId",
+    element: <InternshipDetails />
+  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

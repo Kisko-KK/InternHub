@@ -17,5 +17,6 @@ namespace InternHub.Service.Common
         Task<bool> PutAsync(Internship internship, string userId);
         Task<bool> DeleteAsync(Internship internship, string userId);
         Task<Internship> GetInternshipAsync(Guid id);
+        Task<bool> IsStudentRegisteredToInternshipAsync(string studentId, Guid internshipId);
     }
 }

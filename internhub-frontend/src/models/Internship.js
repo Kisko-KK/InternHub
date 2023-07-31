@@ -2,6 +2,7 @@ import { Company, StudyArea } from "./index";
 
 export class Internship {
   constructor({
+    id = "",
     studyAreaId = "",
     studyArea = null,
     companyId = "",
@@ -13,6 +14,7 @@ export class Internship {
     endDate = "",
     applicationsCount = 0
   }) {
+    this.id = id;
     this.studyAreaId = studyAreaId;
     this.studyArea = studyArea;
     this.companyId = companyId;
@@ -27,6 +29,7 @@ export class Internship {
 
   static fromJson(json) {
     return new Internship({
+      id: json["Id"],
       studyAreaId: json["StudyAreaId"],
       companyId: json["CompanyId"],
       name: json["Name"],

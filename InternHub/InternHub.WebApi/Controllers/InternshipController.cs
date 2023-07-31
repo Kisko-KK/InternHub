@@ -17,7 +17,7 @@ using System.Web.Security;
 
 namespace InternHub.WebApi.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [RoutePrefix("api/Internship")]
     public class InternshipController : ApiController
     {
@@ -44,7 +44,7 @@ namespace InternHub.WebApi.Controllers
 
 
         [HttpGet]
-        [Route("api/Internship/GetCompanyViewInternship")]
+        [Route("GetCompanyViewInternship")]
         public async Task<HttpResponseMessage> GetCompanyViewInternshipAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] InternshipFilter filter = null)
         {
             PagedList<Internship> pagedList = await InternshipService.GetAsync(sorting, paging, filter);
@@ -69,17 +69,7 @@ namespace InternHub.WebApi.Controllers
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Not found!");
             }
-            InternshipView internshipView = new InternshipView {
-                StudyAreaId = internship.StudyAreaId,
-                StudyArea = new StudyAreaView(internship.StudyArea),
-                CompanyId = internship.CompanyId,
-                Company = new CompanyView(internship.Company),
-                Name = internship.Name,
-                Description = internship.Description,
-                Address = internship.Address,
-                StartDate = internship.StartDate,
-                EndDate = internship.EndDate
-            };
+            InternshipView internshipView = new InternshipView(internship);
             
             return Request.CreateResponse(HttpStatusCode.OK, internshipView);
         }
@@ -143,5 +133,18 @@ namespace InternHub.WebApi.Controllers
             }
             return Request.CreateResponse(HttpStatusCode.OK, $"Internship with id:{id} was deleted!");
         }
+
+        
+        [HttpGet]
+        [Route("IsStudentRegisteredToInternship")]
+        public async Task<HttpResponseMessage> IsStudentRegisteredToInternship([FromUri] string studentId, [FromUri] Guid internshipId)
+        {
+            if (await InternshipService.IsStudentRegisteredToInternshipAsync(studentId,internshipId))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, true);
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, false);
+        }
+        
     }
 }
