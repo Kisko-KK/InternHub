@@ -52,9 +52,9 @@ namespace InternHub.WebApi.Controllers
 
             if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
 
-            CompanyView companyView = new CompanyView(existingCompany);
+            CompanyDetailsView companyDetailsView = new CompanyDetailsView(existingCompany);
 
-            return Request.CreateResponse(HttpStatusCode.OK, companyView);
+            return Request.CreateResponse(HttpStatusCode.OK, companyDetailsView);
         }
 
         // POST api/<controller>

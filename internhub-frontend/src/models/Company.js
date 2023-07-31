@@ -18,7 +18,7 @@ export class Company extends User {
       address: json["Address"],
       description: json["Description"],
       countyId: json["County"] ? json["County"]["Id"] : null,
-      county: County.fromJson(json["County"]),
+      county: json["County"] ? County.fromJson(json["County"]) : null,
       phoneNumber: json["PhoneNumber"],
       email: json["Email"],
       password: json["Password"],

@@ -1,4 +1,4 @@
-import { Loader, CompanyNavigation } from "../../components";
+import { Loader, CompanyNavigation, Button } from "../../components";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CompanyService } from "../../services/CompanyService";
@@ -17,9 +17,12 @@ export default function CompanyProfilePage() {
   }
 
   useEffect(() => {
+    setLoading(true);
     getCompany();
-  }, []);
+  }, [params.id]);
 
+  console.log("params.id:", params.id);
+  console.log("Company state:", company);
   if (loading) return <Loader />;
   return (
     <div>
@@ -33,7 +36,7 @@ export default function CompanyProfilePage() {
           Address: <b>{company.address}</b>
         </div>
         <div className="">
-          Address: <b>{company.county}</b>
+          County: <b>{company.county}</b>
         </div>
         <div className="">
           Email: <b>{company.email}</b>
@@ -48,6 +51,7 @@ export default function CompanyProfilePage() {
           Website: <b>{company.website}</b>
         </div>
       </div>
+      <Button>Edit</Button>
     </div>
   );
 }
