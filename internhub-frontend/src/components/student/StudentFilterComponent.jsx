@@ -66,7 +66,7 @@ export default function StudentFilterComponent({
   if (loading) return <Loader />;
 
   return (
-    <div className="container justify-content-center align-items-center">
+    <div className="container row justify-content-center align-items-center">
       <Form
         onSubmit={(e) => {
           e.preventDefault();
