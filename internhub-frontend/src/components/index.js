@@ -20,11 +20,14 @@ import CompanyComponent from "./company/CompanyComponent";
 import StudentFilterComponent from "./student/StudentFilterComponent";
 import Internship from "./Internship";
 import InternshipFilter from "./InternshipFilter";
+import NavigationBar from "./NavigationBar";
+import MultiSelect from "./MultiSelect";
 
 export {
   AdminNavigation,
   CompanyNavigation,
   StudentNavigation,
+  NavigationBar,
   Paging,
   Button,
   Input,
@@ -43,5 +46,6 @@ export {
   CompanyComponent,
   StudentFilterComponent,
   Internship,
-  InternshipFilter
+  InternshipFilter,
+  MultiSelect,
 };

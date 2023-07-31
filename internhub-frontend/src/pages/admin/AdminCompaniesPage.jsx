@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  AdminNavigation,
+  NavigationBar,
   Button,
   CompanyAdminFilter,
   CompanyList,
@@ -9,36 +9,55 @@ import {
 } from "../../components";
 import { PagedList } from "../../models";
 import { CompanyService } from "../../services";
+import { useSearchParams } from "react-router-dom/dist";
 
 export default function AdminCompaniesPage() {
   const companyService = new CompanyService();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [pagedCompanies, setPagedCompanies] = useState(new PagedList({}));
-  const [currentFilter, setCurrentFilter] = useState({});
+  const [currentFilter, setCurrentFilter] = useState({
+    pageNumber: +(searchParams.get("pageNumber") ?? 1),
+    name: searchParams.get("name"),
+    isActive:
+      searchParams.get("isActive") === null
+        ? true
+        : searchParams.get("isActive").toLowerCase() === "true",
+    isAccepted:
+      searchParams.get("isAccepted") === null
+        ? false
+        : searchParams.get("isAccepted").toLowerCase() === "true",
+  });
   const navigate = useNavigate();
 
-  async function refreshCompanies({ pageNumber, ...filter }) {
+  async function refreshCompanies() {
     const data = await companyService.getAsync({
-      pageNumber,
-      ...filter,
+      ...currentFilter,
+      sortBy: "Id",
+      sortOrder: "ASC",
+      pageSize: 10,
     });
     setPagedCompanies(data);
   }
 
   useEffect(() => {
-    refreshCompanies({ pageNumber: 1 });
-  }, []);
+    refreshCompanies();
+  }, [searchParams, currentFilter]);
 
   return (
-    <div className="bg-dark">
-      <AdminNavigation />
-      <h1 className="text-light">Companies</h1>
+    <div>
+      <NavigationBar />
+      <div className="text-center">
+        <h1>Companies</h1>
+      </div>
       <CompanyAdminFilter
+        filter={currentFilter}
         onFilter={(filter) => {
-          refreshCompanies({ pageNumber: 1, ...filter });
+          setSearchParams({ ...filter, pageNumber: 1 });
+          setCurrentFilter({ ...filter, pageNumber: 1 });
         }}
         onClearFilter={() => {
-          setCurrentFilter({});
-          refreshCompanies({ pageNumber: 1 });
+          setSearchParams({ pageNumber: 1 });
+          setCurrentFilter({ pageNumber: 1 });
         }}
       />
       <Button
@@ -52,9 +71,9 @@ export default function AdminCompaniesPage() {
       <CompanyList
         companies={pagedCompanies.data}
         onRemove={() =>
-          refreshCompanies({
-            pageNumber: pagedCompanies.currentPage,
+          setSearchParams({
             ...currentFilter,
+            pageNumber: pagedCompanies.currentPage,
           })
         }
       />
@@ -62,7 +81,8 @@ export default function AdminCompaniesPage() {
         currentPage={pagedCompanies.currentPage}
         lastPage={pagedCompanies.lastPage}
         onPageChanged={(page) => {
-          refreshCompanies(page);
+          setSearchParams({ ...currentFilter, pageNumber: page });
+          refreshCompanies();
         }}
       />
     </div>

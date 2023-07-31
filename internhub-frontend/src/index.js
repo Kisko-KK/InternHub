@@ -17,13 +17,14 @@ import {
   StudentRegisterPage,
   CompanyProfilePage,
   CompanyEditPage,
+  RequireAuthPage,
 } from "./pages";
 import { Company } from "./models";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <LandingPage />,
+    element: <HomePage />,
   },
   {
     path: "/login",
@@ -31,11 +32,13 @@ const router = createBrowserRouter([
   },
   {
     path: "/students",
-    element: <AdminStudentsPage />,
+    element: <RequireAuthPage roles={["Admin"]} page={<AdminStudentsPage />} />,
   },
   {
     path: "/companies",
-    element: <AdminCompaniesPage />,
+    element: (
+      <RequireAuthPage roles={["Admin"]} page={<AdminCompaniesPage />} />
+    ),
   },
   {
     path: "/student/register",
@@ -64,6 +67,10 @@ const router = createBrowserRouter([
   {
     path: "/company",
     element: <CompanyHomePage />,
+  },
+  {
+    path: "company/addnewinternship",
+    element: <CompanyCreateInternship />,
   },
 ]);
 

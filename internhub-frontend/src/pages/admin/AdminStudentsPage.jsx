@@ -1,40 +1,63 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  AdminNavigation,
   Button,
+  NavigationBar,
   Paging,
   StudentFilterComponent,
   StudentsList,
 } from "../../components";
+import { useSearchParams } from "react-router-dom/dist";
 import { PagedList } from "../../models";
 import { StudentService } from "../../services";
 
 export default function AdminStudentsPage() {
   const studentService = new StudentService();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [pagedStudents, setPagedStudents] = useState(new PagedList({}));
-  const [currentFilter, setCurrentFilter] = useState({});
+  const [currentFilter, setCurrentFilter] = useState({
+    pageNumber: +(searchParams.get("pageNumber") ?? 1),
+    firstName: searchParams.get("firstName"),
+    lastName: searchParams.get("lastName"),
+    isActive:
+      searchParams.get("isActive") === null
+        ? true
+        : searchParams.get("isActive").toLowerCase() === "true",
+    studyAreas: searchParams.getAll("studyAreas"),
+    counties: searchParams.getAll("counties"),
+  });
   const navigate = useNavigate();
 
-  async function refreshStudents({ pageNumber, ...filter }) {
-    const data = await studentService.getAdminAsync({ pageNumber, ...filter });
+  async function refreshStudents() {
+    const data = await studentService.getAdminAsync({
+      ...currentFilter,
+      sortBy: "Id",
+      sortOrder: "ASC",
+      pageSize: 10,
+    });
     setPagedStudents(data);
   }
 
   useEffect(() => {
-    refreshStudents(1);
-  }, []);
+    refreshStudents();
+  }, [currentFilter, searchParams]);
 
   return (
-    <div className="bg-dark">
-      <AdminNavigation />
-      <h1 className="text-light">Students</h1>
+    <div>
+      <NavigationBar />
+      <div className="text-center">
+        <h1>Students</h1>
+      </div>
       <StudentFilterComponent
+        filter={currentFilter}
         onFilter={(filter) => {
-          setCurrentFilter(filter);
-          refreshStudents({ pageNumber: 1, ...filter });
+          setSearchParams({ ...filter, pageNumber: 1 });
+          setCurrentFilter({ ...filter, pageNumber: 1 });
         }}
-        onClearFilter={() => refreshStudents({ pageNumber: 1 })}
+        onClearFilter={() => {
+          setSearchParams({ pageNumber: 1 });
+          setCurrentFilter({ pageNumber: 1 });
+        }}
       />
       <Button
         buttonColor="success"
@@ -50,14 +73,18 @@ export default function AdminStudentsPage() {
           navigate(`/student/edit/${id}`);
         }}
         onRemove={() => {
-          refreshStudents({ pageNumber: 1, ...currentFilter });
+          setSearchParams({
+            ...currentFilter,
+            pageNumber: pagedStudents.currentPage,
+          });
         }}
       />
       <Paging
         currentPage={pagedStudents.currentPage}
         lastPage={pagedStudents.lastPage}
         onPageChanged={(page) => {
-          refreshStudents({ pageNumber: page });
+          setSearchParams({ ...currentFilter, pageNumber: page });
+          setCurrentFilter({ ...currentFilter, pageNumber: page });
         }}
       />
     </div>

@@ -5,17 +5,25 @@ import { HttpHeader } from "../models";
 const urlPrefix = Server.url + "Student";
 
 export class StudentService {
-  getUrlQuery({ pageNumber = 1, pageSize = 10, ...filter }) {
-    const counties = filter.counties
-      ? "&" + filter.counties.map((county) => `counties=${county}`).join("&")
-      : "";
-    const studyAreas = filter.studyAreas
-      ? "&" +
-        filter.studyAreas
-          .map((studyArea) => `studyAreas=${studyArea}`)
-          .join("&")
-      : "";
-    const urlQuery = `?CurrentPage=${pageNumber}&pageSize=${pageSize}&isActive=${
+  getUrlQuery({
+    sortBy = "Id",
+    sortOrder = "ASC",
+    pageNumber = 1,
+    pageSize = 10,
+    ...filter
+  }) {
+    const counties =
+      filter.counties && filter.counties.length > 0
+        ? "&" + filter.counties.map((county) => `counties=${county}`).join("&")
+        : "";
+    const studyAreas =
+      filter.studyAreas && filter.studyAreas.length > 0
+        ? "&" +
+          filter.studyAreas
+            .map((studyArea) => `studyAreas=${studyArea}`)
+            .join("&")
+        : "";
+    const urlQuery = `?currentPage=${pageNumber}&pageSize=${pageSize}&sortBy=${sortBy}&sortOrder=${sortOrder}&isActive=${
       filter.isActive
     }&firstName=${filter.firstName || ""}&lastName=${
       filter.lastName || ""

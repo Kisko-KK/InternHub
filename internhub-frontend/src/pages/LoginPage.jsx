@@ -17,19 +17,29 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="bg-dark">
-      <h1 className="text-light">Login Page</h1>
-      <form className="form" onSubmit={onSubmit}>
-        <div className="mb-3 mt-3 w-50">
-          <Input name="email" text="Email:" />
+    <div className="vh-100 d-flex justify-content-center align-items-center">
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col">
+            <div className="text-center mb-3">
+              <h1>Login</h1>
+            </div>
+            <form className="form" onSubmit={onSubmit}>
+              <div className="mb-3">
+                <Input name="email" text="Email:" />
+              </div>
+              <div className="mb-3">
+                <Input type="password" name="password" text="Password:" />
+              </div>
+              <div className="text-center">
+                <Button type={"submit"} buttonColor={"primary"}>
+                  Login
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div className="mb-3 mt-3 w-50">
-          <Input type="password" name="password" text="Password:" />
-        </div>
-        <Button type={"submit"} buttonColor={"primary"}>
-          Login
-        </Button>
-      </form>
+      </div>
     </div>
   );
 }

@@ -48,4 +48,10 @@ export class LoginService {
     console.log(userToken);
     return userToken;
   }
+
+  getUserRole() {
+    const userToken = this.getUserToken();
+    if (userToken) return userToken.role || "";
+    return "";
+  }
 }

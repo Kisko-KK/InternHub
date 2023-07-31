@@ -6,7 +6,7 @@ import {
   Input,
   Loader,
   SelectDropdown,
-  StudentNavigation,
+  NavigationBar,
 } from "../../components";
 import { Student } from "../../models";
 import {
@@ -28,11 +28,11 @@ export default function StudentEditPage() {
 
   useEffect(() => {
     async function fetchData() {
-      getStudent();
       setCounties(await countyService.getAsync());
       setStudyAreas(await studyAreaService.getAsync());
       setLoading(false);
     }
+    getStudent();
     fetchData();
   }, []);
 
@@ -46,63 +46,72 @@ export default function StudentEditPage() {
   if (loading) return <Loader />;
 
   return (
-    <div className="bg-dark">
-      <StudentNavigation />
-      <h1 className="text-light">Edit student page</h1>
-      <Form
-        onSubmit={async (e) => {
-          var newStudent = new Student({
-            firstName: e.target.firstName.value,
-            lastName: e.target.lastName.value,
-            email: e.target.email.value,
-            phoneNumber: e.target.phoneNumber.value,
-            address: e.target.address.value,
-            description: e.target.description.value,
-            password: e.target.password ? e.target.password.value : null,
-            countyId: e.target.county.value,
-            studyAreaId: e.target.studyarea.value,
-          });
-          const result = await studentService.updateAsync(
-            student.id,
-            newStudent
-          );
-          if (result) {
-            navigate("/");
-          }
-        }}
-      >
-        <Input name="firstName" text="First name:" value={student.firstName} />
-        <Input name="lastName" text="Last name:" value={student.lastName} />
-        <Input
-          name="phoneNumber"
-          text="Phone number:"
-          value={student.phoneNumber}
-        />
-        <SelectDropdown
-          text={"Županija:"}
-          placeholder={"Odaberite županiju"}
-          name={"county"}
-          list={counties}
-          selectedId={student.countyId}
-        />
-        <Input name="address" text="Address:" value={student.address} />
-        <Input
-          name="description"
-          text="Description:"
-          value={student.description}
-        />
-        <SelectDropdown
-          text={"Područje obrazovanja:"}
-          placeholder={"Odaberite područje obrazovanja"}
-          name={"studyArea"}
-          list={studyArea}
-          selectedId={student.studyAreaId}
-        />
-        <br></br>
-        <Button buttonColor="primary" type="submit">
-          Save
-        </Button>
-      </Form>
+    <div>
+      <NavigationBar />
+
+      <div className="container">
+        <div className="text-center">
+          <h1>Edit student page</h1>
+        </div>
+        <Form
+          onSubmit={async (e) => {
+            var newStudent = new Student({
+              firstName: e.target.firstName.value,
+              lastName: e.target.lastName.value,
+              email: e.target.email.value,
+              phoneNumber: e.target.phoneNumber.value,
+              address: e.target.address.value,
+              description: e.target.description.value,
+              password: e.target.password ? e.target.password.value : null,
+              countyId: e.target.county.value,
+              studyAreaId: e.target.studyarea.value,
+            });
+            const result = await studentService.updateAsync(
+              student.id,
+              newStudent
+            );
+            if (result) {
+              navigate("/");
+            }
+          }}
+        >
+          <Input
+            name="firstName"
+            text="First name:"
+            value={student.firstName}
+          />
+          <Input name="lastName" text="Last name:" value={student.lastName} />
+          <Input
+            name="phoneNumber"
+            text="Phone number:"
+            value={student.phoneNumber}
+          />
+          <SelectDropdown
+            text={"County:"}
+            placeholder={"Select county"}
+            name={"county"}
+            list={counties}
+            selectedId={student.countyId}
+          />
+          <Input name="address" text="Address:" value={student.address} />
+          <Input
+            name="description"
+            text="Description:"
+            value={student.description}
+          />
+          <SelectDropdown
+            text={"Study area:"}
+            placeholder={"Select study area"}
+            name={"studyArea"}
+            list={studyArea}
+            selectedId={student.studyAreaId}
+          />
+          <br></br>
+          <Button buttonColor="primary" type="submit">
+            Save
+          </Button>
+        </Form>
+      </div>
     </div>
   );
 }

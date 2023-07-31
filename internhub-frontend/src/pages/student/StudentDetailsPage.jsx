@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Loader, StudentNavigation } from "../../components";
+import { Loader, NavigationBar } from "../../components";
 import { StudentService } from "../../services";
+import NotFoundPage from "../NotFoundPage";
 
 export default function StudentDetailsPage() {
   const studentService = new StudentService();
   const [loading, setLoading] = useState(true);
-  const [student, setStudent] = useState({});
+  const [student, setStudent] = useState(null);
   const params = useParams();
 
   async function getStudent() {
@@ -21,28 +22,31 @@ export default function StudentDetailsPage() {
   }, []);
 
   if (loading) return <Loader />;
+  if (!student) return <NotFoundPage />;
 
   return (
-    <div className="bg-dark">
-      <StudentNavigation />
-      <h1 className="text-light">Student Details Page</h1>
-      <div>
-        <div className="mb-3 mt-3 w-50 text-light">
+    <div>
+      <NavigationBar />
+      <div className="container">
+        <div className="text-center">
+          <h1>Student Details Page</h1>
+        </div>
+        <div className="row mb-3 mt-">
           First Name: <b>{student.firstName}</b>
         </div>
-        <div className="mb-3 mt-3 w-50 text-light">
+        <div className="row mb-3 mt-3">
           Last Name: <b>{student.lastName}</b>
         </div>
-        <div className="mb-3 mt-3 w-50 text-light">
+        <div className="row mb-3 mt-">
           Email: <b>{student.email}</b>
         </div>
-        <div className="mb-3 mt-3 w-50 text-light">
+        <div className="row mb-3 mt-">
           Phone number: <b>{student.phoneNumber}</b>
         </div>
-        <div className="mb-3 mt-3 w-50 text-light">
+        <div className="row mb-3 mt-3">
           Address: <b>{student.address}</b>
         </div>
-        <div className="mb-3 mt-3 w-50 text-light">
+        <div className="row mb-3 mt-3">
           Description: <b>{student.description}</b>
         </div>
       </div>

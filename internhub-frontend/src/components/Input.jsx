@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-export default function Input({ name, text, value, type, required = false }) {
+export default function Input({
+  name,
+  text,
+  defaultValue,
+  value,
+  onChange,
+  type,
+  required = false,
+}) {
   return (
-    <div className="mb-3 mt-3 w-50">
-      <label htmlFor={name} className="form-label text-light">
+    <div className="mb-3 mt-3">
+      <label htmlFor={name} className="form-label">
         {text}
       </label>
       <br></br>
@@ -11,7 +19,9 @@ export default function Input({ name, text, value, type, required = false }) {
         type={type ?? "text"}
         id={name}
         name={name}
-        defaultValue={value}
+        value={value}
+        onChange={onChange}
+        defaultValue={defaultValue}
         className="form-control"
         required={required}
       />

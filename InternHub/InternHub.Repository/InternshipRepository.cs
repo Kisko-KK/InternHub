@@ -121,12 +121,9 @@ namespace InternHub.Repository
                 NpgsqlCommand countCommand = new NpgsqlCommand("", connection);
 
                 filterQueryBuilder.Append(filterQuery);
-                if (filter.IsActive != null)
-                {
-                    filterQueryBuilder.Append(" AND i.\"IsActive\" = @isActive");
-                    selectCommand.Parameters.AddWithValue("@isActive", filter.IsActive.Value);
-                    countCommand.Parameters.AddWithValue("@isActive", filter.IsActive.Value);
-                }
+                filterQueryBuilder.Append(" AND i.\"IsActive\" = @isActive");
+                selectCommand.Parameters.AddWithValue("@isActive", filter.IsActive);
+                countCommand.Parameters.AddWithValue("@isActive", filter.IsActive);
                 if (filter.Name != null)
                 {
                     filterQueryBuilder.Append(" AND i.\"Name\" LIKE '%' || @name || '%' ");

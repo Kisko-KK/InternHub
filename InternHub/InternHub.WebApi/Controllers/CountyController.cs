@@ -28,7 +28,7 @@ namespace InternHub.WebApi.Controllers
             try
             {
                 List<County> counties = await CountyService.GetAllAsync();
-                return Request.CreateResponse(HttpStatusCode.OK, counties.Select(x => new CountyView(x)));
+                return Request.CreateResponse(HttpStatusCode.OK, counties.Select(x => new CountyView(x)).OrderBy(x => x.Name));
             }
             catch { return Request.CreateResponse(HttpStatusCode.InternalServerError, "Code crash"); }
         }
