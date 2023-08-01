@@ -20,7 +20,7 @@ import {
   RequireAuthPage,
 } from "./pages";
 import { InternshipDetails } from "./components";
-import { Company } from "./models";
+import { Company, Student } from "./models";
 
 const router = createBrowserRouter([
   {
@@ -47,11 +47,16 @@ const router = createBrowserRouter([
   },
   {
     path: "/student/edit/:id",
-    element: <StudentEditPage />,
+    element: (
+      <RequireAuthPage
+        roles={["Student", "Admin"]}
+        page={<StudentEditPage />}
+      />
+    ),
   },
   {
     path: "/student/details/:id",
-    element: <StudentDetailsPage />,
+    element: <RequireAuthPage roles={[]} page={<StudentDetailsPage />} />,
   },
   {
     path: "/company/register",
@@ -59,11 +64,16 @@ const router = createBrowserRouter([
   },
   {
     path: "/company/profile/:id",
-    element: <CompanyProfilePage />,
+    element: <RequireAuthPage roles={[]} page={<CompanyProfilePage />} />,
   },
   {
     path: "/company/edit/:id",
-    element: <CompanyEditPage />,
+    element: (
+      <RequireAuthPage
+        roles={["Company", "Admin"]}
+        page={<CompanyEditPage />}
+      />
+    ),
   },
   {
     path: "/company",
@@ -75,8 +85,8 @@ const router = createBrowserRouter([
   },
   {
     path: "/internship/details/:internshipId/:studentId",
-    element: <InternshipDetails />
-  }
+    element: <InternshipDetails />,
+  },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

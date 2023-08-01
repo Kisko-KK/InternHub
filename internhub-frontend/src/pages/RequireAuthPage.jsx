@@ -15,6 +15,8 @@ export default function RequireAuthPage({ roles, page }) {
   }, []);
 
   if (
+    !roles ||
+    roles.length === 0 ||
     roles.map((role) => role.toLowerCase()).includes(userRole.toLowerCase())
   ) {
     return page;

@@ -16,6 +16,7 @@ export default function StudentNavigation() {
           <li className="nav-item">My internships</li>
         </Link>
         <Button
+          className="logout-button"
           onClick={() => {
             const loginService = new LoginService();
             if (loginService.logOut()) navigate("/login");

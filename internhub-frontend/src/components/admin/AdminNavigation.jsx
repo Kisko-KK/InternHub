@@ -23,6 +23,7 @@ export default function AdminNavigation() {
           <li className="nav-item">Internships</li>
         </Link> */}
           <Button
+            className="logout-button"
             onClick={() => {
               const loginService = new LoginService();
               if (loginService.logOut()) navigate("/login");

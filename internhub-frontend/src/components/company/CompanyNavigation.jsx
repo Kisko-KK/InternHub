@@ -9,7 +9,7 @@ export default function CompanyNavigation() {
   return (
     <div className="Nav">
       <ul className="nav-links">
-        <Link className="link-style" to="/company">
+        <Link className="link-style" to="/">
           <li className="nav-item">Home</li>
         </Link>
         <Link className="link-style" to="">
@@ -22,6 +22,7 @@ export default function CompanyNavigation() {
           <li className="nav-item">Profile</li>
         </Link>
         <Button
+          className="logout-button"
           onClick={() => {
             const loginService = new LoginService();
             if (loginService.logOut()) navigate("/login");

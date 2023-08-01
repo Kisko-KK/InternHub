@@ -6,6 +6,8 @@ export default function SelectDropdown({
   placeholder,
   selectedId,
   text,
+  onChange,
+  value,
 }) {
   return (
     <div className="mb-3 mt-3">
@@ -13,8 +15,19 @@ export default function SelectDropdown({
         {text}
       </label>
       <br></br>
-      <select name={name} id={name} required className="form-control">
-        <option value="" selected={selectedId ? false : true}>
+      <select
+        name={name}
+        id={name}
+        onChange={onChange}
+        value={selectedId}
+        required
+        className="form-control"
+      >
+        <option
+          value=""
+
+          //selected={selectedId ? false : true}
+        >
           {placeholder}
         </option>
         {list.map((data) => {
@@ -22,7 +35,7 @@ export default function SelectDropdown({
             <option
               key={data.id}
               value={data.id}
-              selected={selectedId === data.id}
+              //selected={selectedId === data.id}
             >
               {data.name}
             </option>

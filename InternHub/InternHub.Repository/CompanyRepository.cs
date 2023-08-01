@@ -199,7 +199,7 @@ namespace InternHub.Repository
                     {
                         string updateCompanySql = "UPDATE \"Company\" SET \"Website\" = @website, \"Name\" = @name WHERE \"Id\" = @id";
 
-                        string updateUserSql = "UPDATE dbo.\"AspNetUsers\" SET \"FirstName\" = @firstname, \"LastName\" = @lastname, \"Address\" = @address, \"Description\" = @description, \"Email\" = @email WHERE \"Id\" = @id";
+                        string updateUserSql = "UPDATE dbo.\"AspNetUsers\" SET \"FirstName\" = @firstname, \"LastName\" = @lastname, \"Address\" = @address, \"Description\" = @description, \"Email\" = @email, \"PhoneNumber\" = @phoneNumber WHERE \"Id\" = @id";
 
                         using (NpgsqlCommand updateCompanyCommand = new NpgsqlCommand(updateCompanySql, connection, transaction))
                         using (NpgsqlCommand updateUserCommand = new NpgsqlCommand(updateUserSql, connection, transaction))
