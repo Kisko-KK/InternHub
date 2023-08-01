@@ -5,12 +5,12 @@ import { PagedList } from "../models/PagedList";
 const urlPrefix = Server.url + "Internship";
 
 export class InternshipService{
-    async getAsync({pageNumber, ...filterData }) {
+    async getAsync({pageNumber, pageSize, ...filterData }) {
         try {
           const counties = filterData.counties ? filterData.counties.map((county) => "&Counties=" + county).join("") : "";
 
             const response = await axios.get(
-              urlPrefix + `?CurrentPage=${pageNumber}&pageSize=3&Name=${filterData.name || ""}&startDate=${filterData.startDate}&endDate=${filterData.endDate}${counties}`,
+              urlPrefix + `?CurrentPage=${pageNumber}&pageSize=${pageSize}&Name=${filterData.name || ""}&startDate=${filterData.startDate}&endDate=${filterData.endDate}${counties}`,
               {
                 headers: HttpHeader.get(),
               }

@@ -31,7 +31,7 @@ export default function StudentHomePage() {
       ...filterData,
       sortBy: "Id",
       sortOrder: "ASC",
-      pageSize: 10,
+      pageSize: 3,
     });
     setPagedInternships(data);
   };
@@ -43,7 +43,6 @@ export default function StudentHomePage() {
   return (
     <div className="container">
       <NavigationBar />
-      <div>Student Home page</div>
       <InternshipFilter
         filter={filterData}
         onFilter={(filter) => {
