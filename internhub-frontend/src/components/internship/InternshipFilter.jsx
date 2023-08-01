@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import { CountyService } from "../services";
-import { Button, Input, MultiSelect } from "./index";
+import { CountyService } from "../../services/CountyService";
+import { Button, Input, MultiSelect } from "../index";
 
 const InternshipFilter = ({ onFilter, onClearFilter, filter }) => {
   const [counties, setCounties] = useState(filter.counties || []);

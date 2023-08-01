@@ -21,8 +21,6 @@ import StudentFilterComponent from "./student/StudentFilterComponent";
 import Internship from "../components/internship/Internship";
 import InternshipFilter from "./internship/InternshipFilter";
 import InternshipDetails from "./internship/InternshipDetails"
-import Internship from "./Internship";
-import InternshipFilter from "./InternshipFilter";
 import NavigationBar from "./NavigationBar";
 import MultiSelect from "./MultiSelect";
 
@@ -49,7 +47,6 @@ export {
   CompanyComponent,
   StudentFilterComponent,
   Internship,
-  InternshipFilter,
   MultiSelect,
   InternshipFilter,
   InternshipDetails

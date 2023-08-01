@@ -5,10 +5,9 @@ import { PagedList } from "../models/PagedList";
 const urlPrefix = Server.url + "Internship";
 
 export class InternshipService{
-    async getAsync(pageNumber, filterData ) {
+    async getAsync({pageNumber, ...filterData }) {
         try {
-
-          const counties = filterData.counties ? filterData.counties.map((county) => "&Counties=" + county).join() : "";
+          const counties = filterData.counties ? filterData.counties.map((county) => "&Counties=" + county).join("") : "";
 
             const response = await axios.get(
               urlPrefix + `?CurrentPage=${pageNumber}&pageSize=3&Name=${filterData.name || ""}&startDate=${filterData.startDate}&endDate=${filterData.endDate}${counties}`,
@@ -17,6 +16,7 @@ export class InternshipService{
               }
             );
             if (response.status !== 200) return [];
+            console.log("ovo" + response);
             const dataList = response.data["Data"].map((data) =>
               Internship.fromJson(data)
             );
