@@ -33,9 +33,8 @@ export default function CompanyRegisterPage() {
   };
 
   return (
-    <div className="bg-dark">
-      <CompanyNavigation />
-      <h1 className>Register company page</h1>
+    <div className="container">
+      <h1 className="text-center">Register company page</h1>
       <Form
         onSubmit={async (e) => {
           e.preventDefault();

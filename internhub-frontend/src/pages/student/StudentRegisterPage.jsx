@@ -38,7 +38,7 @@ export default function StudentRegisterPage() {
   if (loading) return <Loader />;
   return (
     <div>
-      <NavigationBar />
+      {/* <NavigationBar /> */}
       <div className="text-center">
         {" "}
         <h1>Student register</h1>

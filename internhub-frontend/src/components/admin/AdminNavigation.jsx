@@ -3,36 +3,62 @@ import { Link, useNavigate } from "react-router-dom";
 import Button from "../Button";
 import "../../styles/nav.css";
 import { LoginService } from "../../services";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHome,
+  faFileAlt,
+  faGraduationCap,
+  faBuilding,
+  faRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function AdminNavigation() {
   const navigate = useNavigate();
+  const handleLogout = () => {
+    const loginService = new LoginService();
+    if (loginService.logOut()) {
+      navigate("/login");
+    }
+  };
   return (
-    <div className="Nav">
-      <div className="d-flex justify-content-center align-items-center">
-        <ul className="nav-links">
+    <div className="sidebar">
+      <ul className="nav-links">
+        <li className="nav-item">
           <Link className="link-style" to="/">
-            <li className="nav-item">Home</li>
+            <span className="icon">
+              <FontAwesomeIcon className="fontawesome" icon={faHome} />
+            </span>
+            <span className="nav-text">Home</span>
           </Link>
+        </li>
+        <li className="nav-item">
           <Link className="link-style" to="/students">
-            <li className="nav-item">Students</li>
+            <span className="icon">
+              <FontAwesomeIcon className="fontawesome" icon={faGraduationCap} />
+            </span>
+            <span className="nav-text">Students</span>
           </Link>
+        </li>
+        <li className="nav-item">
           <Link className="link-style" to="/companies">
-            <li className="nav-item">Companies</li>
+            <span className="icon">
+              <FontAwesomeIcon className="fontawesome" icon={faBuilding} />
+            </span>
+            <span className="nav-text">Companies</span>
           </Link>
-          {/* <Link className="link-style" to="">
-          <li className="nav-item">Internships</li>
-        </Link> */}
-          <Button
-            className="logout-button"
-            onClick={() => {
-              const loginService = new LoginService();
-              if (loginService.logOut()) navigate("/login");
-            }}
-          >
-            Logout
-          </Button>
-        </ul>
-      </div>
+        </li>
+        <li className="nav-item">
+          <Link className="link-style" to="/login" onClick={handleLogout}>
+            <span className="icon">
+              <FontAwesomeIcon
+                className="fontawesome"
+                icon={faRightFromBracket}
+              />
+            </span>
+            <span className="nav-text">Logout</span>
+          </Link>
+        </li>
+      </ul>
     </div>
   );
 }

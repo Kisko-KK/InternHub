@@ -3,33 +3,63 @@ import { Link, useNavigate } from "react-router-dom";
 import Button from "../Button";
 import "../../styles/nav.css";
 import { LoginService } from "../../services";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHome,
+  faFileAlt,
+  faUser,
+  faRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function StudentNavigation() {
   const navigate = useNavigate();
+  const handleLogout = () => {
+    const loginService = new LoginService();
+    if (loginService.logOut()) {
+      navigate("/login");
+    }
+  };
   return (
-    <div className="Nav">
+    <div className="sidebar">
       <ul className="nav-links">
-        <Link className="link-style" to="/">
-          <li className="nav-item">Home</li>
-        </Link>
-        <Link className="link-style" to="/student/internships">
-          <li className="nav-item">My internships</li>
-        </Link>
-        <Button
-          className="logout-button"
-          onClick={() => {
-            const loginService = new LoginService();
-            if (loginService.logOut()) navigate("/login");
-          }}
-        >
-          Logout
-        </Button>
-        <Link
-          className="link-style"
-          to={`/student/details/${new LoginService().getUserToken().id}`}
-        >
-          <li className="nav-item">My profile</li>
-        </Link>
+        <li className="nav-item">
+          <Link className="link-style" to="/">
+            <span className="icon">
+              <FontAwesomeIcon className="fontawesome" icon={faHome} />
+            </span>
+            <span className="nav-text">Home</span>
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link className="link-style" to="">
+            <span className="icon">
+              <FontAwesomeIcon className="fontawesome" icon={faFileAlt} />
+            </span>
+            <span className="nav-text">My internships</span>
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link
+            className="link-style"
+            to={`/student/details/${new LoginService().getUserToken().id}`}
+          >
+            <span className="icon">
+              <FontAwesomeIcon className="fontawesome" icon={faUser} />
+            </span>
+            <span className="nav-text">My profile</span>
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link className="link-style" to="/login" onClick={handleLogout}>
+            <span className="icon">
+              <FontAwesomeIcon
+                className="fontawesome"
+                icon={faRightFromBracket}
+              />
+            </span>
+            <span className="nav-text">Logout</span>
+          </Link>
+        </li>
       </ul>
     </div>
   );
