@@ -9,10 +9,19 @@ import {
 const urlPrefix = Server.url + "InternshipApplication";
 
 export class InternshipApplicationService {
-  async getAsync(pageNumber) {
+  async getAsync({ pageNumber, pageSize, ...filter }) {
     try {
+      const states =
+        filter.states && filter.states.length > 0
+          ? "&" + filter.states.map((state) => `states=${state}`).join("&")
+          : "";
       const response = await axios.get(
-        urlPrefix + `?CurrentPage=${pageNumber}&pageSize=5`,
+        urlPrefix +
+          `?CurrentPage=${pageNumber}&pageSize=${pageSize}&studentId=${
+            filter.studentId || ""
+          }&companyName=${filter.companyName || ""}&internshipName=${
+            filter.internshipName || ""
+          }${states}`,
         {
           headers: HttpHeader.get(),
         }
@@ -21,6 +30,7 @@ export class InternshipApplicationService {
       const dataList = response.data["Data"].map((data) =>
         InternshipApplication.fromJson(data)
       );
+      console.log(dataList);
       const pagedList = PagedList.fromJson(response.data, dataList);
       return pagedList;
     } catch {

@@ -12,4 +12,5 @@ export { State } from "./State";
 export { Notification } from "./Notification";
 export { CompanyFilter } from "./filter/CompanyFilter";
 export { StudentFilter } from "./filter/StudentFilter";
-export { Internship } from "./Internship"
+export { Internship } from "./Internship";
+export { InternshipApplicationFilter } from "./filter/InternshipApplicationFilter";

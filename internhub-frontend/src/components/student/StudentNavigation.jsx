@@ -12,7 +12,7 @@ export default function StudentNavigation() {
         <Link className="link-style" to="/">
           <li className="nav-item">Home</li>
         </Link>
-        <Link className="link-style" to="">
+        <Link className="link-style" to="/student/internships">
           <li className="nav-item">My internships</li>
         </Link>
         <Button

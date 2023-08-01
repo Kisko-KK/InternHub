@@ -1,4 +1,4 @@
-import { Student, State } from "./index";
+import { Student, State, Internship } from "./index";
 
 export class InternshipApplication {
   constructor({
@@ -7,12 +7,14 @@ export class InternshipApplication {
     message = "",
     student = null,
     state = null,
+    internship = null,
   }) {
     this.dateCreated = dateCreated;
     this.dateUpdated = dateUpdated;
     this.message = message;
     this.student = student;
     this.state = state;
+    this.internship = internship;
   }
 
   static fromJson(json) {
@@ -22,6 +24,7 @@ export class InternshipApplication {
       message: json["Message"],
       student: Student.fromJson(json["Student"]),
       state: State.fromJson(json["State"]),
+      internship: Internship.fromJson(json["Internship"]),
     });
   }
 }

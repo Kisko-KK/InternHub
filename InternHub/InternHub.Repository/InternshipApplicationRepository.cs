@@ -6,6 +6,7 @@ using InternHub.Repository.Common;
 using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace InternHub.Repository
@@ -40,15 +41,41 @@ namespace InternHub.Repository
 
                 if (internshipApplicationFilter != null)
                 {
-                    if (internshipApplicationFilter.StateName != null)
+                    if (internshipApplicationFilter.States != null && internshipApplicationFilter.States.Count > 0)
                     {
-                        parameters.Add("sta.\"Name\" ILIKE @stateName");
-                        command.Parameters.AddWithValue("@stateName", "%" + internshipApplicationFilter.StateName + "%");
+                        StringBuilder builder = new StringBuilder();
+                        
+                        command.Parameters.AddWithValue("@stateId", internshipApplicationFilter.States);
+                        for (int i = 0; i < internshipApplicationFilter.States.Count; i++)
+                        {
+                            string parameterName = $"@stateId{i}";
+                            builder.Append(parameterName);
+
+                            if (i < internshipApplicationFilter.States.Count - 1)
+                            {
+                                builder.Append(", ");
+                            }
+                            command.Parameters.AddWithValue(parameterName, internshipApplicationFilter.States[i]);
+                        }
+                        parameters.Add("sta.\"Id\" in (" + builder.ToString() + ")");
+
+
+
                     }
                     if (internshipApplicationFilter.InternshipName != null)
                     {
                         parameters.Add("i.\"Name\" ILIKE @internshipName");
                         command.Parameters.AddWithValue("@internshipName", "%" + internshipApplicationFilter.InternshipName + "%");
+                    }
+                    if(internshipApplicationFilter.StudentId != null)
+                    {
+                        parameters.Add("s.\"Id\" = @userId");
+                        command.Parameters.AddWithValue("@userId", internshipApplicationFilter.StudentId);
+                    }
+                    if(internshipApplicationFilter.CompanyName != null)
+                    {
+                        parameters.Add("comp.\"Name\" ILIKE @companyName");
+                        command.Parameters.AddWithValue("@companyName", "%" + internshipApplicationFilter.CompanyName + "%");
                     }
                 }
                 string selectQuery = @"
@@ -97,7 +124,7 @@ namespace InternHub.Repository
                 "WHERE ia.\"IsActive\" = true " +
                     (parameters.Count == 0 ? "" : "AND " + string.Join(" AND ", parameters)) + $" ORDER BY {sortBy} {(sorting.SortOrder.ToLower() == "asc" ? "ASC" : "DESC")} LIMIT @pageSize OFFSET @skip";
 
-                string countQuery = "SELECT COUNT(*) FROM \"InternshipApplication\" ia INNER JOIN \"Student\" s ON ia.\"StudentId\" = s.\"Id\" INNER JOIN \"State\" sta ON ia.\"StateId\" = sta.\"Id\" inner join \"Internship\" i on i.\"Id\"=ia.\"InternshipId\" WHERE ia.\"IsActive\" = true " + (parameters.Count == 0 ? "" : "AND " + string.Join(" AND ", parameters));
+                string countQuery = "SELECT COUNT(*) FROM \r\n                    \"InternshipApplication\" ia\r\n                    INNER JOIN \"Student\" s ON ia.\"StudentId\" = s.\"Id\"\r\n                    INNER JOIN \"State\" sta ON ia.\"StateId\" = sta.\"Id\"\r\n                    INNER JOIN dbo.\"AspNetUsers\" u ON u.\"Id\" = s.\"Id\"\r\n                    INNER JOIN \"County\" c ON c.\"Id\" = u.\"CountyId\"\r\n                    INNER JOIN \"Internship\" i ON i.\"Id\" = ia.\"InternshipId\"\r\n                    INNER JOIN \"Company\" comp ON i.\"CompanyId\" = comp.\"Id\"\r\n                    inner join \"StudyArea\" sa on i.\"StudyAreaId\" =sa.\"Id\"\r\n                    inner join \"StudyArea\" sas on s.\"StudyAreaId\"=sas.\"Id\"  WHERE ia.\"IsActive\" = true " + (parameters.Count == 0 ? "" : "AND " + string.Join(" AND ", parameters));
 
                 NpgsqlCommand countCommand = new NpgsqlCommand(countQuery, connection);
 

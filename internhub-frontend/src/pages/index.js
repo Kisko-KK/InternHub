@@ -11,13 +11,14 @@ import AdminStudentsPage from "./admin/AdminStudentsPage";
 import CompanyHomePage from "./company/CompanyHomePage";
 import CompanyRegisterPage from "./company/CompanyRegisterPage";
 import CompanyCreateInternship from "./company/CompanyCreateInternship";
+import CompanyProfilePage from "./company/CompanyProfilePage";
+import CompanyEditPage from "./company/CompanyEditPage";
 
 import StudentHomePage from "./student/StudentHomePage";
 import StudentDetailsPage from "./student/StudentDetailsPage";
 import StudentEditPage from "./student/StudentEditPage";
 import StudentRegisterPage from "./student/StudentRegisterPage";
-import CompanyProfilePage from "./company/CompanyProfilePage";
-import CompanyEditPage from "./company/CompanyEditPage";
+import StudentInternships from "./student/StudentInternships";
 
 export {
   LoginPage,
@@ -37,4 +38,5 @@ export {
   StudentRegisterPage,
   CompanyProfilePage,
   CompanyEditPage,
+  StudentInternships,
 };
