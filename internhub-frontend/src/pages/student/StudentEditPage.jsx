@@ -23,6 +23,13 @@ export default function StudentEditPage() {
   const [student, setStudent] = useState({});
   const [counties, setCounties] = useState([]);
   const [studyArea, setStudyAreas] = useState([]);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [description, setDescription] = useState("");
+  const [address, setAddress] = useState("");
+  const [countyId, setCountyId] = useState("");
+  const [studyAreaId, setStudyAreaId] = useState("");
   const navigate = useNavigate();
   const params = useParams();
 
@@ -40,6 +47,13 @@ export default function StudentEditPage() {
     await studentService.getByIdAsync(params.id).then((student) => {
       setLoading(false);
       setStudent(student);
+      setFirstName(student.firstName);
+      setLastName(student.lastName);
+      setPhoneNumber(student.phoneNumber);
+      setDescription(student.description);
+      setAddress(student.address);
+      setCountyId(student.countyId);
+      setStudyAreaId(student.studyAreaId);
     });
   }
 
@@ -55,16 +69,15 @@ export default function StudentEditPage() {
         </div>
         <Form
           onSubmit={async (e) => {
+            e.preventDefault();
             var newStudent = new Student({
-              firstName: e.target.firstName.value,
-              lastName: e.target.lastName.value,
-              email: e.target.email.value,
-              phoneNumber: e.target.phoneNumber.value,
-              address: e.target.address.value,
-              description: e.target.description.value,
-              password: e.target.password ? e.target.password.value : null,
-              countyId: e.target.county.value,
-              studyAreaId: e.target.studyarea.value,
+              firstName: firstName,
+              lastName: lastName,
+              phoneNumber: phoneNumber,
+              address: address,
+              description: description,
+              countyId: countyId,
+              studyAreaId: studyAreaId,
             });
             const result = await studentService.updateAsync(
               student.id,
@@ -78,33 +91,48 @@ export default function StudentEditPage() {
           <Input
             name="firstName"
             text="First name:"
-            value={student.firstName}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
           />
-          <Input name="lastName" text="Last name:" value={student.lastName} />
+          <Input
+            name="lastName"
+            text="Last name:"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
           <Input
             name="phoneNumber"
             text="Phone number:"
-            value={student.phoneNumber}
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
           />
           <SelectDropdown
             text={"County:"}
             placeholder={"Select county"}
             name={"county"}
             list={counties}
-            selectedId={student.countyId}
+            onChange={(e) => setCountyId(e.target.value)}
+            selectedId={countyId}
           />
-          <Input name="address" text="Address:" value={student.address} />
+          <Input
+            name="address"
+            text="Address:"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
           <Input
             name="description"
             text="Description:"
-            value={student.description}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
           <SelectDropdown
             text={"Study area:"}
             placeholder={"Select study area"}
             name={"studyArea"}
             list={studyArea}
-            selectedId={student.studyAreaId}
+            selectedId={studyAreaId}
+            onChange={(e) => setStudyAreaId(e.target.value)}
           />
           <br></br>
           <Button buttonColor="primary" type="submit">

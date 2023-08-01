@@ -22,6 +22,8 @@ export default function StudentRegisterPage() {
   const [loading, setLoading] = useState(true);
   const [counties, setCounties] = useState([]);
   const [studyArea, setStudyAreas] = useState([]);
+  const [studyAreaId, setStudyAreaId] = useState("");
+  const [countyId, setCountyId] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,12 +56,12 @@ export default function StudentRegisterPage() {
               address: e.target.address.value,
               description: e.target.description.value,
               password: e.target.password ? e.target.password.value : null,
-              countyId: e.target.county.value,
-              studyAreaId: e.target.studyarea.value,
+              countyId: countyId,
+              studyAreaId: studyAreaId,
             });
             const result = await studentService.postAsync(student);
             if (result) {
-              navigate("/");
+              navigate("/login");
             }
           }}
         >
@@ -71,14 +73,18 @@ export default function StudentRegisterPage() {
             placeholder={"Select county:"}
             name={"county"}
             list={counties}
+            selectedId={countyId}
+            onChange={(e) => setCountyId(e.target.value)}
           />
           <Input name="address" text="Address:" />
           <Input name="description" text="Description:" />
           <SelectDropdown
             text={"Study area:"}
             placeholder={"Select study area"}
-            name={"studyArea"}
+            name={"studyarea"}
             list={studyArea}
+            selectedId={studyAreaId}
+            onChange={(e) => setStudyAreaId(e.target.value)}
           />
           <Input name="email" text="Email:" />
           <Input type="password" name="password" text="Password:" />

@@ -22,7 +22,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // GET: api/State
-        [Authorize]
+        [AllowAnonymous]
         public async Task<HttpResponseMessage> GetAsync()
         {
             try

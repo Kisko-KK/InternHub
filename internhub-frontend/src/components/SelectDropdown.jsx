@@ -7,7 +7,6 @@ export default function SelectDropdown({
   selectedId,
   text,
   onChange,
-  value,
 }) {
   return (
     <div className="mb-3 mt-3">

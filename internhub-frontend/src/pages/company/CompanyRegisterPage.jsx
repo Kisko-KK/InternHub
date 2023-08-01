@@ -55,7 +55,7 @@ export default function CompanyRegisterPage() {
           const result = await companyService.postAsync(company);
 
           if (result) {
-            navigate("/");
+            navigate("/login");
           }
         }}
       >
@@ -78,6 +78,5 @@ export default function CompanyRegisterPage() {
         <Button type="submit">Create</Button>
       </Form>
     </div>
-
   );
 }

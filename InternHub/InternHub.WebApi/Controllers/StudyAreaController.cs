@@ -24,7 +24,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         // GET: api/StudyArea
-        [Authorize]
+        [AllowAnonymous]
         public async Task<HttpResponseMessage> GetAllAsync()
         {
             try
