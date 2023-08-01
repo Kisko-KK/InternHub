@@ -86,9 +86,17 @@
     color: white;
     margin-left: 40px;
   }
+  button:hover{
+    background-color: #5C8892;
+    transform: scale(1.04);
+  }
 
   html,
   body {
     background-color: #f2f2f2;
   }
   
+  .card{
+    background-color: #a8bbbf;
+    font-size: 1.2em;
+  }

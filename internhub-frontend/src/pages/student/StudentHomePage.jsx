@@ -7,7 +7,7 @@ import {
 } from "../../components";
 import "../../styles/student.css";
 import { PagedList } from "../../models";
-import { InternshipService } from "../../services";
+import { InternshipService, LoginService } from "../../services";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom/dist";
 
@@ -16,12 +16,13 @@ export default function StudentHomePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filterData, setFilterData] = useState({
     pageNumber: +(searchParams.get("pageNumber") ?? 1),
-    name: searchParams.get("name"),
-    endDate: searchParams.get("endDate"),
-    startDate: searchParams.get("startDate"),
+    name: searchParams.get("name")||"",
+    endDate: searchParams.get("endDate")||"",
+    startDate: searchParams.get("startDate") ||"",
     counties: searchParams.getAll("counties"),
   });
   const internshipService = new InternshipService();
+  const loginService = new LoginService();
 
   const navigate = useNavigate();
 
@@ -60,9 +61,7 @@ export default function StudentHomePage() {
           internship={internship}
           buttonText={"Details"}
           hasApplicationsCount={false}
-          redirectTo={() => {
-            navigate("/login");
-          }}
+          redirectTo={() => {navigate(`/internship/details/${internship.id}/${loginService.getUserToken().id}`)}}
         />
       ))}
       <Paging

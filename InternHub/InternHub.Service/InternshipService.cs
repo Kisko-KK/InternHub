@@ -54,5 +54,10 @@ namespace InternHub.Service
             internship.DateUpdated = DateTime.Now;
             return await InternshipRepository.PutAsync(internship);
         }
+
+        public async Task<bool> IsStudentRegisteredToInternshipAsync(string studentId, Guid internshipId)
+        {
+            return await InternshipRepository.IsStudentRegisteredToInternshipAsync(studentId, internshipId);
+        }
     }
 }

@@ -45,7 +45,6 @@ export class LoginService {
     const data = JSON.parse(localStorage.getItem("user_token"));
     if (!data) return null;
     const userToken = new UserToken(data);
-    console.log(userToken);
     return userToken;
   }
 

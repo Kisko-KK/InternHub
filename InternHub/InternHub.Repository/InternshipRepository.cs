@@ -307,6 +307,33 @@ namespace InternHub.Repository
             }
         }
 
+
+        public async Task<bool> IsStudentRegisteredToInternshipAsync(string studentId, Guid internshipId)
+        {
+            using (NpgsqlConnection connection= new NpgsqlConnection(connectionString.Name))
+            {
+                connection.Open();
+
+                NpgsqlCommand command = new NpgsqlCommand("select COUNT(*) " +
+                    "from public.\"InternshipApplication\" ia " +
+                    "inner join public.\"Student\" s on ia.\"StudentId\" = s.\"Id\" " +
+                    "inner join public.\"Internship\" i on ia.\"InternshipId\" = i.\"Id\" and i.\"IsActive\" = true " +
+                    "inner join dbo.\"AspNetUsers\" anu on anu.\"Id\" = s.\"Id\" and anu.\"IsActive\" = true " +
+                    "where ia.\"StudentId\" = @studentId and ia.\"InternshipId\" = @internshipId and ia.\"IsActive\" = true", connection);
+
+                command.Parameters.AddWithValue("@studentId", studentId);
+                command.Parameters.AddWithValue("internshipId", internshipId);
+
+
+                int count = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+
+
+                return count > 0;
+            }
+        }
+
+
         private Internship ReadInternship(NpgsqlDataReader reader)
         {
             try

@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/student.css"
+import "../../styles/student.css"
 
 export default function Internship({buttonText, internship, hasApplicationsCount, redirectTo}) {
 
