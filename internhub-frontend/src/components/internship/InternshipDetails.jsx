@@ -42,7 +42,7 @@ const InternshipDetails = () => {
                 <p className="card-text text-center mt-4"><strong>Duration: </strong> {internshipService.convertToShorterDate(internship.startDate)} - {internshipService.convertToShorterDate(internship.endDate)}</p>
                 <p className="card-text text-center">{internship.description}</p>
                 <p className="text-center">We are looking for students that are in {internship.studyArea ? internship.studyArea.name : ''} study area.</p>
-                <div className="row">
+                <div className="row w-100">
                   <div className="col-md-12">
                     <p className="text-center mt-5"><strong>Company:</strong> {internship.company ? internship.company.name : ''}</p>
                     <p className="text-center"> {internship.company ? internship.company.address : ''}</p>
@@ -52,14 +52,14 @@ const InternshipDetails = () => {
                   </div>
                 </div>
                 { isRegisteredToInternship &&
-                  <div className='text-center mt-5'>
+                  <div className='text-center mt-5 bg-c'>
                   <button className="mx-auto" onClick={handleLogOutInternship}>
                     Odjavi ovu praksu
                   </button>
                 </div>
                 }
                 { !isRegisteredToInternship &&
-                  <div className='text-center mt-5'>
+                  <div className='text-center mt-5 bg-c'>
                   <button className="mx-auto" onClick={handleRegisterInternship}>
                     Prijavi se na praksu
                   </button>

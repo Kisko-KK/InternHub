@@ -11,7 +11,7 @@ export default function Internship({buttonText, internship, hasApplicationsCount
     internship.endDate = convertToShorterDate(internship.endDate);
 
     return (
-        <div id = "outer-container">
+        <div id = "outside-container">
             <div id = "internship-container">
             <h3>{internship.name}</h3>
 

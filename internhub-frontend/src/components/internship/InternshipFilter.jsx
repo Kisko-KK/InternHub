@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Select from "react-select";
 import { CountyService } from "../../services/CountyService";
 import { Button, Input, MultiSelect } from "../index";
 
@@ -86,22 +85,15 @@ const InternshipFilter = ({ onFilter, onClearFilter, filter }) => {
             value={counties}
             onChange={setCounties}
           />
-          {/* <label>Counties:</label>
-          <Select
-            options={countiesOptions}
-            isMulti
-            value={counties}
-            onChange={(selectedOptions) => setCounties(selectedOptions)}
-          /> */}
         </div>
       </div>
 
-      <div className="mt-3">
+      <div className="ml-3">
         <Button buttonColor="primary" onClick={handleFilter}>
           Filter
         </Button>
       </div>
-      <div className="mt-3">
+      <div className="">
         <Button buttonColor="secondary" onClick={handleCancel}>
           Cancel
         </Button>

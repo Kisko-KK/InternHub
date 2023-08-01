@@ -11,11 +11,14 @@
     position: relative;
   }
   
-  #outer-container {
+  #outside-container {
     display: grid;
     place-items: center;
   }
   
+  p,h3,h2, .p-button-flex, .p-flex, .card-body, .col-md-12, strong, a, .bg-c{
+    background-color: #a8bbbf;
+  }
   h3 {
     margin-left: 15px;
     margin-bottom: 10   px;
@@ -63,7 +66,7 @@
   
   .p-flex {
     position: absolute; /* Position the p-flex absolutely */
-    bottom: -5px; /* Adjust the bottom value as needed */
+    bottom: 0px; /* Adjust the bottom value as needed */
     left: 15px; /* Adjust the left value as needed */
     right: 30px; /* Adjust the right value as needed */
     display: flex;
@@ -100,3 +103,9 @@
     background-color: #a8bbbf;
     font-size: 1.2em;
   }
+
+  .container{
+    max-width: 1200px !important;
+    background-color: #f2f2f2 !important;
+  }
+
