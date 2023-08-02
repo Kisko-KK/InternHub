@@ -4,6 +4,7 @@ import {
   Paging,
   InternshipFilter,
   NavigationBar,
+  NoItems,
 } from "../../components";
 import "../../styles/student.css";
 import { PagedList } from "../../models";
@@ -16,9 +17,9 @@ export default function StudentHomePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filterData, setFilterData] = useState({
     pageNumber: +(searchParams.get("pageNumber") ?? 1),
-    name: searchParams.get("name")||"",
-    endDate: searchParams.get("endDate")||"",
-    startDate: searchParams.get("startDate") ||"",
+    name: searchParams.get("name") || "",
+    endDate: searchParams.get("endDate") || "",
+    startDate: searchParams.get("startDate") || "",
     counties: searchParams.getAll("counties"),
   });
   const internshipService = new InternshipService();
@@ -54,13 +55,20 @@ export default function StudentHomePage() {
           setFilterData({ pageNumber: 1 });
         }}
       />
+      {pagedInternships.listSize === 0 && <NoItems />}
       {pagedInternships.data.map((internship) => (
         <Internship
           key={internship.id}
           internship={internship}
           buttonText={"Details"}
           hasApplicationsCount={false}
-          redirectTo={() => {navigate(`/internship/details/${internship.id}/${loginService.getUserToken().id}`)}}
+          redirectTo={() => {
+            navigate(
+              `/internship/details/${internship.id}/${
+                loginService.getUserToken().id
+              }`
+            );
+          }}
         />
       ))}
       <Paging

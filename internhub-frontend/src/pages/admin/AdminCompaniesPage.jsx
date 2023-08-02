@@ -6,6 +6,7 @@ import {
   CompanyAdminFilter,
   CompanyList,
   Paging,
+  NoItems,
 } from "../../components";
 import { PagedList } from "../../models";
 import { CompanyService } from "../../services";
@@ -46,45 +47,49 @@ export default function AdminCompaniesPage() {
   return (
     <div>
       <NavigationBar />
-      <div className="text-center">
-        <h1>Companies</h1>
+      <div className="container">
+        <div className="text-center">
+          <h1>Companies</h1>
+        </div>
+        <CompanyAdminFilter
+          filter={currentFilter}
+          onFilter={(filter) => {
+            setSearchParams({ ...filter, pageNumber: 1 });
+            setCurrentFilter({ ...filter, pageNumber: 1 });
+          }}
+          onClearFilter={() => {
+            setSearchParams({ pageNumber: 1 });
+            setCurrentFilter({ pageNumber: 1 });
+          }}
+        />
+        {/* <Button
+          buttonColor="success"
+          onClick={() => {
+            navigate("/company/register");
+          }}
+        >
+          New company
+        </Button> */}
+        <div style={{ height: 30 }}></div>
+        <CompanyList
+          companies={pagedCompanies.data}
+          onRemove={() =>
+            setSearchParams({
+              ...currentFilter,
+              pageNumber: pagedCompanies.currentPage,
+            })
+          }
+        />
+        {pagedCompanies.listSize === 0 && <NoItems />}
+        <Paging
+          currentPage={pagedCompanies.currentPage}
+          lastPage={pagedCompanies.lastPage}
+          onPageChanged={(page) => {
+            setSearchParams({ ...currentFilter, pageNumber: page });
+            refreshCompanies();
+          }}
+        />
       </div>
-      <CompanyAdminFilter
-        filter={currentFilter}
-        onFilter={(filter) => {
-          setSearchParams({ ...filter, pageNumber: 1 });
-          setCurrentFilter({ ...filter, pageNumber: 1 });
-        }}
-        onClearFilter={() => {
-          setSearchParams({ pageNumber: 1 });
-          setCurrentFilter({ pageNumber: 1 });
-        }}
-      />
-      <Button
-        buttonColor="success"
-        onClick={() => {
-          navigate("/company/register");
-        }}
-      >
-        New company
-      </Button>
-      <CompanyList
-        companies={pagedCompanies.data}
-        onRemove={() =>
-          setSearchParams({
-            ...currentFilter,
-            pageNumber: pagedCompanies.currentPage,
-          })
-        }
-      />
-      <Paging
-        currentPage={pagedCompanies.currentPage}
-        lastPage={pagedCompanies.lastPage}
-        onPageChanged={(page) => {
-          setSearchParams({ ...currentFilter, pageNumber: page });
-          refreshCompanies();
-        }}
-      />
     </div>
   );
 }

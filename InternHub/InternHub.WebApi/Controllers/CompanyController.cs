@@ -19,11 +19,13 @@ namespace InternHub.WebApi.Controllers
         private ICompanyService CompanyService { get; }
         private INotificationService NotificationService { get; }
         private RoleManager RoleManager { get; }
+        private UserManager UserManager { get; }
 
-        public CompanyController(ICompanyService companyService, RoleManager roleManager, INotificationService notificationService)
+        public CompanyController(ICompanyService companyService, RoleManager roleManager, UserManager userManager, INotificationService notificationService)
         {
             CompanyService = companyService;
             RoleManager = roleManager;
+            UserManager = userManager;
             NotificationService = notificationService;
         }
 
@@ -79,7 +81,7 @@ namespace InternHub.WebApi.Controllers
                 Password = passwordHasher.HashPassword(company.Password)
             };
 
-            Role role = await RoleManager.FindByNameAsync("Company");
+            Role role = await RoleManager.FindByNameAsync("User");
             if (role == null) return Request.CreateResponse(HttpStatusCode.InternalServerError);
 
             newCompany.RoleId = role.Id;
@@ -140,15 +142,22 @@ namespace InternHub.WebApi.Controllers
             try
             {
                 Company existingCompany = await CompanyService.GetAsync(id);
+
+                if (existingCompany.IsAccepted) return Request.CreateResponse(HttpStatusCode.OK);
+
                 if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
 
 
                 if (isAccepted)
                 {
+                    Role role = await RoleManager.FindByNameAsync("Company");
+                    if (role == null) throw new Exception();
+                    existingCompany.RoleId = role.Id;
                     if (await CompanyService.AcceptAsync(existingCompany) == false)
                     {
                         return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't approve company!");
                     }
+
                     await NotificationService.AddAsync("Vaš račun je prihvaćen", "Poštovani " + existingCompany.GetFullName() + "!\n\nVaša prijava za tvrtku " + existingCompany.Name + " na platformi InternHub je odobrena. Od sada možete neometano objavljivati vaše prakse!" + " \n\nVaša InternHub ekipa", existingCompany);
 
                     return Request.CreateResponse(HttpStatusCode.OK, "Company accepted!");

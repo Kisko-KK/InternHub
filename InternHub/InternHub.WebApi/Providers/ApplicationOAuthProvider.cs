@@ -38,7 +38,7 @@ namespace InternHub.WebApi.Providers
         {
             Model.User user = await UserManager.FindAsync(context.UserName, context.Password);
 
-            if (user == null)
+            if (user == null || !user.IsActive)
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
                 return;

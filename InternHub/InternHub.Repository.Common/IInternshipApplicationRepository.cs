@@ -12,6 +12,8 @@ namespace InternHub.Repository.Common
     public interface IInternshipApplicationRepository
     {
         Task<PagedList<InternshipApplication>> GetAllInternshipApplicationsAsync(Paging paging, Sorting sorting, InternshipApplicationFilter internshipApplicationFilter);
+        Task<PagedList<InternshipApplication>> GetUnacceptedAsync(Paging paging, Sorting sorting, InternshipApplicationFilter internshipApplicationFilter);
+        Task<bool> PutAsync(InternshipApplication internshipApplication);
         Task<InternshipApplication> GetInternshipApplicationByIdAsync(Guid id);
         Task<bool> PostInternshipApplicationAsync(InternshipApplication internshipApplication);
         Task<bool> DeleteAsync(InternshipApplication internshipApplication);

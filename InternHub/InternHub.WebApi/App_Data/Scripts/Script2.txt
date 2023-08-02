@@ -64,9 +64,9 @@ VALUES
     ('0c2ba6ff-9145-43cf-ac48-ccf7effea536', '0eea48f7-a781-428d-997c-97734b9a1321'),
     ('a9c14b9f-7b69-45ff-9db8-f61b24a94aec', '3c622019-b413-4363-ba44-9fc67c3d35a4'),
     ('61afa574-c6ac-4fd2-9245-b32d3b2d9b2c', 'cfabc5fe-99c2-4449-9f3b-b6c27694e22c'),
-    ('0a206bed-d95f-49c6-82e5-e3ffa7f48ec0', '3c622019-b413-4363-ba44-9fc67c3d35a4'),
+    ('0a206bed-d95f-49c6-82e5-e3ffa7f48ec0', 'b4f33ce1-1fcf-4be6-8bed-fc9c77a59594'),
     ('a0434668-e3b7-4326-b57b-9b50bd5cea1d', 'cfabc5fe-99c2-4449-9f3b-b6c27694e22c'),
-    ('66dd48ab-afc1-4260-a7f2-527f0b5bd384', '3c622019-b413-4363-ba44-9fc67c3d35a4'),
+    ('66dd48ab-afc1-4260-a7f2-527f0b5bd384', 'b4f33ce1-1fcf-4be6-8bed-fc9c77a59594'),
     ('6699302f-1668-4387-99a9-2f92f9d3ed08', 'cfabc5fe-99c2-4449-9f3b-b6c27694e22c');
 
 INSERT INTO public."Company" ("Id", "Name", "Website", "IsAccepted")

@@ -277,10 +277,19 @@ namespace InternHub.Repository
                         userCommand.Parameters.AddWithValue("@id", company.Id);
                         userCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
 
+                        NpgsqlCommand userRoleRemoveCommand = new NpgsqlCommand("REMOVE from dbo.\"AspNetUserRoles\" where \"UserId\" = @id", connection, transaction);
+                        userCommand.Parameters.AddWithValue("@id", company.Id);
+
+                        NpgsqlCommand userRoleAddCommand = new NpgsqlCommand("INSERT INTO dbo.\"AspNetUserRoles\" values (@id, @roleId)", connection, transaction);
+                        userCommand.Parameters.AddWithValue("@id", company.Id);
+                        userCommand.Parameters.AddWithValue("@roleId", company.RoleId);
+
                         int companyResult = await companyCommand.ExecuteNonQueryAsync();
                         int userResult = await userCommand.ExecuteNonQueryAsync();
+                        int userRoleRemoveResult = await userRoleRemoveCommand.ExecuteNonQueryAsync();
+                        int userRoleAddResult = await userRoleAddCommand.ExecuteNonQueryAsync();
 
-                        int result = companyResult * userResult;
+                        int result = companyResult * userResult * userRoleRemoveResult * userRoleAddResult;
 
                         if (result > 0) await transaction.CommitAsync();
                         else await transaction.RollbackAsync();

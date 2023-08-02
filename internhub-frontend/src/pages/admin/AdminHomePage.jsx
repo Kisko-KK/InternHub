@@ -6,6 +6,7 @@ import {
   CompanyAdminList,
   CompanyFilterComponent,
   Paging,
+  NoItems,
 } from "../../components";
 import { PagedList } from "../../models";
 import { CompanyService } from "../../services";
@@ -30,6 +31,7 @@ export default function AdminHomePage() {
       pageSize: 10,
     });
     setPagedCompanies(data);
+    console.log(data);
   }
 
   useEffect(() => {
@@ -39,37 +41,41 @@ export default function AdminHomePage() {
   return (
     <div>
       <NavigationBar />
-      <div className="text-center">
-        <h1>Unaccepted companies</h1>
+      <div className="container">
+        <div className="text-center">
+          <h1>Unaccepted companies</h1>
+        </div>
+        <CompanyFilterComponent
+          filter={currentFilter}
+          onFilter={(filter) => {
+            setSearchParams({ ...filter, pageNumber: 1 });
+            setCurrentFilter({ ...filter, pageNumber: 1 });
+          }}
+          onClearFilter={() => {
+            setSearchParams({ pageNumber: 1 });
+            setCurrentFilter({ pageNumber: 1 });
+          }}
+        />
+        <div style={{ height: 30 }}></div>
+        <CompanyAdminList
+          companies={pagedCompanies.data}
+          onChange={() => {
+            refreshCompanies({
+              pageNumber: pagedCompanies.currentPage,
+              ...currentFilter,
+            });
+          }}
+        />
+        {pagedCompanies.listSize === 0 && <NoItems />}
+        <Paging
+          currentPage={pagedCompanies.currentPage}
+          lastPage={pagedCompanies.lastPage}
+          onPageChanged={(page) => {
+            setSearchParams({ ...currentFilter, pageNumber: page });
+            setCurrentFilter({ ...currentFilter, pageNumber: page });
+          }}
+        />
       </div>
-      <CompanyFilterComponent
-        filter={currentFilter}
-        onFilter={(filter) => {
-          setSearchParams({ ...filter, pageNumber: 1 });
-          setCurrentFilter({ ...filter, pageNumber: 1 });
-        }}
-        onClearFilter={() => {
-          setSearchParams({ pageNumber: 1 });
-          setCurrentFilter({ pageNumber: 1 });
-        }}
-      />
-      <CompanyAdminList
-        companies={pagedCompanies.data}
-        onChange={() => {
-          refreshCompanies({
-            pageNumber: pagedCompanies.currentPage,
-            ...currentFilter,
-          });
-        }}
-      />
-      <Paging
-        currentPage={pagedCompanies.currentPage}
-        lastPage={pagedCompanies.lastPage}
-        onPageChanged={(page) => {
-          setSearchParams({ ...currentFilter, pageNumber: page });
-          setCurrentFilter({ ...currentFilter, pageNumber: page });
-        }}
-      />
     </div>
   );
 }

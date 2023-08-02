@@ -9,23 +9,41 @@ import {
 const urlPrefix = Server.url + "InternshipApplication";
 
 export class InternshipApplicationService {
-  async getAsync({ pageNumber, pageSize, ...filter }) {
+  getUrlQuery({ pageNumber, pageSize, ...filter }) {
+    const states =
+      filter.states && filter.states.length > 0
+        ? "&" + filter.states.map((state) => `states=${state}`).join("&")
+        : "";
+    const urlQuery = `?CurrentPage=${pageNumber}&pageSize=${pageSize}&studentId=${
+      filter.studentId || ""
+    }&companyName=${filter.companyName || ""}&internshipName=${
+      filter.internshipName || ""
+    }${states}`;
+    return urlQuery;
+  }
+
+  async getAsync(params) {
     try {
-      const states =
-        filter.states && filter.states.length > 0
-          ? "&" + filter.states.map((state) => `states=${state}`).join("&")
-          : "";
-      const response = await axios.get(
-        urlPrefix +
-          `?CurrentPage=${pageNumber}&pageSize=${pageSize}&studentId=${
-            filter.studentId || ""
-          }&companyName=${filter.companyName || ""}&internshipName=${
-            filter.internshipName || ""
-          }${states}`,
-        {
-          headers: HttpHeader.get(),
-        }
+      const response = await axios.get(urlPrefix + this.getUrlQuery(params), {
+        headers: HttpHeader.get(),
+      });
+      if (response.status !== 200) return [];
+      const dataList = response.data["Data"].map((data) =>
+        InternshipApplication.fromJson(data)
       );
+      console.log(dataList);
+      const pagedList = PagedList.fromJson(response.data, dataList);
+      return pagedList;
+    } catch {
+      return new PagedList({});
+    }
+  }
+
+  async getUnacceptedAsync(params) {
+    try {
+      const response = await axios.get(urlPrefix + this.getUrlQuery(params), {
+        headers: HttpHeader.get(),
+      });
       if (response.status !== 200) return [];
       const dataList = response.data["Data"].map((data) =>
         InternshipApplication.fromJson(data)
@@ -55,6 +73,21 @@ export class InternshipApplicationService {
       const response = await axios.post(urlPrefix, {"InternshipId" : internshipId, "Message" : applyMessage}, {
         headers: HttpHeader.get(),
       });
+      return response.status === 200;
+    } catch {
+      return false;
+    }
+  }
+
+  async acceptAsync(id, isAccepted) {
+    try {
+      const response = await axios.post(
+        urlPrefix + `?id=${id}&isAccepted=${isAccepted}`,
+        null,
+        {
+          headers: HttpHeader.get(),
+        }
+      );
       return response.status === 200;
     } catch {
       return false;

@@ -18,6 +18,7 @@ using System.Web.Http;
 namespace InternHub.WebApi.Controllers
 {
     [Authorize]
+    [RoutePrefix("api/InternshipApplication")]
     public class InternshipApplicationController : ApiController
     {
         private IInternshipApplicationService InternshipApplicationService { get; }
@@ -48,6 +49,33 @@ namespace InternHub.WebApi.Controllers
                     Data = internshipApplications.Data.Select(x => new InternshipApplicationView(x)).ToList()
                 };
                 return Request.CreateResponse(HttpStatusCode.OK, pagedApplications);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception here
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "An error occurred while processing the request.", ex);
+            }
+        }
+
+        [HttpGet, Route("GetUnaccepted")]
+        public async Task<HttpResponseMessage> GetUnacceptedAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] InternshipApplicationFilter filter = null)
+        {
+            try
+            {
+                PagedList<InternshipApplication> pagedList = await InternshipApplicationService.GetUnacceptedAsync(paging, sorting, filter);
+
+                if (pagedList == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+                PagedList<InternshipApplicationStudentsView> pagedListView = new PagedList<InternshipApplicationStudentsView>
+                {
+                    CurrentPage = pagedList.CurrentPage,
+                    PageSize = pagedList.PageSize,
+                    DatabaseRecordsCount = pagedList.DatabaseRecordsCount,
+                    Data = pagedList.Data.Select(intershipApplication => new InternshipApplicationStudentsView(intershipApplication)).ToList(),
+                    LastPage = pagedList.LastPage
+                };
+
+                return Request.CreateResponse(HttpStatusCode.OK, pagedListView);
             }
             catch (Exception ex)
             {
@@ -127,5 +155,26 @@ namespace InternHub.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, result);
         }
 
+
+        [HttpPost, Authorize(Roles = "Student")]
+        public async Task<HttpResponseMessage> AcceptAsync(Guid id, bool isAccepted)
+        {
+            try
+            {
+                State state = await StateService.GetByNameAsync(isAccepted ? "Accepted" : "Declined");
+                if (state == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+                InternshipApplication internshipApplication = await InternshipApplicationService.GetInternshipApplicationByIdAsync(id);
+                if (internshipApplication == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+                internshipApplication.StateId = state.Id;
+                bool result = await InternshipApplicationService.PutAsync(internshipApplication, User.Identity.GetUserId());
+
+                if (!result) return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch { return Request.CreateResponse(HttpStatusCode.InternalServerError); }
+        }
     }
 }

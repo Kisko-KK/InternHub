@@ -11,6 +11,7 @@ namespace InternHub.Service
     public class InternshipService : IInternshipService
     {
         private IInternshipRepository InternshipRepository { get; set; }
+
         public InternshipService(IInternshipRepository internshipRepository)
         {
             InternshipRepository = internshipRepository;

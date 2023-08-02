@@ -319,11 +319,14 @@
     <Compile Include="Controllers\StudentController.cs" />
     <Compile Include="Controllers\StudyAreaController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CompanyDetailsView.cs" />
     <Compile Include="Models\CountyPut.cs" />
+    <Compile Include="Models\InternshipApplicationStudentsView.cs" />
+    <Compile Include="Models\InternshipShortView.cs" />
     <Compile Include="Models\StudentShortView.cs" />
     <Compile Include="Models\CompanyHomeInternshipView.cs" />
     <Compile Include="Models\CompanyPost.cs" />

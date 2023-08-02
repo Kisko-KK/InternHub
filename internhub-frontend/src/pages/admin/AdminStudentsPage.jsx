@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Button,
   NavigationBar,
+  NoItems,
   Paging,
   StudentFilterComponent,
   StudentsList,
@@ -45,48 +46,52 @@ export default function AdminStudentsPage() {
   return (
     <div>
       <NavigationBar />
-      <div className="text-center">
-        <h1>Students</h1>
+      <div className="container">
+        <div className="text-center">
+          <h1>Students</h1>
+        </div>
+        <StudentFilterComponent
+          filter={currentFilter}
+          onFilter={(filter) => {
+            setSearchParams({ ...filter, pageNumber: 1 });
+            setCurrentFilter({ ...filter, pageNumber: 1 });
+          }}
+          onClearFilter={() => {
+            setSearchParams({ pageNumber: 1 });
+            setCurrentFilter({ pageNumber: 1 });
+          }}
+        />
+        {/* <Button
+          buttonColor="success"
+          onClick={() => {
+            navigate("/student/register");
+          }}
+        >
+          New student
+        </Button> */}
+        <div style={{ height: 30 }}></div>
+        <StudentsList
+          students={pagedStudents.data}
+          onEdit={(id) => {
+            navigate(`/student/edit/${id}`);
+          }}
+          onRemove={() => {
+            setSearchParams({
+              ...currentFilter,
+              pageNumber: pagedStudents.currentPage,
+            });
+          }}
+        />
+        {pagedStudents.listSize === 0 && <NoItems />}
+        <Paging
+          currentPage={pagedStudents.currentPage}
+          lastPage={pagedStudents.lastPage}
+          onPageChanged={(page) => {
+            setSearchParams({ ...currentFilter, pageNumber: page });
+            setCurrentFilter({ ...currentFilter, pageNumber: page });
+          }}
+        />
       </div>
-      <StudentFilterComponent
-        filter={currentFilter}
-        onFilter={(filter) => {
-          setSearchParams({ ...filter, pageNumber: 1 });
-          setCurrentFilter({ ...filter, pageNumber: 1 });
-        }}
-        onClearFilter={() => {
-          setSearchParams({ pageNumber: 1 });
-          setCurrentFilter({ pageNumber: 1 });
-        }}
-      />
-      <Button
-        buttonColor="success"
-        onClick={() => {
-          navigate("/student/register");
-        }}
-      >
-        New student
-      </Button>
-      <StudentsList
-        students={pagedStudents.data}
-        onEdit={(id) => {
-          navigate(`/student/edit/${id}`);
-        }}
-        onRemove={() => {
-          setSearchParams({
-            ...currentFilter,
-            pageNumber: pagedStudents.currentPage,
-          });
-        }}
-      />
-      <Paging
-        currentPage={pagedStudents.currentPage}
-        lastPage={pagedStudents.lastPage}
-        onPageChanged={(page) => {
-          setSearchParams({ ...currentFilter, pageNumber: page });
-          setCurrentFilter({ ...currentFilter, pageNumber: page });
-        }}
-      />
     </div>
   );
 }

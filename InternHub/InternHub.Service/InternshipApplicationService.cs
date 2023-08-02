@@ -34,6 +34,14 @@ namespace InternHub.Service
         {
             return await _repo.GetIdAsync(studentId, internshipId);
         }
+        public async Task<PagedList<InternshipApplication>> GetUnacceptedAsync(Paging paging, Sorting sorting, InternshipApplicationFilter internshipApplicationFilter) => await _repo.GetUnacceptedAsync(paging, sorting, internshipApplicationFilter);
+
+        public async Task<bool> PutAsync(InternshipApplication internshipApplication, string currentUserId)
+        {
+            internshipApplication.UpdatedByUserId = currentUserId;
+            internshipApplication.DateUpdated = DateTime.Now;
+            return await _repo.PutAsync(internshipApplication);
+        }
 
         public async Task<InternshipApplication> GetInternshipApplicationByIdAsync(Guid id) => await _repo.GetInternshipApplicationByIdAsync(id);
 

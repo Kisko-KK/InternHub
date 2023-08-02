@@ -123,6 +123,7 @@ export default function StudentFilterComponent({
           </div>
           <div className="col-6">
             <MultiSelect
+              text="Study areas:"
               options={studyAreaOptions}
               value={selectedStudyAreas}
               onChange={(selectedStudyAreas) =>

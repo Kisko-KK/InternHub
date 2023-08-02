@@ -19,8 +19,8 @@ export class InternshipApplication {
 
   static fromJson(json) {
     return new InternshipApplication({
-      dateCreated: json["DateCreated"],
-      dateUpdated: json["DateUpdated"],
+      dateCreated: json["DateCreated"] || "",
+      dateUpdated: json["DateUpdated"] || "",
       message: json["Message"],
       student: Student.fromJson(json["Student"]),
       state: State.fromJson(json["State"]),

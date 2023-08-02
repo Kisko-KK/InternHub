@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+import { useEffect } from "react";
+import { Loader } from "../components";
 import { LoginService } from "../services";
 import {
   AdminHomePage,
@@ -8,9 +10,25 @@ import {
 } from "./index";
 
 export default function HomePage() {
-  const userToken = new LoginService().getUserToken() ?? { role: "" };
-  if (userToken.role.toLowerCase() === "admin") return <AdminHomePage />;
-  if (userToken.role.toLowerCase() === "company") return <CompanyHomePage />;
-  if (userToken.role.toLowerCase() === "student") return <StudentHomePage />;
+  const loginService = new LoginService();
+  const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState("");
+
+  async function getUserRole() {
+    let role = await loginService.getUserRoleAsync();
+    role = role.toLowerCase();
+    setRole(role);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    getUserRole();
+  });
+
+  if (loading) return <Loader />;
+
+  if (role.toLowerCase() === "admin") return <AdminHomePage />;
+  if (role.toLowerCase() === "company") return <CompanyHomePage />;
+  if (role.toLowerCase() === "student") return <StudentHomePage />;
   return <LandingPage />;
 }

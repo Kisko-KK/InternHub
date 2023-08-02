@@ -6,6 +6,7 @@ import {
   Internship,
   InternshipApplicationFilterComponent,
   NavigationBar,
+  NoItems,
   Paging,
 } from "../../components";
 import { PagedList } from "../../models";
@@ -59,7 +60,8 @@ export default function StudentInternships() {
             setCurrentFilter({ pageNumber: 1 });
           }}
         />
-
+        <div style={{ height: 30 }}></div>
+        {pagedInternshipApplications.listSize === 0 && <NoItems />}
         {pagedInternshipApplications.data.map((internshipApplication) => (
           <Internship
             key={internshipApplication.internship.id}

@@ -29,6 +29,7 @@ export class LoginService {
   logOut() {
     try {
       localStorage.removeItem("user_token");
+      sessionStorage.removeItem("user_role");
       return true;
     } catch {
       return false;
@@ -48,9 +49,19 @@ export class LoginService {
     return userToken;
   }
 
-  getUserRole() {
-    const userToken = this.getUserToken();
-    if (userToken) return userToken.role || "";
-    return "";
+  async getUserRoleAsync() {
+    try {
+      let role = sessionStorage.getItem("user_role");
+      if (role) return role;
+      const response = await axios.get(Server.url + "User/GetRole", {
+        headers: HttpHeader.get(),
+      });
+      if (response.status !== 200) return "";
+      role = response.data;
+      sessionStorage.setItem("user_role", role);
+      return role;
+    } catch {
+      return "";
+    }
   }
 }

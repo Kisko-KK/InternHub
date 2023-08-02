@@ -14,6 +14,7 @@ export default function LoginPage() {
       password: e.target.password.value,
     });
     if (result) navigate("/");
+    else alert("Invalid email or password!");
   }
 
   return (
