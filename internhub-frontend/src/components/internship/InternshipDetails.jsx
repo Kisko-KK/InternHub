@@ -3,9 +3,11 @@ import { useParams } from "react-router-dom";
 import {
   InternshipApplicationService,
   InternshipService,
+  LoginService,
+  StudentService,
 } from "../../services";
 import StudentNavigation from "../student/StudentNavigation";
-import { RegisterPopupInternship } from "../../components/index";
+import { RegisterPopupInternship, StudentsList } from "../../components/index";
 import "../../styles/student.css";
 
 const InternshipDetails = () => {
@@ -13,9 +15,12 @@ const InternshipDetails = () => {
   const { internshipId, studentId } = useParams("");
   const [isRegisteredToInternship, setIsRegisteredToInternship] =
     useState(false);
+  const [students, setStudents] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [internshipApplicationId, setInternshipApplicationId] = useState("");
-
+  const [isCompany, setIsCompany] = useState(false);
+  const studentService = new StudentService();
+  const loginService = new LoginService();
   const internshipService = new InternshipService();
   const internshipApplicationService = new InternshipApplicationService();
 
@@ -58,11 +63,24 @@ const InternshipDetails = () => {
     await fetchIsStudentregisteredAsync();
   };
 
+  async function checkIfCompany() {
+    const role = await loginService.getUserRoleAsync();
+    const isCompany = role.toLowerCase() === "company";
+    setIsCompany(isCompany);
+    if (isCompany) refreshStudents();
+  }
+
   useEffect(() => {
+    checkIfCompany();
     fetchInternshipAsync();
     fetchIsStudentregisteredAsync();
     fetchInternshipApplicationId();
   }, []);
+
+  async function refreshStudents() {
+    const data = await studentService.getByInternshipAsync(internshipId);
+    setStudents(data);
+  }
 
   return (
     <>
@@ -144,6 +162,7 @@ const InternshipDetails = () => {
                 />
               </div>
             </div>
+            {isCompany && <StudentsList students={students} readonly={true} />}
           </div>
         </div>
       </div>

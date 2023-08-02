@@ -2,7 +2,7 @@ import React from "react";
 import Table from "../Table";
 import StudentComponent from "./StudentComponent";
 
-export default function StudentsList({ students, onEdit, onRemove }) {
+export default function StudentsList({ students, onEdit, onRemove, readonly }) {
   return (
     <Table>
       <thead>
@@ -21,6 +21,7 @@ export default function StudentsList({ students, onEdit, onRemove }) {
               student={student}
               onEdit={onEdit}
               onRemove={onRemove}
+              readonly={readonly}
             />
           );
         })}

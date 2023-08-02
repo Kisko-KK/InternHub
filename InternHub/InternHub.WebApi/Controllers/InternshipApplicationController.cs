@@ -156,7 +156,7 @@ namespace InternHub.WebApi.Controllers
         }
 
 
-        [HttpPost, Authorize(Roles = "Student")]
+        [HttpPost, Authorize(Roles = "Company"), Route("Accept")]
         public async Task<HttpResponseMessage> AcceptAsync(Guid id, bool isAccepted)
         {
             try

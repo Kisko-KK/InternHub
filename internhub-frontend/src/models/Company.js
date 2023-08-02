@@ -9,7 +9,6 @@ export class Company extends User {
   }
 
   static fromJson(json) {
-    console.log(json);
     return new Company({
       id: json["Id"],
       name: json["Name"],

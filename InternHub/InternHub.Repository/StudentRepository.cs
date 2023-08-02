@@ -20,6 +20,27 @@ namespace InternHub.Repository
             _connectionString = connectionString;
         }
 
+        public async Task<List<Student>> GetByInternship(Guid internshipId)
+        {
+            List<Student> students = new List<Student>();
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
+            {
+                NpgsqlCommand command = new NpgsqlCommand("select * from \"Student\" s inner join dbo.\"AspNetUsers\" anu on s.\"Id\" = anu.\"Id\"  inner join \"InternshipApplication\" ia on s.\"Id\" = ia.\"StudentId\" where ia.\"IsActive\" = true and anu.\"IsActive\" = true and ia.\"InternshipId\" = @internshipId", connection);
+                command.Parameters.AddWithValue("@internshipId", internshipId);
+
+                await connection.OpenAsync();
+
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.HasRows && await reader.ReadAsync())
+                {
+                    Student student = ReadStudentAsAdmin(reader);
+                    students.Add(student);
+                }
+            }
+            return students;
+        }
+
         public async Task<PagedList<Student>> GetStudentViewAsAdminAsync(Sorting sorting, Paging paging, StudentFilter filter)
         {
             PagedList<Student> pagedStudents = new PagedList<Student>()

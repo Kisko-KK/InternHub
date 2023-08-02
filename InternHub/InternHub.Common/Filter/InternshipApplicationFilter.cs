@@ -12,5 +12,8 @@ namespace InternHub.Common.Filter
         public string InternshipName { get; set; } = null;
         public string CompanyName { get; set; }
         public string StudentId { get; set; } = null;
+        public string CompanyId { get; set; } = null;
+        public string FirstName { get; set; } = null;
+        public string LastName { get; set; } = null;
     }
 }

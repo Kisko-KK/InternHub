@@ -26,6 +26,11 @@ namespace InternHub.Service
             return await _studentRepository.GetStudentsAsync(sorting, paging, filter);
         }
 
+        public async Task<List<Student>> GetByInternship(Guid internshipId)
+        {
+            return await _studentRepository.GetByInternship(internshipId);
+        }
+
         public async Task<Student> GetStudentByIdAsync(string id)
         {
             return await _studentRepository.GetStudentByIdAsync(id);

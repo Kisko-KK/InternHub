@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   NavigationBar,
-  Button,
   CompanyAdminFilter,
   CompanyList,
   Paging,
@@ -28,7 +26,6 @@ export default function AdminCompaniesPage() {
         ? false
         : searchParams.get("isAccepted").toLowerCase() === "true",
   });
-  const navigate = useNavigate();
 
   async function refreshCompanies() {
     const data = await companyService.getAsync({

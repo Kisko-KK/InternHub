@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Button,
   NavigationBar,
   NoItems,
   Paging,
@@ -81,6 +80,7 @@ export default function AdminStudentsPage() {
               pageNumber: pagedStudents.currentPage,
             });
           }}
+          readonly={false}
         />
         {pagedStudents.listSize === 0 && <NoItems />}
         <Paging

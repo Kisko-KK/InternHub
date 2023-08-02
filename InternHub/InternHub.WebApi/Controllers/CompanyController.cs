@@ -19,13 +19,11 @@ namespace InternHub.WebApi.Controllers
         private ICompanyService CompanyService { get; }
         private INotificationService NotificationService { get; }
         private RoleManager RoleManager { get; }
-        private UserManager UserManager { get; }
 
-        public CompanyController(ICompanyService companyService, RoleManager roleManager, UserManager userManager, INotificationService notificationService)
+        public CompanyController(ICompanyService companyService, RoleManager roleManager, INotificationService notificationService)
         {
             CompanyService = companyService;
             RoleManager = roleManager;
-            UserManager = userManager;
             NotificationService = notificationService;
         }
 

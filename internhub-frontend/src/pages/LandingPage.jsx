@@ -25,20 +25,21 @@ const LandingPage = () => {
         <h2 className="title ml-3">Welcome to InternHub</h2>
       </div>
       <div className="mt-5" />
+      <img src="/images/hello.svg" alt="hello" width={600} />
       <div className="d-flex justify-content-between w-50 mt-5">
         <Button
           variant="primary"
           className="custom-button"
           onClick={handleStudentRegistry}
         >
-          Registry as a student
+          Register as a student
         </Button>
         <Button
           variant="primary"
           className="custom-button"
           onClick={handleCompanyRegistry}
         >
-          Registry as a company
+          Register as a company
         </Button>
       </div>
       <Button
