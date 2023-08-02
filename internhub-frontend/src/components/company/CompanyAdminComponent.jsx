@@ -1,8 +1,10 @@
 import React from "react";
 import { CompanyService } from "../../services";
 import Button from "../Button";
+import { useNavigate } from "react-router-dom";
 
 export default function CompanyAdminComponent({ company, onChange }) {
+  const navigate = useNavigate();
   const companyService = new CompanyService();
 
   async function onClick(isAccepted) {
@@ -21,6 +23,12 @@ export default function CompanyAdminComponent({ company, onChange }) {
         </a>
       </td>
       <td>
+        <Button
+          buttonColor="primary"
+          onClick={async () => navigate("/company/details/" + company.id)}
+        >
+          Details
+        </Button>
         <Button buttonColor="success" onClick={async () => await onClick(true)}>
           Accept
         </Button>

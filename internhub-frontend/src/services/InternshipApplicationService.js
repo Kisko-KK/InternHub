@@ -115,6 +115,18 @@ export class InternshipApplicationService {
     }
   }
 
+  async deleteByInternshipAsync(internshipId, studentId) {
+    try {
+      const response = await axios.delete(
+        urlPrefix + `?internshipId=${internshipId}&studentId=${studentId}`,
+        { headers: HttpHeader.get() }
+      );
+      return response.status === 200;
+    } catch {
+      return false;
+    }
+  }
+
   async getIdAsync(studentId, internshipId) {
     try {
       const response = await axios.get(

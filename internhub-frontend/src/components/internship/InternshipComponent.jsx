@@ -1,9 +1,9 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../../styles/student.css";
 import { StateComponent, AppliedComponent, Button } from "../index";
 
-export default function Internship({
+export default function InternshipComponent({
   buttonText,
   internship,
   hasApplicationsCount,
@@ -13,6 +13,7 @@ export default function Internship({
   isApplied,
   isOwner,
 }) {
+  const navigate = useNavigate();
   const convertToShorterDate = (fullDate) => {
     const date = new Date(fullDate);
     return `${date.getFullYear()}-${(date.getMonth() + 1)
@@ -34,12 +35,12 @@ export default function Internship({
         <div className="p-button-flex">
           <p id="description">{internship.description}</p>
           <div>
-            <button onClick={() => redirectTo()}>{buttonText}</button>
+            <Button onClick={() => redirectTo()}>{buttonText}</Button>
             {isOwner && (
               <Button
                 buttonColor={"secondary"}
                 onClick={() => {
-                  Navigate("/internship/edit/" + internship.id);
+                  navigate("/internship/edit/" + internship.id);
                 }}
               >
                 Edit

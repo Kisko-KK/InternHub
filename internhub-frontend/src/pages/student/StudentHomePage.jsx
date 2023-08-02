@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
-  Internship,
   Paging,
   InternshipFilter,
   NavigationBar,
   NoItems,
+  InternshipComponent,
 } from "../../components";
 import "../../styles/student.css";
 import { PagedList } from "../../models";
@@ -58,18 +58,14 @@ export default function StudentHomePage() {
       />
       {pagedInternships.listSize === 0 && <NoItems />}
       {pagedInternships.data.map((internship) => (
-        <Internship
+        <InternshipComponent
           key={internship.id}
           internship={internship}
           buttonText={"Details"}
           hasApplicationsCount={false}
           isApplied={internship.isApplied}
           redirectTo={() => {
-            navigate(
-              `/internship/details/${internship.id}/${
-                loginService.getUserToken().id
-              }`
-            );
+            navigate(`/internship/details/${internship.id}`);
           }}
         />
       ))}

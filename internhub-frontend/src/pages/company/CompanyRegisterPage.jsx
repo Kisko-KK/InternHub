@@ -55,6 +55,10 @@ export default function CompanyRegisterPage() {
 
           if (result) {
             navigate("/login");
+          } else {
+            alert(
+              "An error occurred while registering your account... Please try again later!"
+            );
           }
         }}
       >

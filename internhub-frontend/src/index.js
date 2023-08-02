@@ -11,15 +11,16 @@ import {
   LoginPage,
   StudentDetailsPage,
   StudentEditPage,
-  CompanyCreateInternship,
+  InternshipCreate,
   StudentRegisterPage,
   CompanyProfilePage,
   CompanyEditPage,
   RequireAuthPage,
   StudentInternships,
   CompanyInternshipApplications,
+  InternshipDetails,
+  InternshipEdit,
 } from "./pages";
-import { InternshipDetails } from "./components";
 
 const router = createBrowserRouter([
   {
@@ -68,7 +69,7 @@ const router = createBrowserRouter([
     element: <CompanyRegisterPage />,
   },
   {
-    path: "/company/profile/:id",
+    path: "/company/details/:id",
     element: <RequireAuthPage roles={[]} page={<CompanyProfilePage />} />,
   },
   {
@@ -82,11 +83,17 @@ const router = createBrowserRouter([
   },
   {
     path: "/internship/create",
-    element: <CompanyCreateInternship />,
+    element: (
+      <RequireAuthPage roles={["Company"]} page={<InternshipCreate />} />
+    ),
   },
   {
-    path: "/internship/details/:internshipId/:studentId",
-    element: <InternshipDetails />,
+    path: "/internship/edit/:id",
+    element: <RequireAuthPage roles={["Company"]} page={<InternshipEdit />} />,
+  },
+  {
+    path: "/internship/details/:id",
+    element: <RequireAuthPage roles={[]} page={<InternshipDetails />} />,
   },
   {
     path: "/internship/applications",

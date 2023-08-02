@@ -11,6 +11,7 @@ import {
   faBuilding,
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
+import { SmallLogo } from "../index";
 
 export default function AdminNavigation() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function AdminNavigation() {
   };
   return (
     <div className="sidebar">
+      <SmallLogo />
       <ul className="nav-links">
         <li className="nav-item">
           <Link className="link-style" to="/">

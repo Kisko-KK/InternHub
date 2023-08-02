@@ -89,7 +89,7 @@ namespace InternHub.WebApi.Controllers
             Internship internship = new Internship
             {
                 StudyAreaId = internshipUpdate.StudyAreaId,
-                CompanyId = internshipUpdate.CompanyId,
+                CompanyId = User.Identity.GetUserId(),
                 Name = internshipUpdate.Name,
                 Description = internshipUpdate.Description,
                 Address = internshipUpdate.Address,
@@ -117,7 +117,6 @@ namespace InternHub.WebApi.Controllers
             if (updatedInternship.Address != null) internship.Address = updatedInternship.Address;
             if (updatedInternship.StartDate != null) internship.StartDate = updatedInternship.StartDate;
             if (updatedInternship.EndDate != null) internship.EndDate = updatedInternship.EndDate;
-            if (updatedInternship.CompanyId != null) internship.CompanyId = updatedInternship.CompanyId;
             if (updatedInternship.StudyAreaId != null) internship.StudyAreaId = updatedInternship.StudyAreaId;
 
             if (await InternshipService.PutAsync(internship, currentUserId) == false)

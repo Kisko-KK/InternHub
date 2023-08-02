@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import {
   InternshipApplicationComponent,
   InternshipApplicationFilter,
@@ -31,7 +31,6 @@ export default function CompanyInternshipApplications() {
       pageSize: 3,
       companyId: loginService.getUserToken().id,
     });
-    console.log(data);
     setPagedInternshipApplications(data);
   };
 
@@ -59,6 +58,66 @@ export default function CompanyInternshipApplications() {
             setFilterData({ pageNumber: 1 });
           }}
         />
+
+        <div
+          className="row"
+          style={{
+            backgroundColor: "#a8bbbf",
+            borderRadius: "8px",
+            width: "45vh",
+          }}
+        >
+          <div className="col-9">
+            <div>
+              <h1>title</h1>
+            </div>
+            <div>
+              <h6>Message</h6>
+            </div>
+            <div style={{ height: 40 }}></div>
+            <div>
+              <h5>Internbship name (Duration)</h5>
+            </div>
+          </div>
+          <div className="d-flex col-3 justify-content-end">
+            <div className="col">
+              <p>buttons </p>
+              ghjkg
+            </div>
+          </div>
+        </div>
+
+        {/* <div id="outside-container">
+          <div id="internship-container">
+            <div className="header-container">
+              <h3>{getStudentName()}</h3>
+              <div className="row text-center">
+                <Button
+                  buttonColor={"success"}
+                  onClick={async () => await acceptStudentAsync(true)}
+                >
+                  Accept
+                </Button>
+                <Button buttonColor={"danger"}>Decline</Button>
+              </div>
+            </div>
+
+            <div className="p-button-flex">
+              <p id="description">{internshipApplication.message}</p>
+            </div>
+
+            <p className="duration">
+              Duration: {internshipApplication.internship.startDate} -{" "}
+              {internshipApplication.internship.endDate}
+            </p>
+
+            <div className="p-flex">
+              <p>{internshipApplication.internship.name}</p>
+              <p></p>
+            </div>
+          </div>
+        </div> */}
+
         {pagedInternshipApplications.listSize === 0 && <NoItems />}
         {pagedInternshipApplications.data.map((internshipApplication) => (
           <InternshipApplicationComponent

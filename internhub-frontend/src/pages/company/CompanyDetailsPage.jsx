@@ -1,11 +1,12 @@
-import { Loader, CompanyNavigation, Button } from "../../components";
+import { Loader, Button, NavigationBar } from "../../components";
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { LoginService, CompanyService } from "../../services";
+import { CompanyService, LoginService } from "../../services";
 import NotFoundPage from "../NotFoundPage";
 
-export default function CompanyProfilePage() {
+export default function CompanyDetailsPage() {
   const companyService = new CompanyService();
+  const loginService = new LoginService();
   const [loading, setLoading] = useState(true);
   const [company, setCompany] = useState({});
   const params = useParams();
@@ -18,16 +19,20 @@ export default function CompanyProfilePage() {
     });
   }
 
-  async function handleDelete(event) {
+  async function handleDelete() {
     const userConfirmed = window.confirm("Are you sure you want to delete?");
     if (userConfirmed) {
-      try {
-        await companyService.removeAsync(params.id);
-      } catch (error) {
-        console.error("Error deleting company:", error);
+      const result = await companyService.removeAsync(params.id);
+      if (result) {
+        if (company.id === loginService.getUserToken().id) {
+          loginService.logOut();
+          navigate("/login");
+        } else {
+          window.history.back();
+        }
+      } else {
+        alert("An error occured while deleting... Please try again later!");
       }
-    } else {
-      navigate(`/company/profile/${new LoginService().getUserToken().id}`);
     }
   }
   useEffect(() => {
@@ -39,9 +44,10 @@ export default function CompanyProfilePage() {
   if (!company) return <NotFoundPage />;
   return (
     <div>
-      <CompanyNavigation />
-      <h1 className="text-center">Profile</h1>
+      <NavigationBar />
       <div className="container">
+        <h1 className="text-center">Company Profile</h1>
+        <div style={{ height: 20 }}></div>
         <div className="">
           Name: <b>{company.name}</b>
         </div>
@@ -52,7 +58,11 @@ export default function CompanyProfilePage() {
           Last Name: <b>{company.lastName}</b>
         </div>
         <div className="">
-          Address: <b>{company.address}</b>
+          Address:{" "}
+          <b>
+            {company.address +
+              (company.county ? ", " + company.county.name : "")}
+          </b>
         </div>
         <div className="">
           County: <b>{company.county.name}</b>
@@ -74,13 +84,12 @@ export default function CompanyProfilePage() {
             </a>
           </b>
         </div>
-        <Link
-          className="text-center"
-          to={`/company/edit/${new LoginService().getUserToken().id}`}
-        >
+        <Link className="text-center" to={`/company/edit/${company.id}`}>
           <Button>Edit</Button>
         </Link>
-        <Button onClick={handleDelete}>Delete</Button>
+        <Button onClick={handleDelete} buttonColor="danger">
+          Delete
+        </Button>
       </div>
     </div>
   );

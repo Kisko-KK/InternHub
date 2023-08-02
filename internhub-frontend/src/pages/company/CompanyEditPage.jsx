@@ -17,6 +17,7 @@ export default function CompanyEditPage() {
   const [loading, setLoading] = useState(true);
   const companyService = new CompanyService();
   const countyService = new CountyService();
+  const loginService = new LoginService();
   const params = useParams();
 
   const [company, setCompany] = useState({
@@ -51,13 +52,11 @@ export default function CompanyEditPage() {
   async function handleFormSubmit(event) {
     event.preventDefault();
     try {
-      // Call the updateAsync function to update the company data
       const success = await companyService.updateAsync(params.id, company);
       if (success) {
-        // Redirect to the company details page after successful update
-        navigate(`/company/profile/${params.id}`);
+        navigate(`/company/details/${params.id}`);
       } else {
-        console.error("Failed to update company data.");
+        alert("An error occured while updating... Please try again later!");
       }
     } catch (error) {
       console.error("Error updating company data", error);
@@ -73,12 +72,6 @@ export default function CompanyEditPage() {
         <h1 className="text-center">Edit Company</h1>
 
         <Form onSubmit={handleFormSubmit}>
-          <Input
-            name="email"
-            text="Email:"
-            value={company.email}
-            onChange={(e) => setCompany({ ...company, email: e.target.value })}
-          />
           <Input
             name="companyName"
             text="Company name:"
@@ -144,13 +137,12 @@ export default function CompanyEditPage() {
             }
           />
           <br />
-          {params.id === new LoginService().getUserToken().id && (
-            <Button type="submit">Save</Button>
+          {(params.id === loginService.getUserToken().id ||
+            sessionStorage.getItem("user_role") === "Admin") && (
+            <Button type="submit" buttonColor="primary">
+              Save
+            </Button>
           )}
-
-          <Link to={`/company/profile/${new LoginService().getUserToken().id}`}>
-            <Button className="cancel-button">Cancel</Button>
-          </Link>
         </Form>
       </div>
     </div>

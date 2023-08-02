@@ -2,7 +2,7 @@ import React from "react";
 import Table from "../Table";
 import CompanyComponent from "./CompanyComponent";
 
-export default function CompanyList({ companies, onRemove }) {
+export default function CompanyList({ companies, onRemove, isActive = true }) {
   return (
     <Table>
       <thead>
@@ -20,6 +20,7 @@ export default function CompanyList({ companies, onRemove }) {
               key={company.id}
               company={company}
               onRemove={onRemove}
+              isActive={isActive}
             />
           );
         })}

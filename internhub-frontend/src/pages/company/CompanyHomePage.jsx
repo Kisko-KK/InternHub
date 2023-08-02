@@ -4,9 +4,9 @@ import {
   NavigationBar,
   InternshipFilter,
   NoItems,
-  Internship,
   Paging,
   Button,
+  InternshipComponent,
 } from "../../components";
 import { PagedList } from "../../models";
 import { InternshipService, LoginService } from "../../services";
@@ -66,18 +66,14 @@ export default function CompanyHomePage() {
       </div>
       {pagedInternships.listSize === 0 && <NoItems />}
       {pagedInternships.data.map((internship) => (
-        <Internship
+        <InternshipComponent
           key={internship.id}
           internship={internship}
           buttonText={"Details"}
           hasApplicationsCount={true}
           isOwner={true}
           redirectTo={() => {
-            navigate(
-              `/internship/details/${internship.id}/${
-                loginService.getUserToken().id
-              }`
-            );
+            navigate(`/internship/details/${internship.id}`);
           }}
         />
       ))}

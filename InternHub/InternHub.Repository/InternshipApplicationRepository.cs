@@ -40,79 +40,7 @@ namespace InternHub.Repository
             }
         }
 
-        public async Task<PagedList<InternshipApplication>> GetAllInternshipApplicationsAsync(Paging paging, Sorting sorting, InternshipApplicationFilter internshipApplicationFilter)
-        {
-            PagedList<InternshipApplication> pagedList = new PagedList<InternshipApplication>();
-            //umjesto where 1=1 isactive=1
-            if (paging == null) paging = new Paging();
-            if (sorting == null) sorting = new Sorting();
-
-            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
-            {
-                NpgsqlCommand command = new NpgsqlCommand();
-                command.Connection = connection;
-                command.Parameters.AddWithValue("@pageSize", paging.PageSize);
-                command.Parameters.AddWithValue("@skip", (paging.CurrentPage - 1) * paging.PageSize);
-
-                string sortBy = (sorting.SortBy.ToLower() == "Id".ToLower() ? "s" : "ia") + ".\"" + sorting.SortBy + "\"";
-
-                List<string> parameters = new List<string>();
-
-                if (internshipApplicationFilter != null)
-                {
-
-
-                    if (internshipApplicationFilter.States != null && internshipApplicationFilter.States.Count > 0)
-                    {
-                        StringBuilder builder = new StringBuilder();
-                        
-                        command.Parameters.AddWithValue("@stateId", internshipApplicationFilter.States);
-                        for (int i = 0; i < internshipApplicationFilter.States.Count; i++)
-                        {
-                            string parameterName = $"@stateId{i}";
-                            builder.Append(parameterName);
-
-                            if (i < internshipApplicationFilter.States.Count - 1)
-                            {
-                                builder.Append(", ");
-                            }
-                            command.Parameters.AddWithValue(parameterName, internshipApplicationFilter.States[i]);
-                        }
-                        parameters.Add("sta.\"Id\" in (" + builder.ToString() + ")");
-                    }
-
-                    if(internshipApplicationFilter.CompanyId != null)
-                    {
-                        parameters.Add("i.\"CompanyId\" = @companyId");
-                        command.Parameters.AddWithValue("@companyId", internshipApplicationFilter.CompanyId);
-                    }
-                    if (internshipApplicationFilter.InternshipName != null)
-                    {
-                        parameters.Add("i.\"Name\" ILIKE @internshipName");
-                        command.Parameters.AddWithValue("@internshipName", "%" + internshipApplicationFilter.InternshipName + "%");
-                    }
-                    if(internshipApplicationFilter.StudentId != null)
-                    {
-                        parameters.Add("s.\"Id\" = @userId");
-                        command.Parameters.AddWithValue("@userId", internshipApplicationFilter.StudentId);
-                    }
-                    if(internshipApplicationFilter.CompanyName != null)
-                    {
-                        parameters.Add("comp.\"Name\" ILIKE @companyName");
-                        command.Parameters.AddWithValue("@companyName", "%" + internshipApplicationFilter.CompanyName + "%");
-                    }
-                    if(internshipApplicationFilter.FirstName != null)
-                    {
-                        parameters.Add("u.\"FirstName\" ILIKE @firstName");
-                        command.Parameters.AddWithValue("@firstName", "%" + internshipApplicationFilter.CompanyName + "%");
-                    }
-                    if(internshipApplicationFilter.LastName != null)
-                    {
-                        parameters.Add("u.\"LastName\" ILIKE @lastName");
-                        command.Parameters.AddWithValue("@lastName", "%" + internshipApplicationFilter.CompanyName + "%");
-                    }
-                }
-                string selectQuery = @"
+        private string getQuery = @"
                      SELECT 
                     ia.""Id"",
                     ia.""DateCreated"",
@@ -152,8 +80,28 @@ namespace InternHub.Repository
                     INNER JOIN ""Internship"" i ON i.""Id"" = ia.""InternshipId""
                     INNER JOIN ""Company"" comp ON i.""CompanyId"" = comp.""Id""
                     inner join ""StudyArea"" sa on i.""StudyAreaId"" =sa.""Id""
-                    inner join ""StudyArea"" sas on s.""StudyAreaId""=sas.""Id"" 
-                                " +
+                    inner join ""StudyArea"" sas on s.""StudyAreaId""=sas.""Id""";
+
+        public async Task<PagedList<InternshipApplication>> GetAllInternshipApplicationsAsync(Paging paging, Sorting sorting, InternshipApplicationFilter filter)
+        {
+            PagedList<InternshipApplication> pagedList = new PagedList<InternshipApplication>();
+            //umjesto where 1=1 isactive=1
+            if (paging == null) paging = new Paging();
+            if (sorting == null) sorting = new Sorting();
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
+            {
+                NpgsqlCommand command = new NpgsqlCommand();
+                command.Connection = connection;
+                command.Parameters.AddWithValue("@pageSize", paging.PageSize);
+                command.Parameters.AddWithValue("@skip", (paging.CurrentPage - 1) * paging.PageSize);
+
+                string sortBy = (sorting.SortBy.ToLower() == "Id".ToLower() ? "s" : "ia") + ".\"" + sorting.SortBy + "\"";
+
+                List<string> parameters = new List<string>();
+
+                SetFilterParameters(parameters, command, filter);
+                string selectQuery = getQuery +
 
                 "WHERE ia.\"IsActive\" = true " +
                     (parameters.Count == 0 ? "" : "AND " + string.Join(" AND ", parameters)) + $" ORDER BY {sortBy} {(sorting.SortOrder.ToLower() == "asc" ? "ASC" : "DESC")} LIMIT @pageSize OFFSET @skip";
@@ -187,7 +135,7 @@ namespace InternHub.Repository
             return pagedList;
         }
 
-        public async Task<PagedList<InternshipApplication>> GetUnacceptedAsync(Paging paging, Sorting sorting, InternshipApplicationFilter internshipApplicationFilter)
+        public async Task<PagedList<InternshipApplication>> GetUnacceptedAsync(Paging paging, Sorting sorting, InternshipApplicationFilter filter)
         {
             PagedList<InternshipApplication> pagedList = new PagedList<InternshipApplication>();
             //umjesto where 1=1 isactive=1
@@ -208,102 +156,8 @@ namespace InternHub.Repository
                     "sta.\"Name\" ilike '%Processing%'"
                 };
 
-                if (internshipApplicationFilter != null)
-                {
-                    if (internshipApplicationFilter.States != null && internshipApplicationFilter.States.Count > 0)
-                    {
-                        StringBuilder builder = new StringBuilder();
-
-                        command.Parameters.AddWithValue("@stateId", internshipApplicationFilter.States);
-                        for (int i = 0; i < internshipApplicationFilter.States.Count; i++)
-                        {
-                            string parameterName = $"@stateId{i}";
-                            builder.Append(parameterName);
-
-                            if (i < internshipApplicationFilter.States.Count - 1)
-                            {
-                                builder.Append(", ");
-                            }
-                            command.Parameters.AddWithValue(parameterName, internshipApplicationFilter.States[i]);
-                        }
-                        parameters.Add("sta.\"Id\" in (" + builder.ToString() + ")");
-
-
-
-                    }
-                    if (internshipApplicationFilter.CompanyId != null)
-                    {
-                        parameters.Add("i.\"CompanyId\" = @companyId");
-                        command.Parameters.AddWithValue("@companyId", internshipApplicationFilter.CompanyId);
-                    }
-                    if (internshipApplicationFilter.InternshipName != null)
-                    {
-                        parameters.Add("i.\"Name\" ILIKE @internshipName");
-                        command.Parameters.AddWithValue("@internshipName", "%" + internshipApplicationFilter.InternshipName + "%");
-                    }
-                    if (internshipApplicationFilter.StudentId != null)
-                    {
-                        parameters.Add("s.\"Id\" = @userId");
-                        command.Parameters.AddWithValue("@userId", internshipApplicationFilter.StudentId);
-                    }
-                    if (internshipApplicationFilter.CompanyName != null)
-                    {
-                        parameters.Add("comp.\"Name\" ILIKE @companyName");
-                        command.Parameters.AddWithValue("@companyName", "%" + internshipApplicationFilter.CompanyName + "%");
-                    }
-                    if (internshipApplicationFilter.FirstName != null)
-                    {
-                        parameters.Add("u.\"FirstName\" ILIKE @firstName");
-                        command.Parameters.AddWithValue("@firstName", "%" + internshipApplicationFilter.FirstName + "%");
-                    }
-                    if (internshipApplicationFilter.LastName != null)
-                    {
-                        parameters.Add("u.\"LastName\" ILIKE @lastName");
-                        command.Parameters.AddWithValue("@lastName", "%" + internshipApplicationFilter.LastName + "%");
-                    }
-                }
-                string selectQuery = @"
-                     SELECT 
-                    ia.""Id"",
-                    ia.""DateCreated"",
-                    ia.""DateUpdated"",
-                    ia.""CreatedByUserId"",
-                    ia.""UpdatedByUserId"",
-                    ia.""IsActive"",
-                    ia.""StateId"",
-                    ia.""StudentId"",
-                    ia.""InternshipId"",
-                    u.""FirstName"" as ""StudentFirstName"",
-                    u.""LastName"" as ""StudentLastName"",
-                    u.""Email"" as ""StudentEmail"",
-                    u.""PhoneNumber"" as ""StudentPhoneNumber"",
-                    u.""Address"" as ""StudentAddress"",
-                    u.""Description"" as ""StudentDescription"",
-                    c.""Name"" AS ""StudentCounty"",
-                    sas.""Name"" AS ""StudentStudyArea"",
-                    sa.""Id"" as ""InternshipStudyAreaId"",
-                    sa.""Name"" AS ""InternshipStudyArea"",
-                    i.""Id"" as ""InternshipId"",
-                    i.""CompanyId"",
-                    comp.""Name"" AS ""CompanyName"",
-                    comp.""Website"" as ""CompanyWebsite"",
-                    i.""Name"" AS ""InternshipName"",
-                    i.""Description"" AS ""InternshipDescription"",
-                    i.""Address"" AS ""InternshipAddress"",
-                    i.""StartDate"",
-                    i.""EndDate"",
-                    sta.""Name"" AS ""InternshipApplicationStateName""
-                FROM 
-                    ""InternshipApplication"" ia
-                    INNER JOIN ""Student"" s ON ia.""StudentId"" = s.""Id""
-                    INNER JOIN ""State"" sta ON ia.""StateId"" = sta.""Id""
-                    INNER JOIN dbo.""AspNetUsers"" u ON u.""Id"" = s.""Id""
-                    INNER JOIN ""County"" c ON c.""Id"" = u.""CountyId""
-                    INNER JOIN ""Internship"" i ON i.""Id"" = ia.""InternshipId""
-                    INNER JOIN ""Company"" comp ON i.""CompanyId"" = comp.""Id""
-                    inner join ""StudyArea"" sa on i.""StudyAreaId"" =sa.""Id""
-                    inner join ""StudyArea"" sas on s.""StudyAreaId""=sas.""Id"" 
-                                " +
+                SetFilterParameters(parameters, command, filter);
+                string selectQuery = getQuery +
 
                 "WHERE ia.\"IsActive\" = true " +
                     (parameters.Count == 0 ? "" : "AND " + string.Join(" AND ", parameters)) + $" ORDER BY {sortBy} {(sorting.SortOrder.ToLower() == "asc" ? "ASC" : "DESC")} LIMIT @pageSize OFFSET @skip";
@@ -370,52 +224,31 @@ namespace InternHub.Repository
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
             {
                 //student, state i internship
-                string query = @"
-                     SELECT 
-                    ia.""Id"",
-                    ia.""DateCreated"",
-                    ia.""DateUpdated"",
-                    ia.""CreatedByUserId"",
-                    ia.""UpdatedByUserId"",
-                    ia.""IsActive"",
-                    ia.""StateId"",
-                    ia.""StudentId"",
-                    ia.""InternshipId"",
-                    u.""FirstName"" as ""StudentFirstName"",
-                    u.""LastName"" as ""StudentLastName"",
-                    u.""Email"" as ""StudentEmail"",
-                    u.""PhoneNumber"" as ""StudentPhoneNumber"",
-                    u.""Address"" as ""StudentAddress"",
-                    u.""Description"" as ""StudentDescription"",
-                    c.""Name"" AS ""StudentCounty"",
-                    sas.""Name"" AS ""StudentStudyArea"",
-                    sa.""Id"" as ""InternshipStudyAreaId"",
-                    sa.""Name"" AS ""InternshipStudyArea"",
-                    i.""Id"" as ""InternshipId"",
-                    i.""CompanyId"",
-                    comp.""Name"" AS ""CompanyName"",
-                    comp.""Website"" as ""CompanyWebsite"",
-                    i.""Name"" AS ""InternshipName"",
-                    i.""Description"" AS ""InternshipDescription"",
-                    i.""Address"" AS ""InternshipAddress"",
-                    i.""StartDate"",
-                    i.""EndDate"",
-                    sta.""Name"" AS ""InternshipApplicationStateName""
-                FROM 
-                    ""InternshipApplication"" ia
-                    INNER JOIN ""Student"" s ON ia.""StudentId"" = s.""Id""
-                    INNER JOIN ""State"" sta ON ia.""StateId"" = sta.""Id""
-                    INNER JOIN dbo.""AspNetUsers"" u ON u.""Id"" = s.""Id""
-                    INNER JOIN ""County"" c ON c.""Id"" = u.""CountyId""
-                    INNER JOIN ""Internship"" i ON i.""Id"" = ia.""InternshipId""
-                    INNER JOIN ""Company"" comp ON i.""CompanyId"" = comp.""Id""
-                    inner join ""StudyArea"" sa on i.""StudyAreaId"" =sa.""Id""
-                    inner join ""StudyArea"" sas on s.""StudyAreaId""=sas.""Id"" 
-                WHERE 
-                    ia.""Id"" = @id
-";
+                string query = getQuery + "WHERE ia.\"Id\" = @id";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
                 command.Parameters.AddWithValue("@id", id);
+                await connection.OpenAsync();
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+
+                if (reader.HasRows && await reader.ReadAsync())
+                {
+                    internshipApplication = ReadInternshipApplication(reader);
+                }
+                return internshipApplication;
+
+            }
+        }
+
+        public async Task<InternshipApplication> GetByInternshipAsync(Guid internshipId, string studentId)
+        {
+
+            InternshipApplication internshipApplication = null;
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
+            {
+                string query = getQuery + "WHERE ia.\"InternshipId\" = @internshipId and \"StudentId\" = @studentId";
+                NpgsqlCommand command = new NpgsqlCommand(query, connection);
+                command.Parameters.AddWithValue("@internshipId", internshipId);
+                command.Parameters.AddWithValue("@studentId", studentId);
                 await connection.OpenAsync();
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
@@ -537,6 +370,64 @@ namespace InternHub.Repository
                 };
             }
             catch { return null; }
+        }
+
+        private void SetFilterParameters(List<string> parameters, NpgsqlCommand command, InternshipApplicationFilter filter)
+        {
+            if (filter != null)
+            {
+                if (filter.States != null && filter.States.Count > 0)
+                {
+                    StringBuilder builder = new StringBuilder();
+
+                    command.Parameters.AddWithValue("@stateId", filter.States);
+                    for (int i = 0; i < filter.States.Count; i++)
+                    {
+                        string parameterName = $"@stateId{i}";
+                        builder.Append(parameterName);
+
+                        if (i < filter.States.Count - 1)
+                        {
+                            builder.Append(", ");
+                        }
+                        command.Parameters.AddWithValue(parameterName, filter.States[i]);
+                    }
+                    parameters.Add("sta.\"Id\" in (" + builder.ToString() + ")");
+
+
+
+                }
+                if (filter.CompanyId != null)
+                {
+                    parameters.Add("i.\"CompanyId\" = @companyId");
+                    command.Parameters.AddWithValue("@companyId", filter.CompanyId);
+                }
+                if (filter.InternshipName != null)
+                {
+                    parameters.Add("i.\"Name\" ILIKE @internshipName");
+                    command.Parameters.AddWithValue("@internshipName", "%" + filter.InternshipName + "%");
+                }
+                if (filter.StudentId != null)
+                {
+                    parameters.Add("s.\"Id\" = @userId");
+                    command.Parameters.AddWithValue("@userId", filter.StudentId);
+                }
+                if (filter.CompanyName != null)
+                {
+                    parameters.Add("comp.\"Name\" ILIKE @companyName");
+                    command.Parameters.AddWithValue("@companyName", "%" + filter.CompanyName + "%");
+                }
+                if (filter.FirstName != null)
+                {
+                    parameters.Add("u.\"FirstName\" ILIKE @firstName");
+                    command.Parameters.AddWithValue("@firstName", "%" + filter.FirstName + "%");
+                }
+                if (filter.LastName != null)
+                {
+                    parameters.Add("u.\"LastName\" ILIKE @lastName");
+                    command.Parameters.AddWithValue("@lastName", "%" + filter.LastName + "%");
+                }
+            }
         }
     }
 }

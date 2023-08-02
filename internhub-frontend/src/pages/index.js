@@ -10,8 +10,7 @@ import AdminStudentsPage from "./admin/AdminStudentsPage";
 
 import CompanyHomePage from "./company/CompanyHomePage";
 import CompanyRegisterPage from "./company/CompanyRegisterPage";
-import CompanyCreateInternship from "./company/CompanyCreateInternship";
-import CompanyProfilePage from "./company/CompanyProfilePage";
+import CompanyDetailsPage from "./company/CompanyDetailsPage";
 import CompanyEditPage from "./company/CompanyEditPage";
 import CompanyInternshipApplications from "./company/CompanyInternshipApplications";
 
@@ -21,13 +20,18 @@ import StudentEditPage from "./student/StudentEditPage";
 import StudentRegisterPage from "./student/StudentRegisterPage";
 import StudentInternships from "./student/StudentInternships";
 
+import InternshipCreate from "./internship/InternshipCreate";
+import InternshipDetails from "./internship/InternshipDetails";
+import InternshipEdit from "./internship/InternshipEdit";
+
+import UserHomePage from "./UserHomePage";
+
 export {
   LoginPage,
   LandingPage,
   NotFoundPage,
   RequireAuthPage,
   CompanyRegisterPage,
-  CompanyCreateInternship,
   HomePage,
   AdminHomePage,
   AdminCompaniesPage,
@@ -37,8 +41,12 @@ export {
   StudentDetailsPage,
   StudentEditPage,
   StudentRegisterPage,
-  CompanyProfilePage,
+  CompanyDetailsPage as CompanyProfilePage,
   CompanyEditPage,
   StudentInternships,
   CompanyInternshipApplications,
+  InternshipCreate,
+  InternshipDetails,
+  InternshipEdit,
+  UserHomePage,
 };

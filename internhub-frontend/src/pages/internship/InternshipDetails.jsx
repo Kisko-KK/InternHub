@@ -6,18 +6,24 @@ import {
   LoginService,
   StudentService,
 } from "../../services";
-import StudentNavigation from "../student/StudentNavigation";
-import { RegisterPopupInternship, StudentsList } from "../../components/index";
+import {
+  Loader,
+  NavigationBar,
+  RegisterPopupInternship,
+  StudentsList,
+} from "../../components/index";
 import "../../styles/student.css";
+import NotFoundPage from "../NotFoundPage";
 
 const InternshipDetails = () => {
   const [internship, setInternship] = useState({});
-  const { internshipId, studentId } = useParams("");
+  const [loading, setLoading] = useState(true);
+  const { id } = useParams("");
   const [isRegisteredToInternship, setIsRegisteredToInternship] =
     useState(false);
   const [students, setStudents] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
-  const [internshipApplicationId, setInternshipApplicationId] = useState("");
+  // const [internshipApplicationId, setInternshipApplicationId] = useState("");
   const [isCompany, setIsCompany] = useState(false);
   const studentService = new StudentService();
   const loginService = new LoginService();
@@ -30,61 +36,63 @@ const InternshipDetails = () => {
     );
     if (withdraw) {
       if (
-        await internshipApplicationService.deleteAsync(internshipApplicationId)
+        await internshipApplicationService.deleteByInternshipAsync(
+          id,
+          loginService.getUserToken().id
+        )
       ) {
         alert("Application withdrawn successfully!");
-        fetchIsStudentregisteredAsync();
+        fetchIsStudentRegisteredAsync();
       } else {
         alert("Something has gone wrong, please try again!");
       }
     }
   };
 
-  const fetchInternshipApplicationId = async () => {
-    setInternshipApplicationId(
-      await internshipApplicationService.getIdAsync(studentId, internshipId)
-    );
+  const fetchInternshipAsync = async () => {
+    setInternship(await internshipService.getByIdAsync(id));
+    setLoading(false);
   };
 
-  const fetchInternshipAsync = async () => {
-    setInternship(await internshipService.getByIdAsync(internshipId));
-  };
-  const fetchIsStudentregisteredAsync = async () => {
+  const fetchIsStudentRegisteredAsync = async () => {
     setIsRegisteredToInternship(
       await internshipService.getIsStudentRegisteredToInternshipAsync(
-        studentId,
-        internshipId
+        loginService.getUserToken().id,
+        id
       )
     );
   };
   const handleApplySuccessAsync = async () => {
     alert("You applied successfully!");
-    await fetchInternshipApplicationId();
-    await fetchIsStudentregisteredAsync();
+    // await fetchInternshipApplicationId();
+    await fetchIsStudentRegisteredAsync();
   };
 
   async function checkIfCompany() {
     const role = await loginService.getUserRoleAsync();
-    const isCompany = role.toLowerCase() === "company";
+    const isCompany =
+      role.toLowerCase() === "company" || role.toLowerCase() === "admin";
     setIsCompany(isCompany);
     if (isCompany) refreshStudents();
+    else fetchIsStudentRegisteredAsync();
   }
 
   useEffect(() => {
     checkIfCompany();
     fetchInternshipAsync();
-    fetchIsStudentregisteredAsync();
-    fetchInternshipApplicationId();
   }, []);
 
   async function refreshStudents() {
-    const data = await studentService.getByInternshipAsync(internshipId);
+    const data = await studentService.getByInternshipAsync(id);
     setStudents(data);
   }
 
+  if (loading) return <Loader />;
+  if (!internship) return <NotFoundPage />;
+
   return (
     <>
-      <StudentNavigation />
+      <NavigationBar />
       <div className="container mt-5">
         <div className="row h-100 align-items-center justify-content-center">
           <div className="col-md-10">
@@ -141,7 +149,7 @@ const InternshipDetails = () => {
                     </button>
                   </div>
                 )}
-                {!isRegisteredToInternship && (
+                {!isRegisteredToInternship && !isCompany && (
                   <div className="text-center mt-5 bg-c">
                     <button
                       className="mx-auto"
@@ -162,6 +170,7 @@ const InternshipDetails = () => {
                 />
               </div>
             </div>
+            <div style={{ height: 40 }}></div>
             {isCompany && <StudentsList students={students} readonly={true} />}
           </div>
         </div>

@@ -18,9 +18,8 @@ import CheckBox from "./CheckBox";
 import CompanyList from "./company/CompanyList";
 import CompanyComponent from "./company/CompanyComponent";
 import StudentFilterComponent from "./student/StudentFilterComponent";
-import Internship from "../components/internship/Internship";
+import InternshipComponent from "./internship/InternshipComponent";
 import InternshipFilter from "./internship/InternshipFilter";
-import InternshipDetails from "./internship/InternshipDetails";
 import NavigationBar from "./NavigationBar";
 import MultiSelect from "./MultiSelect";
 import StateComponent from "./StateComponent";
@@ -30,6 +29,8 @@ import NoItems from "./NoItems";
 import AppliedComponent from "./AppliedComponent";
 import InternshipApplicationComponent from "./internship/InternshipApplicationComponent";
 import InternshipApplicationFilter from "./internship/InternshipApplicationFilter";
+import UserNavigation from "./user/UserNavigation";
+import SmallLogo from "./SmallLogo";
 
 export {
   AdminNavigation,
@@ -53,10 +54,9 @@ export {
   CompanyList,
   CompanyComponent,
   StudentFilterComponent,
-  Internship,
+  InternshipComponent,
   MultiSelect,
   InternshipFilter,
-  InternshipDetails,
   StateComponent,
   InternshipApplicationFilterComponent,
   RegisterPopupInternship,
@@ -64,4 +64,6 @@ export {
   AppliedComponent,
   InternshipApplicationComponent,
   InternshipApplicationFilter,
+  UserNavigation,
+  SmallLogo,
 };

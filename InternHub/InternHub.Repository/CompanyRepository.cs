@@ -277,12 +277,12 @@ namespace InternHub.Repository
                         userCommand.Parameters.AddWithValue("@id", company.Id);
                         userCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
 
-                        NpgsqlCommand userRoleRemoveCommand = new NpgsqlCommand("REMOVE from dbo.\"AspNetUserRoles\" where \"UserId\" = @id", connection, transaction);
-                        userCommand.Parameters.AddWithValue("@id", company.Id);
+                        NpgsqlCommand userRoleRemoveCommand = new NpgsqlCommand("DELETE from dbo.\"AspNetUserRoles\" r where r.\"UserId\" = @userId", connection, transaction);
+                        userRoleRemoveCommand.Parameters.AddWithValue("@userId", company.Id);
 
-                        NpgsqlCommand userRoleAddCommand = new NpgsqlCommand("INSERT INTO dbo.\"AspNetUserRoles\" values (@id, @roleId)", connection, transaction);
-                        userCommand.Parameters.AddWithValue("@id", company.Id);
-                        userCommand.Parameters.AddWithValue("@roleId", company.RoleId);
+                        NpgsqlCommand userRoleAddCommand = new NpgsqlCommand("INSERT INTO dbo.\"AspNetUserRoles\" values (@userId, @roleId)", connection, transaction);
+                        userRoleAddCommand.Parameters.AddWithValue("@userId", company.Id);
+                        userRoleAddCommand.Parameters.AddWithValue("@roleId", company.RoleId);
 
                         int companyResult = await companyCommand.ExecuteNonQueryAsync();
                         int userResult = await userCommand.ExecuteNonQueryAsync();
@@ -300,8 +300,6 @@ namespace InternHub.Repository
                     {
                         await transaction.RollbackAsync();
                     }
-
-
                 }
                 return false;
             }

@@ -23,11 +23,13 @@ namespace InternHub.WebApi.Controllers
     {
         private IInternshipApplicationService InternshipApplicationService { get; }
         private IStateService StateService { get; }
+        private INotificationService NotificationService { get; }
 
-        public InternshipApplicationController(IInternshipApplicationService internshipApplicationService, IStateService stateService)
+        public InternshipApplicationController(IInternshipApplicationService internshipApplicationService, IStateService stateService, INotificationService notificationService)
         {
             InternshipApplicationService = internshipApplicationService;
             StateService = stateService;
+            NotificationService = notificationService;
         }
 
         public async Task<HttpResponseMessage> GetAllAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] InternshipApplicationFilter filter = null)
@@ -146,6 +148,21 @@ namespace InternHub.WebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, $"Internship application with id:{id} was deleted!");
         }
 
+        [Authorize(Roles = "Student")]
+        public async Task<HttpResponseMessage> DeleteAsync(Guid internshipId, string studentId)
+        {
+            InternshipApplication existingInternshipApplication = await InternshipApplicationService.GetByInternshipAsync(internshipId, studentId);
+            string currentUserId = User.Identity?.GetUserId();
+
+            if (existingInternshipApplication == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any internship application with that id!"); }
+
+            if (await InternshipApplicationService.DeleteAsync(existingInternshipApplication, currentUserId) == false)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't delete internship application!");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, $"Internship application with id:{existingInternshipApplication.Id} was deleted!");
+        }
+
         [HttpGet]
         [Route("GetId")]
         public async Task<HttpResponseMessage> GetIdAsync(string studentId, Guid internshipId)
@@ -171,6 +188,15 @@ namespace InternHub.WebApi.Controllers
                 bool result = await InternshipApplicationService.PutAsync(internshipApplication, User.Identity.GetUserId());
 
                 if (!result) return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+                if(isAccepted)
+                {
+                    await NotificationService.AddAsync("Vaš račun je prihvaćen", "Poštovani " + internshipApplication.Student.GetFullName() + "!\n\nVaša prijava na praksu " + internshipApplication.Internship.Name + " na platformi InternHub je odobrena. Tvrtka će Vas uskoro obavijestiti o daljnjim koracima!" + " \n\nVaša InternHub ekipa", internshipApplication.Student);
+                }
+                else
+                {
+                    await NotificationService.AddAsync("Vaš račun je prihvaćen", "Poštovani " + internshipApplication.Student.GetFullName() + "!\n\nVaša prijava na praksu " + internshipApplication.Internship.Name + " na platformi InternHub je odbijena. Nemojte da Vas to obeshabri, uskoro će doći druga prilika!" + " \n\nVaša InternHub ekipa", internshipApplication.Student);
+                }
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }

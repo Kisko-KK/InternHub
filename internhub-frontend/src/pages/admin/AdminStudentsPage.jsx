@@ -81,6 +81,7 @@ export default function AdminStudentsPage() {
             });
           }}
           readonly={false}
+          isActive={currentFilter.isActive}
         />
         {pagedStudents.listSize === 0 && <NoItems />}
         <Paging

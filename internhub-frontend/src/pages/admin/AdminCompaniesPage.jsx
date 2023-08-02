@@ -76,6 +76,7 @@ export default function AdminCompaniesPage() {
               pageNumber: pagedCompanies.currentPage,
             })
           }
+          isActive={currentFilter.isActive}
         />
         {pagedCompanies.listSize === 0 && <NoItems />}
         <Paging

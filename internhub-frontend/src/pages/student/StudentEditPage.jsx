@@ -15,11 +15,13 @@ import {
   StudyAreaService,
   LoginService,
 } from "../../services";
+import NotFoundPage from "../NotFoundPage";
 
 export default function StudentEditPage() {
   const studentService = new StudentService();
   const countyService = new CountyService();
   const studyAreaService = new StudyAreaService();
+  const loginService = new LoginService();
   const [loading, setLoading] = useState(true);
   const [student, setStudent] = useState({});
   const [counties, setCounties] = useState([]);
@@ -48,17 +50,20 @@ export default function StudentEditPage() {
     await studentService.getByIdAsync(params.id).then((student) => {
       setLoading(false);
       setStudent(student);
-      setFirstName(student.firstName);
-      setLastName(student.lastName);
-      setPhoneNumber(student.phoneNumber);
-      setDescription(student.description);
-      setAddress(student.address);
-      setCountyId(student.countyId);
-      setStudyAreaId(student.studyAreaId);
+      if (student) {
+        setFirstName(student.firstName);
+        setLastName(student.lastName);
+        setPhoneNumber(student.phoneNumber);
+        setDescription(student.description);
+        setAddress(student.address);
+        setCountyId(student.countyId);
+        setStudyAreaId(student.studyAreaId);
+      }
     });
   }
 
   if (loading) return <Loader />;
+  if (!student) return <NotFoundPage />;
 
   return (
     <div>
@@ -66,7 +71,7 @@ export default function StudentEditPage() {
 
       <div className="container">
         <div className="text-center">
-          <h1>Edit student page</h1>
+          <h1>Edit student</h1>
         </div>
         <Form
           onSubmit={async (e) => {
@@ -85,8 +90,11 @@ export default function StudentEditPage() {
               newStudent
             );
             if (result) {
-              navigate("/");
-            }
+              navigate("/student/details/" + student.id);
+            } else
+              alert(
+                "An error occured while updating... Please try again later!"
+              );
           }}
         >
           <Input
@@ -139,9 +147,6 @@ export default function StudentEditPage() {
           <Button buttonColor="primary" type="submit">
             Save
           </Button>
-          <Link to={`/student/details/${new LoginService().getUserToken().id}`}>
-            <Button className="cancel-button">Cancel</Button>
-          </Link>
         </Form>
       </div>
     </div>

@@ -59,7 +59,12 @@ export default function InternshipApplicationComponent({
             >
               Accept
             </Button>
-            <Button buttonColor={"danger"}>Decline</Button>
+            <Button
+              buttonColor={"danger"}
+              onClick={async () => await acceptStudentAsync(false)}
+            >
+              Decline
+            </Button>
           </div>
         </div>
 

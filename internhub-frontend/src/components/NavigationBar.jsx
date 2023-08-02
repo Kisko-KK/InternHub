@@ -1,5 +1,10 @@
 import React from "react";
-import { AdminNavigation, CompanyNavigation, StudentNavigation } from "./index";
+import {
+  AdminNavigation,
+  CompanyNavigation,
+  StudentNavigation,
+  UserNavigation,
+} from "./index";
 import { LoginService } from "../services";
 
 export default function NavigationBar() {
@@ -8,5 +13,6 @@ export default function NavigationBar() {
   if (role === "admin") return <AdminNavigation />;
   if (role === "student") return <StudentNavigation />;
   if (role === "company") return <CompanyNavigation />;
+  if (role === "user") return <UserNavigation />;
   return <div></div>;
 }

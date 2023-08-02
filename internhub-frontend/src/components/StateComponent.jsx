@@ -7,7 +7,7 @@ export default function StateComponent({ state }) {
         "margin-right": "50px",
         padding: 6,
         "border-radius": "8px",
-        "background-color":
+        backgroundColor:
           state.toLowerCase() === "accepted"
             ? "green"
             : state.toLowerCase() === "declined"

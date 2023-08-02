@@ -71,4 +71,26 @@ export class InternshipService {
       .toString()
       .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
   };
+
+  async postAsync(internship) {
+    try {
+      const response = await axios.post(urlPrefix, internship, {
+        headers: HttpHeader.get(),
+      });
+      return response.status === 200;
+    } catch {
+      return false;
+    }
+  }
+
+  async updateAsync(id, internship) {
+    try {
+      const response = await axios.put(urlPrefix + "?id=" + id, internship, {
+        headers: HttpHeader.get(),
+      });
+      return response.status === 200;
+    } catch {
+      return false;
+    }
+  }
 }

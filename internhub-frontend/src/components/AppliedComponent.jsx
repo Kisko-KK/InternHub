@@ -7,7 +7,7 @@ export default function AppliedComponent() {
         "margin-right": "60px",
         padding: 6,
         "border-radius": "8px",
-        "background-color": "green",
+        backgroundColor: "green",
         color: "white",
       }}
     >

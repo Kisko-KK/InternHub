@@ -14,6 +14,7 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
+    [RoutePrefix("api/Company")]
     public class CompanyController : ApiController
     {
         private ICompanyService CompanyService { get; }
@@ -133,7 +134,7 @@ namespace InternHub.WebApi.Controllers
         }
 
 
-        [HttpPut, Route("api/Company/Approve")]
+        [HttpPut, Route("Approve")]
         [Authorize(Roles = "Admin")]
         public async Task<HttpResponseMessage> ApproveAsync(string id, bool isAccepted)
         {
@@ -153,7 +154,7 @@ namespace InternHub.WebApi.Controllers
                     existingCompany.RoleId = role.Id;
                     if (await CompanyService.AcceptAsync(existingCompany) == false)
                     {
-                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't approve company!");
+                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't approve company!");
                     }
 
                     await NotificationService.AddAsync("Vaš račun je prihvaćen", "Poštovani " + existingCompany.GetFullName() + "!\n\nVaša prijava za tvrtku " + existingCompany.Name + " na platformi InternHub je odobrena. Od sada možete neometano objavljivati vaše prakse!" + " \n\nVaša InternHub ekipa", existingCompany);

@@ -3,8 +3,8 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
-  Internship,
   InternshipApplicationFilterComponent,
+  InternshipComponent,
   NavigationBar,
   NoItems,
   Paging,
@@ -63,7 +63,7 @@ export default function StudentInternships() {
         <div style={{ height: 30 }}></div>
         {pagedInternshipApplications.listSize === 0 && <NoItems />}
         {pagedInternshipApplications.data.map((internshipApplication) => (
-          <Internship
+          <InternshipComponent
             key={internshipApplication.id}
             internship={internshipApplication.internship}
             buttonText={"Details"}

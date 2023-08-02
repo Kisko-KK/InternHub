@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Button,
-  Form,
-  Input,
-  Loader,
-  SelectDropdown,
-  NavigationBar,
-} from "../../components";
+import { Button, Form, Input, Loader, SelectDropdown } from "../../components";
 import { Student } from "../../models";
 import {
   CountyService,
@@ -62,9 +55,15 @@ export default function StudentRegisterPage() {
             const result = await studentService.postAsync(student);
             if (result) {
               navigate("/login");
+            } else {
+              alert(
+                "An error occurred while registering your account... Please try again later!"
+              );
             }
           }}
         >
+          <Input name="email" text="Email:" />
+          <Input type="password" name="password" text="Password:" />
           <Input name="firstName" text="First name:" />
           <Input name="lastName" text="Last name:" />
           <Input name="phoneNumber" text="Phone number:" />
@@ -86,8 +85,6 @@ export default function StudentRegisterPage() {
             selectedId={studyAreaId}
             onChange={(e) => setStudyAreaId(e.target.value)}
           />
-          <Input name="email" text="Email:" />
-          <Input type="password" name="password" text="Password:" />
           <br></br>
           <Button buttonColor="primary" type="submit">
             Create

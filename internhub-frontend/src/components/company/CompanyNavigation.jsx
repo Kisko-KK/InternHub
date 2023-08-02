@@ -10,6 +10,7 @@ import {
   faUser,
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
+import { SmallLogo } from "../index";
 
 export default function CompanyNavigation() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function CompanyNavigation() {
 
   return (
     <div className="sidebar">
+      <SmallLogo />
       <ul className="nav-links">
         <li className="nav-item">
           <Link className="link-style" to="/">
@@ -42,7 +44,7 @@ export default function CompanyNavigation() {
         <li className="nav-item">
           <Link
             className="link-style"
-            to={`/company/profile/${new LoginService().getUserToken().id}`}
+            to={`/company/details/${new LoginService().getUserToken().id}`}
           >
             <span className="icon">
               <FontAwesomeIcon className="fontawesome" icon={faUser} />

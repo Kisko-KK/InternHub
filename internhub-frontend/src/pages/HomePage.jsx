@@ -7,6 +7,7 @@ import {
   CompanyHomePage,
   LandingPage,
   StudentHomePage,
+  UserHomePage,
 } from "./index";
 
 export default function HomePage() {
@@ -27,8 +28,9 @@ export default function HomePage() {
 
   if (loading) return <Loader />;
 
-  if (role.toLowerCase() === "admin") return <AdminHomePage />;
-  if (role.toLowerCase() === "company") return <CompanyHomePage />;
-  if (role.toLowerCase() === "student") return <StudentHomePage />;
+  if (role === "admin") return <AdminHomePage />;
+  if (role === "company") return <CompanyHomePage />;
+  if (role === "student") return <StudentHomePage />;
+  if (role === "user") return <UserHomePage />;
   return <LandingPage />;
 }

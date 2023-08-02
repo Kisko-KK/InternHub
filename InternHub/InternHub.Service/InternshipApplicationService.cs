@@ -45,6 +45,8 @@ namespace InternHub.Service
 
         public async Task<InternshipApplication> GetInternshipApplicationByIdAsync(Guid id) => await _repo.GetInternshipApplicationByIdAsync(id);
 
+        public async Task<InternshipApplication> GetByInternshipAsync(Guid internshipId, string studentId) => await _repo.GetByInternshipAsync(internshipId, studentId);
+
         public async Task<bool> PostInternshipApplicationAsync(InternshipApplication internshipApplication, string currentUserId)
         {
             if (currentUserId == null)
