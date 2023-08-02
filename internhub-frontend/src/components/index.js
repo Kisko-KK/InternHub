@@ -27,6 +27,7 @@ import StateComponent from "./StateComponent";
 import InternshipApplicationFilterComponent from "./internship/InternshipApplicationFilterComponent";
 import RegisterPopupInternship from "./internship/RegisterPopupInternship";
 import NoItems from "./NoItems";
+import AppliedComponent from "./AppliedComponent";
 
 export {
   AdminNavigation,
@@ -56,6 +57,7 @@ export {
   InternshipDetails,
   StateComponent,
   InternshipApplicationFilterComponent,
-  RegisterPopupInternship
+  RegisterPopupInternship,
   NoItems,
+  AppliedComponent,
 };

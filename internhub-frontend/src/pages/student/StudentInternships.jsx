@@ -47,7 +47,7 @@ export default function StudentInternships() {
       <NavigationBar />
       <div className="container">
         <div className="text-center">
-          <h1>Internships</h1>
+          <h1>My applied internships</h1>
         </div>
         <InternshipApplicationFilterComponent
           filter={currentFilter}
@@ -64,7 +64,7 @@ export default function StudentInternships() {
         {pagedInternshipApplications.listSize === 0 && <NoItems />}
         {pagedInternshipApplications.data.map((internshipApplication) => (
           <Internship
-            key={internshipApplication.internship.id}
+            key={internshipApplication.id}
             internship={internshipApplication.internship}
             buttonText={"Details"}
             hasApplicationsCount={false}

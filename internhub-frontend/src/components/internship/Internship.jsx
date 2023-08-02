@@ -1,6 +1,6 @@
 import React from "react";
 import "../../styles/student.css";
-import StateComponent from "../StateComponent";
+import { StateComponent, AppliedComponent } from "../index";
 
 export default function Internship({
   buttonText,
@@ -9,6 +9,7 @@ export default function Internship({
   redirectTo,
   showState,
   state,
+  isApplied,
 }) {
   const convertToShorterDate = (fullDate) => {
     const date = new Date(fullDate);
@@ -25,6 +26,7 @@ export default function Internship({
         <div className="header-container">
           <h3>{internship.name}</h3>
           {showState && <StateComponent state={state} />}
+          {isApplied && <AppliedComponent />}
         </div>
 
         <div className="p-button-flex">

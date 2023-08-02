@@ -60,6 +60,8 @@ namespace InternHub.Repository
 
                 if (internshipApplicationFilter != null)
                 {
+
+
                     if (internshipApplicationFilter.States != null && internshipApplicationFilter.States.Count > 0)
                     {
                         StringBuilder builder = new StringBuilder();

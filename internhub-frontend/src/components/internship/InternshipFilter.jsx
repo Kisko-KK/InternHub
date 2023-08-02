@@ -50,7 +50,7 @@ const InternshipFilter = ({ onFilter, onClearFilter, filter }) => {
   }, []);
 
   return (
-    <div className="filter-container d-flex justify-content-center align-items-center">
+    <div className="d-flex justify-content-center align-items-center">
       <div className="row">
         <div className="col-md-3">
           <Input
