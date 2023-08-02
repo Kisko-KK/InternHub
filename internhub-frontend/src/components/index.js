@@ -56,7 +56,6 @@ export {
   InternshipDetails,
   StateComponent,
   InternshipApplicationFilterComponent,
-  RegisterPopupInternship
   RegisterPopupInternship,
   NoItems,
 };
