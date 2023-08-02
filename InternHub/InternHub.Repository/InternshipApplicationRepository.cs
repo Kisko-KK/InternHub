@@ -20,6 +20,25 @@ namespace InternHub.Repository
             _connectionString = connectionString;
         }
 
+        public async Task<bool> DeleteAsync(InternshipApplication internshipApplication)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
+            {
+                connection.Open();
+
+  
+                string query = $"UPDATE public.\"InternshipApplication\" SET \"IsActive\" = false, \"UpdatedByUserId\" = @updatedByUserId WHERE \"Id\" = @id";
+
+
+                NpgsqlCommand command = new NpgsqlCommand(query, connection);
+                command.Parameters.AddWithValue("@updatedByUserId", internshipApplication.UpdatedByUserId);
+                command.Parameters.AddWithValue("@id", internshipApplication.Id);
+                int rowsUpdated = await command.ExecuteNonQueryAsync();
+
+                return rowsUpdated > 0;
+
+            }
+        }
 
         public async Task<PagedList<InternshipApplication>> GetAllInternshipApplicationsAsync(Paging paging, Sorting sorting, InternshipApplicationFilter internshipApplicationFilter)
         {
@@ -154,6 +173,31 @@ namespace InternHub.Repository
 
         }
 
+        public async Task<Guid?> GetIdAsync(string studentId, Guid internshipId)
+        {
+            using(NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
+            {
+                connection.Open();
+
+                string query = "select \"Id\" " +
+                    "from public.\"InternshipApplication\" ia " +
+                    "where \"StudentId\" = @studentId and \"InternshipId\" = @internshipId  and \"IsActive\" = true";
+
+                NpgsqlCommand command = new NpgsqlCommand(query, connection);
+                command.Parameters.AddWithValue("@studentId", studentId);
+                command.Parameters.AddWithValue("@internshipId", internshipId);
+
+                var result = await command.ExecuteScalarAsync();
+                if (result != null)
+                {
+                    return (Guid)result;
+                }
+                return null;
+
+                
+            }
+        }
+
         public async Task<InternshipApplication> GetInternshipApplicationByIdAsync(Guid id)
         {
 
@@ -202,7 +246,9 @@ namespace InternHub.Repository
                     INNER JOIN ""Company"" comp ON i.""CompanyId"" = comp.""Id""
                     inner join ""StudyArea"" sa on i.""StudyAreaId"" =sa.""Id""
                     inner join ""StudyArea"" sas on s.""StudyAreaId""=sas.""Id"" 
-                                ";
+                WHERE 
+                    ia.""Id"" = @id
+";
                 NpgsqlCommand command = new NpgsqlCommand(query, connection);
                 command.Parameters.AddWithValue("@id", id);
                 await connection.OpenAsync();
@@ -228,8 +274,9 @@ namespace InternHub.Repository
                 //message
                 connection.Open();
 
-                string applicationQuery = "INSERT INTO \"InternshipApplication\" VALUES (@id,@dateCreated,@dateUpdated,@createdByUserId,@updatedByUserId,@isActive,@stateId" +
-                    "@studentId,@internshipId);";
+ 
+
+                string applicationQuery = "INSERT INTO \"InternshipApplication\" VALUES (@id,@stateId,@studentId,@internshipId,@message,@dateCreated,@DateUpdated,@CreatedByUserId,@UpdatedByUserId,@IsActive);";
 
                 NpgsqlCommand applicationCommand = new NpgsqlCommand(applicationQuery, connection);
                 applicationCommand.Parameters.AddWithValue("@id", internshipApplication.Id);
@@ -239,6 +286,7 @@ namespace InternHub.Repository
                 applicationCommand.Parameters.AddWithValue("@updatedByUserId", internshipApplication.UpdatedByUserId);
                 applicationCommand.Parameters.AddWithValue("@isActive", internshipApplication.IsActive);
                 applicationCommand.Parameters.AddWithValue("@stateId", internshipApplication.StateId);
+                applicationCommand.Parameters.AddWithValue("@message", internshipApplication.Message);
                 applicationCommand.Parameters.AddWithValue("@studentId", internshipApplication.StudentId);
                 applicationCommand.Parameters.AddWithValue("@internshipId", internshipApplication.InternshipId);
 

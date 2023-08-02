@@ -25,6 +25,7 @@ import NavigationBar from "./NavigationBar";
 import MultiSelect from "./MultiSelect";
 import StateComponent from "./StateComponent";
 import InternshipApplicationFilterComponent from "./internship/InternshipApplicationFilterComponent";
+import RegisterPopupInternship from "./internship/RegisterPopupInternship";
 
 export {
   AdminNavigation,
@@ -54,4 +55,6 @@ export {
   InternshipDetails,
   StateComponent,
   InternshipApplicationFilterComponent,
+  InternshipDetails,
+  RegisterPopupInternship
 };

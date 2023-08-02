@@ -118,6 +118,27 @@ body {
   background-color: #f2f2f2 !important;
 }
 
+/* RegisterPopupInternship.css */
+
+.modal {
+  max-width: 400px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.popup-content {
+  text-align: center;
+  margin-bottom: 20px;
+  height: 150px; /* Set a specific height for the popup content */
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: center;
+}
+
 .header-container {
   display: flex;
   justify-content: space-between;
