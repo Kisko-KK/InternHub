@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import {
   Button,
   Form,
@@ -13,6 +13,7 @@ import {
   CountyService,
   StudentService,
   StudyAreaService,
+  LoginService,
 } from "../../services";
 
 export default function StudentEditPage() {
@@ -138,6 +139,9 @@ export default function StudentEditPage() {
           <Button buttonColor="primary" type="submit">
             Save
           </Button>
+          <Link to={`/student/details/${new LoginService().getUserToken().id}`}>
+            <Button className="cancel-button">Cancel</Button>
+          </Link>
         </Form>
       </div>
     </div>
