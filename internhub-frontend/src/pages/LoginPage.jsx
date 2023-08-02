@@ -22,6 +22,9 @@ export default function LoginPage() {
       <div className="container">
         <div className="row justify-content-center">
           <div className="col">
+            <div className="col d-flex justify-content-center">
+              <img id="loginimg" src="/images/login.svg" alt="login_image" />
+            </div>
             <div className="text-center mb-3">
               <h1>Login</h1>
             </div>
