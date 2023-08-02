@@ -86,8 +86,9 @@ const router = createBrowserRouter([
   },
   {
     path: "/internship/details/:internshipId/:studentId",
-    element: <InternshipDetails />,
-  },
+    element: <InternshipDetails />
+  }
+
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

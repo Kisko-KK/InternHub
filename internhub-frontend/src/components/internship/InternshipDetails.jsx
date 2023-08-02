@@ -1,33 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { InternshipService } from '../../services';
+import { InternshipApplicationService, InternshipService } from '../../services';
 import StudentNavigation from '../student/StudentNavigation';
+import { RegisterPopupInternship } from '../../components/index'
+import "../../styles/student.css"
 
 const InternshipDetails = () => {
   const [ internship, setInternship ] = useState({});
   const { internshipId, studentId } = useParams("");
   const [ isRegisteredToInternship, setIsRegisteredToInternship] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [internshipApplicationId, setInternshipApplicationId] = useState('');
 
   const internshipService = new InternshipService();
+  const internshipApplicationService = new InternshipApplicationService();
 
-  const handleRegisterInternship = () => {
-    alert('You have successfully registered for the internship!');
+  const handleLogOutInternshipAsync = async () => {
+    const withdraw = window.confirm("Are you sure you want to withdraw your application?");
+    if (withdraw){
+      if(await internshipApplicationService.deleteAsync(internshipApplicationId)){
+        alert("Application withdrawn successfully!")
+        fetchIsStudentregisteredAsync();
+      }
+      else{
+        alert("Something has gone wrong, please try again!")
+      }
+    }
   };
-  const handleLogOutInternship = () => {
-    alert('You have successfully registered for the internship!');
-  };
 
+  const fetchInternshipApplicationId = async () => {
+    setInternshipApplicationId(await internshipApplicationService.getIdAsync(studentId, internshipId))
+  }
 
-  const fetchInternship = async () =>{
+  const fetchInternshipAsync = async () =>{
     setInternship(await internshipService.getByIdAsync(internshipId));
   } 
-  const fetchIsStudentregistered = async () =>{
+  const fetchIsStudentregisteredAsync = async () =>{
     setIsRegisteredToInternship(await internshipService.getIsStudentRegisteredToInternshipAsync(studentId, internshipId));
+  }
+  const handleApplySuccessAsync = async () =>{
+    alert("You applied successfully!");
+    await fetchInternshipApplicationId();
+    await fetchIsStudentregisteredAsync();
   }
   
   useEffect(() => {
-    fetchInternship();
-    fetchIsStudentregistered();
+    fetchInternshipAsync();
+    fetchIsStudentregisteredAsync();
+    fetchInternshipApplicationId();
   }, []);
 
   return (
@@ -53,18 +73,19 @@ const InternshipDetails = () => {
                 </div>
                 { isRegisteredToInternship &&
                   <div className='text-center mt-5 bg-c'>
-                  <button className="mx-auto" onClick={handleLogOutInternship}>
+                  <button className="mx-auto" onClick={handleLogOutInternshipAsync}>
                     Odjavi ovu praksu
                   </button>
                 </div>
                 }
                 { !isRegisteredToInternship &&
                   <div className='text-center mt-5 bg-c'>
-                  <button className="mx-auto" onClick={handleRegisterInternship}>
+                  <button className="mx-auto" onClick={(()=>{setShowPopup(true)})}>
                     Prijavi se na praksu
                   </button>
                 </div>
                 }
+                <RegisterPopupInternship showPopup={showPopup} handleApplySuccess={handleApplySuccessAsync} handleClose={() => {setShowPopup(false)}}/>
               </div>
             </div>
           </div>

@@ -50,9 +50,9 @@ export class InternshipApplicationService {
     }
   }
 
-  async postAsync(student) {
+  async postAsync(internshipId, applyMessage) {
     try {
-      const response = await axios.post(urlPrefix, student, {
+      const response = await axios.post(urlPrefix, {"InternshipId" : internshipId, "Message" : applyMessage}, {
         headers: HttpHeader.get(),
       });
       return response.status === 200;
@@ -60,4 +60,26 @@ export class InternshipApplicationService {
       return false;
     }
   }
+
+  async deleteAsync(InternshipApplicationId) {
+    try{
+      const response = await axios.delete(urlPrefix + `/${InternshipApplicationId}`, {headers: HttpHeader.get()});
+      return response.status === 200;
+    }catch{
+      return false;
+    }
+  }
+
+  async getIdAsync(studentId, internshipId){
+    try{
+      const response = await axios.get(urlPrefix + `/GetId?studentId=${studentId}&internshipId=${internshipId}`, {headers: HttpHeader.get()});
+      if(response.status === 200){
+        return response.data;
+      }
+      return null;
+    }catch{
+      return null;
+    }
+  }
+
 }

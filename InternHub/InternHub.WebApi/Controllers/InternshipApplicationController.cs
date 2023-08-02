@@ -1,6 +1,7 @@
 ﻿using InternHub.Common;
 using InternHub.Common.Filter;
 using InternHub.Model;
+using InternHub.Service;
 using InternHub.Service.Common;
 using InternHub.WebApi.Models;
 using Microsoft.AspNet.Identity;
@@ -88,18 +89,43 @@ namespace InternHub.WebApi.Controllers
                     Id = Guid.NewGuid(),
                     InternshipId = internshipApplication.InternshipId,
                     StudentId = currentUserId,
-                    StateId = state.Id
+                    StateId = state.Id,
+                    Message = internshipApplication.Message,
                 };
 
                 bool success = await InternshipApplicationService.PostInternshipApplicationAsync(newInternshipApplication, currentUserId);
 
                 if (!success) return Request.CreateResponse(HttpStatusCode.BadRequest);
-                return Request.CreateResponse(HttpStatusCode.OK, new InternshipApplicationView(newInternshipApplication));
+                return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+
+        public async Task<HttpResponseMessage> DeleteAsync(Guid id)
+        {
+            InternshipApplication existingInternshipApplication = await InternshipApplicationService.GetInternshipApplicationByIdAsync(id);
+            string currentUserId = User.Identity?.GetUserId();
+
+            if (existingInternshipApplication == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any internship application with that id!"); }
+
+            if (await InternshipApplicationService.DeleteAsync(existingInternshipApplication, currentUserId) == false)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't delete internship application!");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, $"Internship application with id:{id} was deleted!");
+        }
+
+        [HttpGet]
+        [Route("api/InternshipApplication/GetId")]
+        public async Task<HttpResponseMessage> GetIdAsync(string studentId, Guid internshipId)
+        {
+            Guid? result = await InternshipApplicationService.GetIdAsync(studentId, internshipId);
+
+            return Request.CreateResponse(HttpStatusCode.OK, result);
+        }
+
     }
 }

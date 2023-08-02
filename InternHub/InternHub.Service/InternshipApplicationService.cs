@@ -1,6 +1,7 @@
 ﻿using InternHub.Common;
 using InternHub.Common.Filter;
 using InternHub.Model;
+using InternHub.Model.Common;
 using InternHub.Repository.Common;
 using InternHub.Service.Common;
 using System;
@@ -20,9 +21,19 @@ namespace InternHub.Service
             _repo = internshipApplicationRepository;
         }
 
+        public async Task<bool> DeleteAsync(InternshipApplication internshipApplication, string userId)
+        {
+            internshipApplication.UpdatedByUserId = userId;
+            internshipApplication.DateUpdated = DateTime.Now;
+            return await _repo.DeleteAsync(internshipApplication);
+        }
 
         public async Task<PagedList<InternshipApplication>> GetAllInternshipApplicationsAsync(Paging paging, Sorting sorting, InternshipApplicationFilter internshipApplicationFilter) => await _repo.GetAllInternshipApplicationsAsync(paging, sorting, internshipApplicationFilter);
 
+        public async Task<Guid?> GetIdAsync(string studentId, Guid internshipId)
+        {
+            return await _repo.GetIdAsync(studentId, internshipId);
+        }
 
         public async Task<InternshipApplication> GetInternshipApplicationByIdAsync(Guid id) => await _repo.GetInternshipApplicationByIdAsync(id);
 
