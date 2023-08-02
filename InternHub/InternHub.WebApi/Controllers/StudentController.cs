@@ -62,6 +62,23 @@ namespace InternHub.WebApi.Controllers
             }
         }
 
+        [HttpGet, Route("GetByInternship")]
+        public async Task<HttpResponseMessage> GetByInternshipAsync(Guid internshipId)
+        {
+            try
+            {
+                List<Student> students = await StudentService.GetByInternship(internshipId);
+
+                if (students == null) return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+                return Request.CreateResponse(HttpStatusCode.OK, students.Select(x => new StudentView(x)));
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error", ex);
+            }
+        }
+
         [HttpGet]
         [Route("admin")]
         public async Task<HttpResponseMessage> GetStudentViewAsAdmin([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] StudentFilter filter = null)

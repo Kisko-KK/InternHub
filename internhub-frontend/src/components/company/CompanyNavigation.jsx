@@ -32,7 +32,7 @@ export default function CompanyNavigation() {
           </Link>
         </li>
         <li className="nav-item">
-          <Link className="link-style" to="">
+          <Link className="link-style" to="/internship/applications">
             <span className="icon">
               <FontAwesomeIcon className="fontawesome" icon={faFileAlt} />
             </span>

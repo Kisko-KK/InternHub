@@ -2,6 +2,7 @@ import { Student, State, Internship } from "./index";
 
 export class InternshipApplication {
   constructor({
+    id = "",
     dateCreated = null,
     dateUpdated = null,
     message = "",
@@ -9,6 +10,7 @@ export class InternshipApplication {
     state = null,
     internship = null,
   }) {
+    this.id = id;
     this.dateCreated = dateCreated;
     this.dateUpdated = dateUpdated;
     this.message = message;
@@ -19,12 +21,15 @@ export class InternshipApplication {
 
   static fromJson(json) {
     return new InternshipApplication({
+      id: json["Id"] || "",
       dateCreated: json["DateCreated"] || "",
       dateUpdated: json["DateUpdated"] || "",
-      message: json["Message"],
-      student: Student.fromJson(json["Student"]),
-      state: State.fromJson(json["State"]),
-      internship: Internship.fromJson(json["Internship"]),
+      message: json["Message"] || "",
+      student: json["Student"] ? Student.fromJson(json["Student"]) : null,
+      state: json["State"] ? State.fromJson(json["State"]) : null,
+      internship: json["Internship"]
+        ? Internship.fromJson(json["Internship"])
+        : json["Internship"],
     });
   }
 }

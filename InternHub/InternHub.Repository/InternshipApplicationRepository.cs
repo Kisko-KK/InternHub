@@ -79,9 +79,12 @@ namespace InternHub.Repository
                             command.Parameters.AddWithValue(parameterName, internshipApplicationFilter.States[i]);
                         }
                         parameters.Add("sta.\"Id\" in (" + builder.ToString() + ")");
+                    }
 
-
-
+                    if(internshipApplicationFilter.CompanyId != null)
+                    {
+                        parameters.Add("i.\"CompanyId\" = @companyId");
+                        command.Parameters.AddWithValue("@companyId", internshipApplicationFilter.CompanyId);
                     }
                     if (internshipApplicationFilter.InternshipName != null)
                     {
@@ -97,6 +100,16 @@ namespace InternHub.Repository
                     {
                         parameters.Add("comp.\"Name\" ILIKE @companyName");
                         command.Parameters.AddWithValue("@companyName", "%" + internshipApplicationFilter.CompanyName + "%");
+                    }
+                    if(internshipApplicationFilter.FirstName != null)
+                    {
+                        parameters.Add("u.\"FirstName\" ILIKE @firstName");
+                        command.Parameters.AddWithValue("@firstName", "%" + internshipApplicationFilter.CompanyName + "%");
+                    }
+                    if(internshipApplicationFilter.LastName != null)
+                    {
+                        parameters.Add("u.\"LastName\" ILIKE @lastName");
+                        command.Parameters.AddWithValue("@lastName", "%" + internshipApplicationFilter.CompanyName + "%");
                     }
                 }
                 string selectQuery = @"
@@ -218,6 +231,11 @@ namespace InternHub.Repository
 
 
                     }
+                    if (internshipApplicationFilter.CompanyId != null)
+                    {
+                        parameters.Add("i.\"CompanyId\" = @companyId");
+                        command.Parameters.AddWithValue("@companyId", internshipApplicationFilter.CompanyId);
+                    }
                     if (internshipApplicationFilter.InternshipName != null)
                     {
                         parameters.Add("i.\"Name\" ILIKE @internshipName");
@@ -232,6 +250,16 @@ namespace InternHub.Repository
                     {
                         parameters.Add("comp.\"Name\" ILIKE @companyName");
                         command.Parameters.AddWithValue("@companyName", "%" + internshipApplicationFilter.CompanyName + "%");
+                    }
+                    if (internshipApplicationFilter.FirstName != null)
+                    {
+                        parameters.Add("u.\"FirstName\" ILIKE @firstName");
+                        command.Parameters.AddWithValue("@firstName", "%" + internshipApplicationFilter.FirstName + "%");
+                    }
+                    if (internshipApplicationFilter.LastName != null)
+                    {
+                        parameters.Add("u.\"LastName\" ILIKE @lastName");
+                        command.Parameters.AddWithValue("@lastName", "%" + internshipApplicationFilter.LastName + "%");
                     }
                 }
                 string selectQuery = @"
@@ -442,7 +470,7 @@ namespace InternHub.Repository
             {
                 connection.Open();
 
-                string applicationQuery = "UPDATE \"InternshipApplication\" set \"StateId\" = @stateId, \"UpdatedByUserId\" = @updatedByUserId, \"DateUpdated\" = @dateUpdate WHERE \"Id\" = @id;";
+                string applicationQuery = "UPDATE \"InternshipApplication\" set \"StateId\" = @stateId, \"UpdatedByUserId\" = @updatedByUserId, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id;";
 
                 NpgsqlCommand applicationCommand = new NpgsqlCommand(applicationQuery, connection);
                 applicationCommand.Parameters.AddWithValue("@id", internshipApplication.Id);

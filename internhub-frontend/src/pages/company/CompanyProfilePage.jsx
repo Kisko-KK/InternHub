@@ -34,8 +34,7 @@ export default function CompanyProfilePage() {
     setLoading(true);
     getCompany();
   }, [params.id]);
-  console.log("params.id:", params.id);
-  console.log("Company state:", company);
+
   if (loading) return <Loader />;
   if (!company) return <NotFoundPage />;
   return (
@@ -70,7 +69,7 @@ export default function CompanyProfilePage() {
         <div className="">
           Website:{" "}
           <b>
-            <a href={company.website} target="_blank">
+            <a href={company.website} target="_blank" rel="noreferrer">
               {company.website}
             </a>
           </b>

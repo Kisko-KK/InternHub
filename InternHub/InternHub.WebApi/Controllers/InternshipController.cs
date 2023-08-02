@@ -30,7 +30,6 @@ namespace InternHub.WebApi.Controllers
         // GET api/<controller>
         public async Task<HttpResponseMessage> GetAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] InternshipFilter filter = null)
         {
-            if (filter != null) filter.UserId = User.Identity.GetUserId();
             PagedList<Internship> pagedList = await InternshipService.GetAsync(sorting, paging, filter);
             List<InternshipView> internshipViews = new List<InternshipView>();
             foreach(Internship internship in pagedList.Data)

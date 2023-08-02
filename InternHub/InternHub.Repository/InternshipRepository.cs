@@ -124,6 +124,12 @@ namespace InternHub.Repository
                 filterQueryBuilder.Append(" AND i.\"IsActive\" = @isActive");
                 selectCommand.Parameters.AddWithValue("@isActive", filter.IsActive);
                 countCommand.Parameters.AddWithValue("@isActive", filter.IsActive);
+                if(filter.CompanyId != null)
+                {
+                    filterQueryBuilder.Append(" AND i.\"CompanyId\" = @companyId ");
+                    selectCommand.Parameters.AddWithValue("@companyId", filter.CompanyId);
+                    countCommand.Parameters.AddWithValue("@companyId", filter.CompanyId);
+                }
                 if (filter.Name != null)
                 {
                     filterQueryBuilder.Append(" AND i.\"Name\" LIKE '%' || @name || '%' ");

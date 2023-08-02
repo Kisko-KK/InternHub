@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import {
   Form,
@@ -10,7 +9,6 @@ import {
   Button,
 } from "../../components";
 import { CountyService, CompanyService, LoginService } from "../../services";
-import { HttpHeader } from "../../models";
 import NotFoundPage from "../NotFoundPage";
 
 export default function CompanyEditPage() {

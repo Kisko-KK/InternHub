@@ -8,7 +8,6 @@ import {
   AdminStudentsPage,
   HomePage,
   CompanyRegisterPage,
-  CompanyHomePage,
   LoginPage,
   StudentDetailsPage,
   StudentEditPage,
@@ -18,6 +17,7 @@ import {
   CompanyEditPage,
   RequireAuthPage,
   StudentInternships,
+  CompanyInternshipApplications,
 } from "./pages";
 import { InternshipDetails } from "./components";
 
@@ -81,14 +81,22 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "company/addnewinternship",
+    path: "/internship/create",
     element: <CompanyCreateInternship />,
   },
   {
     path: "/internship/details/:internshipId/:studentId",
-    element: <InternshipDetails />
-  }
-
+    element: <InternshipDetails />,
+  },
+  {
+    path: "/internship/applications",
+    element: (
+      <RequireAuthPage
+        roles={["Company"]}
+        page={<CompanyInternshipApplications />}
+      />
+    ),
+  },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

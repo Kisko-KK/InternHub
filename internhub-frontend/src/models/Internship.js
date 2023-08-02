@@ -13,7 +13,7 @@ export class Internship {
     startDate = "",
     endDate = "",
     applicationsCount = 0,
-    isApplied = false
+    isApplied = false,
   }) {
     this.id = id;
     this.studyAreaId = studyAreaId;
@@ -39,10 +39,12 @@ export class Internship {
       address: json["Address"],
       startDate: json["StartDate"],
       endDate: json["StartDate"],
-      company: Company.fromJson(json["Company"]),
-      studyArea: StudyArea.fromJson(json["StudyArea"]),
+      company: json["Company"] ? Company.fromJson(json["Company"]) : null,
+      studyArea: json["StudyArea"]
+        ? StudyArea.fromJson(json["StudyArea"])
+        : null,
       applicationsCount: json["ApplicationsCount"],
-      isApplied: json["IsApplied"] ? json["IsApplied"] : false
+      isApplied: json["IsApplied"] ? json["IsApplied"] : false,
     });
   }
 }

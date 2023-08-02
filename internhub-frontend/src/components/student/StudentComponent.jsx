@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { StudentService } from "../../services";
 import Button from "../Button";
 
-export default function StudentComponent({ student, onEdit, onRemove }) {
+export default function StudentComponent({
+  student,
+  onEdit,
+  onRemove,
+  readonly,
+}) {
   const studentService = new StudentService();
   const navigate = useNavigate();
   return (
@@ -18,24 +23,28 @@ export default function StudentComponent({ student, onEdit, onRemove }) {
         >
           Details
         </Button>
-        <Button buttonColor="secondary" onClick={() => onEdit(student.id)}>
-          Edit
-        </Button>
-        <Button
-          buttonColor="danger"
-          onClick={async () => {
-            const result = window.confirm(
-              "Jeste li sigurni da zelite ukloniti ovog korisnika?"
-            );
-            if (result) {
-              await studentService.removeAsync(student.id).then(() => {
-                onRemove();
-              });
-            }
-          }}
-        >
-          Delete
-        </Button>
+        {!readonly && (
+          <Button buttonColor="secondary" onClick={() => onEdit(student.id)}>
+            Edit
+          </Button>
+        )}
+        {!readonly && (
+          <Button
+            buttonColor="danger"
+            onClick={async () => {
+              const result = window.confirm(
+                "Jeste li sigurni da zelite ukloniti ovog korisnika?"
+              );
+              if (result) {
+                await studentService.removeAsync(student.id).then(() => {
+                  onRemove();
+                });
+              }
+            }}
+          >
+            Delete
+          </Button>
+        )}
       </td>
     </tr>
   );

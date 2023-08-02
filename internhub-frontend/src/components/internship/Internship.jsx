@@ -1,6 +1,7 @@
 import React from "react";
+import { Navigate } from "react-router-dom";
 import "../../styles/student.css";
-import { StateComponent, AppliedComponent } from "../index";
+import { StateComponent, AppliedComponent, Button } from "../index";
 
 export default function Internship({
   buttonText,
@@ -10,6 +11,7 @@ export default function Internship({
   showState,
   state,
   isApplied,
+  isOwner,
 }) {
   const convertToShorterDate = (fullDate) => {
     const date = new Date(fullDate);
@@ -31,7 +33,19 @@ export default function Internship({
 
         <div className="p-button-flex">
           <p id="description">{internship.description}</p>
-          <button onClick={() => redirectTo()}>{buttonText}</button>
+          <div>
+            <button onClick={() => redirectTo()}>{buttonText}</button>
+            {isOwner && (
+              <Button
+                buttonColor={"secondary"}
+                onClick={() => {
+                  Navigate("/internship/edit/" + internship.id);
+                }}
+              >
+                Edit
+              </Button>
+            )}
+          </div>
         </div>
 
         <p className="duration">

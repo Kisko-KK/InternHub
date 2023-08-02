@@ -14,11 +14,13 @@ export class InternshipApplicationService {
       filter.states && filter.states.length > 0
         ? "&" + filter.states.map((state) => `states=${state}`).join("&")
         : "";
-    const urlQuery = `?CurrentPage=${pageNumber}&pageSize=${pageSize}&studentId=${
-      filter.studentId || ""
-    }&companyName=${filter.companyName || ""}&internshipName=${
-      filter.internshipName || ""
-    }${states}`;
+    const urlQuery = `?CurrentPage=${pageNumber}&pageSize=${pageSize}&companyId=${
+      filter.companyId || ""
+    }&studentId=${filter.studentId || ""}&companyName=${
+      filter.companyName || ""
+    }&firstName=${filter.firstName || ""}&lastName=${
+      filter.lastName || ""
+    }&internshipName=${filter.internshipName || ""}${states}`;
     return urlQuery;
   }
 
@@ -41,9 +43,12 @@ export class InternshipApplicationService {
 
   async getUnacceptedAsync(params) {
     try {
-      const response = await axios.get(urlPrefix + this.getUrlQuery(params), {
-        headers: HttpHeader.get(),
-      });
+      const response = await axios.get(
+        urlPrefix + "/GetUnaccepted" + this.getUrlQuery(params),
+        {
+          headers: HttpHeader.get(),
+        }
+      );
       if (response.status !== 200) return [];
       const dataList = response.data["Data"].map((data) =>
         InternshipApplication.fromJson(data)
@@ -70,9 +75,13 @@ export class InternshipApplicationService {
 
   async postAsync(internshipId, applyMessage) {
     try {
-      const response = await axios.post(urlPrefix, {"InternshipId" : internshipId, "Message" : applyMessage}, {
-        headers: HttpHeader.get(),
-      });
+      const response = await axios.post(
+        urlPrefix,
+        { InternshipId: internshipId, Message: applyMessage },
+        {
+          headers: HttpHeader.get(),
+        }
+      );
       return response.status === 200;
     } catch {
       return false;
@@ -82,7 +91,7 @@ export class InternshipApplicationService {
   async acceptAsync(id, isAccepted) {
     try {
       const response = await axios.post(
-        urlPrefix + `?id=${id}&isAccepted=${isAccepted}`,
+        urlPrefix + `/Accept?id=${id}&isAccepted=${isAccepted}`,
         null,
         {
           headers: HttpHeader.get(),
@@ -95,24 +104,30 @@ export class InternshipApplicationService {
   }
 
   async deleteAsync(InternshipApplicationId) {
-    try{
-      const response = await axios.delete(urlPrefix + `/${InternshipApplicationId}`, {headers: HttpHeader.get()});
+    try {
+      const response = await axios.delete(
+        urlPrefix + `/${InternshipApplicationId}`,
+        { headers: HttpHeader.get() }
+      );
       return response.status === 200;
-    }catch{
+    } catch {
       return false;
     }
   }
 
-  async getIdAsync(studentId, internshipId){
-    try{
-      const response = await axios.get(urlPrefix + `/GetId?studentId=${studentId}&internshipId=${internshipId}`, {headers: HttpHeader.get()});
-      if(response.status === 200){
+  async getIdAsync(studentId, internshipId) {
+    try {
+      const response = await axios.get(
+        urlPrefix +
+          `/GetId?studentId=${studentId}&internshipId=${internshipId}`,
+        { headers: HttpHeader.get() }
+      );
+      if (response.status === 200) {
         return response.data;
       }
       return null;
-    }catch{
+    } catch {
       return null;
     }
   }
-
 }

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StudentFilter } from "../../models";
 import { Button, CheckBox, Form, Input, Loader, MultiSelect } from "../index";
-import Select from "react-select";
 import { CountyService, StudyAreaService } from "../../services";
 
 export default function StudentFilterComponent({

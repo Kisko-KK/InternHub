@@ -31,6 +31,22 @@ export class StudentService {
     return urlQuery;
   }
 
+  async getByInternshipAsync(internshipId) {
+    try {
+      const response = await axios.get(
+        urlPrefix + "/GetByInternship?internshipId=" + internshipId,
+        {
+          headers: HttpHeader.get(),
+        }
+      );
+      if (response.status !== 200) return [];
+      const dataList = response.data.map((data) => Student.fromJson(data));
+      return dataList;
+    } catch {
+      return [];
+    }
+  }
+
   async getAsync(params) {
     try {
       const response = await axios.get(urlPrefix + this.getUrlQuery(params), {

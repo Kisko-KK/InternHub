@@ -13,6 +13,7 @@ import CompanyRegisterPage from "./company/CompanyRegisterPage";
 import CompanyCreateInternship from "./company/CompanyCreateInternship";
 import CompanyProfilePage from "./company/CompanyProfilePage";
 import CompanyEditPage from "./company/CompanyEditPage";
+import CompanyInternshipApplications from "./company/CompanyInternshipApplications";
 
 import StudentHomePage from "./student/StudentHomePage";
 import StudentDetailsPage from "./student/StudentDetailsPage";
@@ -39,4 +40,5 @@ export {
   CompanyProfilePage,
   CompanyEditPage,
   StudentInternships,
+  CompanyInternshipApplications,
 };
