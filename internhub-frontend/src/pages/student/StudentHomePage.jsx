@@ -34,6 +34,7 @@ export default function StudentHomePage() {
       sortOrder: "ASC",
       pageSize: 3,
     });
+    console.log(data);
     setPagedInternships(data);
   };
 
@@ -62,6 +63,7 @@ export default function StudentHomePage() {
           internship={internship}
           buttonText={"Details"}
           hasApplicationsCount={false}
+          isApplied={internship.isApplied}
           redirectTo={() => {
             navigate(
               `/internship/details/${internship.id}/${

@@ -1,6 +1,7 @@
 ﻿using InternHub.Common;
 using InternHub.Common.Filter;
 using InternHub.Model;
+using InternHub.Model.Common;
 using InternHub.Service;
 using InternHub.Service.Common;
 using InternHub.WebApi.Models;
@@ -29,13 +30,21 @@ namespace InternHub.WebApi.Controllers
         // GET api/<controller>
         public async Task<HttpResponseMessage> GetAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] InternshipFilter filter = null)
         {
+            if (filter != null) filter.UserId = User.Identity.GetUserId();
             PagedList<Internship> pagedList = await InternshipService.GetAsync(sorting, paging, filter);
+            List<InternshipView> internshipViews = new List<InternshipView>();
+            foreach(Internship internship in pagedList.Data)
+            {
+                InternshipView internshipView = new InternshipView(internship);
+                internshipView.IsApplied = await InternshipService.IsStudentRegisteredToInternshipAsync(User.Identity.GetUserId(), internship.Id);
+                internshipViews.Add(internshipView);
+            }
             PagedList<InternshipView> pagedListView = new PagedList<InternshipView>
             {
                 CurrentPage = pagedList.CurrentPage,
                 PageSize = pagedList.PageSize,
                 DatabaseRecordsCount = pagedList.DatabaseRecordsCount,
-                Data = pagedList.Data.Select(intership => new InternshipView(intership)).ToList(),
+                Data = internshipViews,
                 LastPage = pagedList.LastPage
             };
 

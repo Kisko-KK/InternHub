@@ -12,7 +12,8 @@ export class Internship {
     address = "",
     startDate = "",
     endDate = "",
-    applicationsCount = 0
+    applicationsCount = 0,
+    isApplied = false
   }) {
     this.id = id;
     this.studyAreaId = studyAreaId;
@@ -25,6 +26,7 @@ export class Internship {
     this.startDate = startDate;
     this.endDate = endDate;
     this.applicationsCount = applicationsCount;
+    this.isApplied = isApplied;
   }
 
   static fromJson(json) {
@@ -39,7 +41,8 @@ export class Internship {
       endDate: json["StartDate"],
       company: Company.fromJson(json["Company"]),
       studyArea: StudyArea.fromJson(json["StudyArea"]),
-      applicationsCount: json["ApplicationsCount"]
+      applicationsCount: json["ApplicationsCount"],
+      isApplied: json["IsApplied"] ? json["IsApplied"] : false
     });
   }
 }

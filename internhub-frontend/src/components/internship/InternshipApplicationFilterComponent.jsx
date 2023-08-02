@@ -84,22 +84,25 @@ export default function InternshipApplicationFilterComponent({
             />
           </div>
         </div>
-        <Button type="submit" buttonColor="primary">
-          Filter
-        </Button>
-        {isFilterActive && (
-          <Button
-            buttonColor="secondary"
-            onClick={() => {
-              setCompanyName("");
-              setInternshipName("");
-              setSelectedStates([]);
-              onClearFilter();
-            }}
-          >
-            Clear filter
+        <div className="text-center">
+          <Button className="m-1" type="submit" buttonColor="primary">
+            Filter
           </Button>
-        )}
+          {isFilterActive && (
+            <Button
+              className="m-1"
+              buttonColor="secondary"
+              onClick={() => {
+                setCompanyName("");
+                setInternshipName("");
+                setSelectedStates([]);
+                onClearFilter();
+              }}
+            >
+              Clear
+            </Button>
+          )}
+        </div>
       </Form>
     </div>
   );

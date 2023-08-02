@@ -147,7 +147,7 @@ namespace InternHub.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/InternshipApplication/GetId")]
+        [Route("GetId")]
         public async Task<HttpResponseMessage> GetIdAsync(string studentId, Guid internshipId)
         {
             Guid? result = await InternshipApplicationService.GetIdAsync(studentId, internshipId);

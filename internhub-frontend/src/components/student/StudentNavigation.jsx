@@ -1,6 +1,5 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Button from "../Button";
 import "../../styles/nav.css";
 import { LoginService } from "../../services";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,7 +30,7 @@ export default function StudentNavigation() {
           </Link>
         </li>
         <li className="nav-item">
-          <Link className="link-style" to="">
+          <Link className="link-style" to="/student/internships">
             <span className="icon">
               <FontAwesomeIcon className="fontawesome" icon={faFileAlt} />
             </span>

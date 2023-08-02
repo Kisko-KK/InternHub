@@ -37,5 +37,6 @@ namespace InternHub.WebApi.Models
         public DateTime EndDate { get; set; }
         public long ApplicationsCount { get; set; }
         public Guid Id { get; set; }
+        public bool IsApplied { get; set; } = false;
     }
 }
