@@ -13,7 +13,7 @@ export class Internship {
     startDate = "",
     endDate = "",
     applicationsCount = 0,
-    isApplied = false
+    isApplied = false,
   }) {
     this.id = id;
     this.studyAreaId = studyAreaId;
@@ -44,6 +44,7 @@ export class Internship {
         ? StudyArea.fromJson(json["StudyArea"])
         : null,
       applicationsCount: json["ApplicationsCount"],
+      isApplied: json["IsApplied"] ? json["IsApplied"] : false,
     });
   }
 }

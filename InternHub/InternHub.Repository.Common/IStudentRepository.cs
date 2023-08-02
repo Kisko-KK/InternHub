@@ -15,13 +15,8 @@ namespace InternHub.Repository.Common
         Task<PagedList<Student>> GetStudentViewAsAdminAsync(Sorting sorting, Paging paging, StudentFilter filter);
         Task<List<Student>> GetByInternship(Guid internshipId);
         Task<Student> GetStudentByIdAsync(string id);
-
         Task<int> PostAsync(Student student);
-
         Task<int> DeleteAsync(Student student);
-
         Task<int> PutAsync(Student student);
-
-
     }
 }

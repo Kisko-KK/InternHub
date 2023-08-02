@@ -71,6 +71,7 @@ export default function CompanyHomePage() {
           internship={internship}
           buttonText={"Details"}
           hasApplicationsCount={true}
+          isOwner={true}
           redirectTo={() => {
             navigate(
               `/internship/details/${internship.id}/${
