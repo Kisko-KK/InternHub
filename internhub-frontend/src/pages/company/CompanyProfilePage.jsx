@@ -1,6 +1,6 @@
 import { Loader, CompanyNavigation, Button } from "../../components";
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { LoginService, CompanyService } from "../../services";
 import NotFoundPage from "../NotFoundPage";
 
@@ -9,6 +9,7 @@ export default function CompanyProfilePage() {
   const [loading, setLoading] = useState(true);
   const [company, setCompany] = useState({});
   const params = useParams();
+  const navigate = useNavigate();
 
   async function getCompany() {
     await companyService.getByIdAsync(params.id).then((company) => {
@@ -17,6 +18,18 @@ export default function CompanyProfilePage() {
     });
   }
 
+  async function handleDelete(event) {
+    const userConfirmed = window.confirm("Are you sure you want to delete?");
+    if (userConfirmed) {
+      try {
+        await companyService.removeAsync(params.id);
+      } catch (error) {
+        console.error("Error deleting company:", error);
+      }
+    } else {
+      navigate(`/company/profile/${new LoginService().getUserToken().id}`);
+    }
+  }
   useEffect(() => {
     setLoading(true);
     getCompany();
@@ -68,6 +81,7 @@ export default function CompanyProfilePage() {
         >
           <Button>Edit</Button>
         </Link>
+        <Button onClick={handleDelete}>Delete</Button>
       </div>
     </div>
   );

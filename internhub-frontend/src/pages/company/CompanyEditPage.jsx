@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import {
   Form,
   Input,
@@ -67,6 +67,7 @@ export default function CompanyEditPage() {
   }
   if (loading) return <Loader />;
   if (!company) return <NotFoundPage />;
+
   return (
     <div>
       <CompanyNavigation />
@@ -148,6 +149,10 @@ export default function CompanyEditPage() {
           {params.id === new LoginService().getUserToken().id && (
             <Button type="submit">Save</Button>
           )}
+
+          <Link to={`/company/profile/${new LoginService().getUserToken().id}`}>
+            <Button className="cancel-button">Cancel</Button>
+          </Link>
         </Form>
       </div>
     </div>

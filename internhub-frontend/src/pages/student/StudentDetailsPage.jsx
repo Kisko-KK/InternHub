@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Loader, NavigationBar } from "../../components";
-import { StudentService } from "../../services";
+import { useParams, Link } from "react-router-dom";
+import { Loader, NavigationBar, Button } from "../../components";
+import { StudentService, LoginService } from "../../services";
 import NotFoundPage from "../NotFoundPage";
 
 export default function StudentDetailsPage() {
@@ -49,6 +49,12 @@ export default function StudentDetailsPage() {
         <div className="row mb-3 mt-3">
           Description: <b>{student.description}</b>
         </div>
+        <Link
+          className="text-center"
+          to={`/student/edit/${new LoginService().getUserToken().id}`}
+        >
+          <Button>Edit</Button>
+        </Link>
       </div>
     </div>
   );

@@ -81,10 +81,6 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/company",
-    element: <CompanyHomePage />,
-  },
-  {
     path: "company/addnewinternship",
     element: <CompanyCreateInternship />,
   },
