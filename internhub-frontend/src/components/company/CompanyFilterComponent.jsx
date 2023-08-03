@@ -24,7 +24,7 @@ export default function CompanyFilterComponent({
       >
         <div className="col">
           <Input
-            text="Name"
+            text="Company Name"
             name="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
