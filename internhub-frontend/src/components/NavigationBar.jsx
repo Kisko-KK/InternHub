@@ -13,6 +13,5 @@ export default function NavigationBar() {
   if (role === "admin") return <AdminNavigation />;
   if (role === "student") return <StudentNavigation />;
   if (role === "company") return <CompanyNavigation />;
-  if (role === "user") return <UserNavigation />;
-  return <div></div>;
+  return <UserNavigation />;
 }

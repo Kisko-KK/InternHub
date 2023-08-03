@@ -59,7 +59,7 @@ export default function CompanyInternshipApplications() {
           }}
         />
 
-        <div
+        {/* <div
           className="row"
           style={{
             backgroundColor: "#a8bbbf",
@@ -85,39 +85,7 @@ export default function CompanyInternshipApplications() {
               ghjkg
             </div>
           </div>
-        </div>
-
-        {/* <div id="outside-container">
-          <div id="internship-container">
-            <div className="header-container">
-              <h3>{getStudentName()}</h3>
-              <div className="row text-center">
-                <Button
-                  buttonColor={"success"}
-                  onClick={async () => await acceptStudentAsync(true)}
-                >
-                  Accept
-                </Button>
-                <Button buttonColor={"danger"}>Decline</Button>
-              </div>
-            </div>
-
-            <div className="p-button-flex">
-              <p id="description">{internshipApplication.message}</p>
-            </div>
-
-            <p className="duration">
-              Duration: {internshipApplication.internship.startDate} -{" "}
-              {internshipApplication.internship.endDate}
-            </p>
-
-            <div className="p-flex">
-              <p>{internshipApplication.internship.name}</p>
-              <p></p>
-            </div>
-          </div>
         </div> */}
-
         {pagedInternshipApplications.listSize === 0 && <NoItems />}
         {pagedInternshipApplications.data.map((internshipApplication) => (
           <InternshipApplicationComponent

@@ -16,6 +16,7 @@ export default function StudentsList({
           <td>First name</td>
           <td>Last name</td>
           <td>Email</td>
+          <td>Study Area</td>
           <td>Actions</td>
         </tr>
       </thead>

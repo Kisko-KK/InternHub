@@ -24,4 +24,8 @@ export class Company extends User {
       password: json["Password"],
     });
   }
+
+  getFullName() {
+    return this.firstName + " " + this.lastName;
+  }
 }

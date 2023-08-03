@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Input } from "../components";
+import { Button, Input, NavigationBar } from "../components";
 import { LoginService } from "../services";
 
 export default function LoginPage() {
@@ -18,29 +18,43 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="vh-100 d-flex justify-content-center align-items-center">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col">
-            <div className="col d-flex justify-content-center">
-              <img id="loginimg" src="/images/login.svg" alt="login_image" />
+    <div>
+      <div className="vh-100 d-flex justify-content-center align-items-center">
+        <NavigationBar />
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col">
+              <div className="col d-flex justify-content-center">
+                <img id="loginimg" src="/images/login.svg" alt="login_image" />
+              </div>
+              <div className="text-center mb-3">
+                <h1>Login</h1>
+              </div>
+              <form className="form" onSubmit={onSubmit}>
+                <div className="mb-3">
+                  <Input
+                    type="email"
+                    required={true}
+                    name="email"
+                    text="Email:"
+                    pattern={"[a-zA-Z0-9.-_]+@[a-zA-Z.-]{2,}.[a-zA-Z]{2,}"}
+                  />
+                </div>
+                <div className="mb-3">
+                  <Input
+                    type="password"
+                    required={true}
+                    name="password"
+                    text="Password:"
+                  />
+                </div>
+                <div className="text-center">
+                  <Button type={"submit"} buttonColor={"primary"}>
+                    Login
+                  </Button>
+                </div>
+              </form>
             </div>
-            <div className="text-center mb-3">
-              <h1>Login</h1>
-            </div>
-            <form className="form" onSubmit={onSubmit}>
-              <div className="mb-3">
-                <Input name="email" text="Email:" />
-              </div>
-              <div className="mb-3">
-                <Input type="password" name="password" text="Password:" />
-              </div>
-              <div className="text-center">
-                <Button type={"submit"} buttonColor={"primary"}>
-                  Login
-                </Button>
-              </div>
-            </form>
           </div>
         </div>
       </div>

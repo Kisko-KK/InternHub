@@ -4,9 +4,9 @@ export default function StateComponent({ state }) {
   return (
     <div
       style={{
-        "margin-right": "50px",
+        marginRight: "50px",
         padding: 6,
-        "border-radius": "8px",
+        borderRadius: "8px",
         backgroundColor:
           state.toLowerCase() === "accepted"
             ? "green"

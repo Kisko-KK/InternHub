@@ -8,6 +8,8 @@ export default function Input({
   onChange,
   type,
   required = false,
+  pattern,
+  minLength,
 }) {
   return (
     <div className="mb-3 mt-3">
@@ -23,7 +25,9 @@ export default function Input({
         onChange={onChange}
         defaultValue={defaultValue}
         className="form-control"
+        pattern={pattern}
         required={required}
+        minLength={minLength}
       />
       <br></br>
     </div>

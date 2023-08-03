@@ -72,9 +72,7 @@ export default function StudentInternships() {
             state={internshipApplication.state.name}
             redirectTo={() => {
               navigate(
-                `/internship/details/${internshipApplication.internship.id}/${
-                  loginService.getUserToken().id
-                }`
+                `/internship/details/${internshipApplication.internship.id}`
               );
             }}
           />

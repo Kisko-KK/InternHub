@@ -17,6 +17,7 @@ export default function StudentComponent({
       <td>{student.firstName}</td>
       <td>{student.lastName}</td>
       <td>{student.email}</td>
+      <td>{student.studyArea ? student.studyArea.name : ""}</td>
       <td>
         {isActive && (
           <>

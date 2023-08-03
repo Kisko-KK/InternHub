@@ -126,6 +126,10 @@ namespace InternHub.WebApi.Controllers
                 bool success = await InternshipApplicationService.PostInternshipApplicationAsync(newInternshipApplication, currentUserId);
 
                 if (!success) return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+                //Company existingCompany = null;
+                //await NotificationService.AddAsync("Account rejected", "Dear " + existingCompany.GetFullName() + "!\n\nYour registration for the company " + existingCompany.Name + " on the platform InternHub has been rejected. If you think it's a mistake fell free to contact us!" + " \n\nYour InternHub team", existingCompany);
+
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -189,13 +193,15 @@ namespace InternHub.WebApi.Controllers
 
                 if (!result) return Request.CreateResponse(HttpStatusCode.BadRequest);
 
-                if(isAccepted)
+                string title = "Internship Application Update";
+
+                if (isAccepted)
                 {
-                    await NotificationService.AddAsync("Vaš račun je prihvaćen", "Poštovani " + internshipApplication.Student.GetFullName() + "!\n\nVaša prijava na praksu " + internshipApplication.Internship.Name + " na platformi InternHub je odobrena. Tvrtka će Vas uskoro obavijestiti o daljnjim koracima!" + " \n\nVaša InternHub ekipa", internshipApplication.Student);
+                    await NotificationService.AddAsync(title, "Dear " + internshipApplication.Student.GetFullName() + "!\n\nYour application for the " + internshipApplication.Internship.Name + " internship on the platform InternHub is accepted. The company will soon update you about further steps!" + " \n\nYour InternHub team", internshipApplication.Student);
                 }
                 else
                 {
-                    await NotificationService.AddAsync("Vaš račun je prihvaćen", "Poštovani " + internshipApplication.Student.GetFullName() + "!\n\nVaša prijava na praksu " + internshipApplication.Internship.Name + " na platformi InternHub je odbijena. Nemojte da Vas to obeshabri, uskoro će doći druga prilika!" + " \n\nVaša InternHub ekipa", internshipApplication.Student);
+                    await NotificationService.AddAsync(title, "Dear " + internshipApplication.Student.GetFullName() + "!\n\nYour application for the " + internshipApplication.Internship.Name + " internship on the platform InternHub is declined. Don't let that discourage you, another opportunity will come soon!" + " \n\nYour InternHub team", internshipApplication.Student);
                 }
 
                 return Request.CreateResponse(HttpStatusCode.OK);

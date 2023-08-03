@@ -7,7 +7,8 @@ export default function CompanyList({ companies, onRemove, isActive = true }) {
     <Table>
       <thead>
         <tr>
-          <td>Name</td>
+          <td>Full Name</td>
+          <td>Company Name</td>
           <td>Address</td>
           <td>Website</td>
           <td>Actions</td>

@@ -21,12 +21,14 @@ namespace InternHub.WebApi.Controllers
     public class StudentController : ApiController
     {
         private IStudentService StudentService { get; }
-        private RoleManager RoleManager { get; set; }
+        private RoleManager RoleManager { get; }
+        private INotificationService NotificationService { get; }
 
-        public StudentController(IStudentService studentService, RoleManager roleManager)
+        public StudentController(IStudentService studentService, RoleManager roleManager, INotificationService notificationService)
         {
             StudentService = studentService;
             RoleManager = roleManager;
+            NotificationService = notificationService;
         }
 
         // GET: Student
@@ -167,6 +169,8 @@ namespace InternHub.WebApi.Controllers
 
             if (rowsAffected <= 0) return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't create new student");
 
+            await NotificationService.AddAsync("Account created", "Dear " + mappedStudent.GetFullName() + "!\n\nYour account on the platform InternHub has been created. If you have any problems, feel free to contact us!" + " \n\nYour InternHub team", mappedStudent);
+
             return Request.CreateResponse(HttpStatusCode.OK);
         }
 
@@ -179,10 +183,12 @@ namespace InternHub.WebApi.Controllers
 
             if (existingStudent == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any student with that id! "); }
 
-            if (await StudentService.DeleteAsync(existingStudent) != 1)
+            if (await StudentService.DeleteAsync(existingStudent) <= 0)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Unable to delete student!");
             }
+
+            await NotificationService.AddAsync("Account deleted", "Dear " + existingStudent.GetFullName() + "!\n\nYour account on the platform InternHub has been deleted. If you think it's a mistake fell free to contact us!" + " \n\nYour InternHub team", existingStudent);
 
             return Request.CreateResponse(HttpStatusCode.OK, $"Student with id : {id} is deleted! ");
 

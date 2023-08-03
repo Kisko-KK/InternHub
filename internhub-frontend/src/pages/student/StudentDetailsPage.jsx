@@ -66,7 +66,6 @@ export default function StudentDetailsPage() {
           Address:{" "}
           <b>
             {student.address +
-              ", " +
               (student.county ? ", " + student.county.name : "")}
           </b>
         </div>
@@ -79,17 +78,22 @@ export default function StudentDetailsPage() {
             Study Area: <b>{student.studyArea.name}</b>
           </div>
         )}
-        <Button
-          buttonColor="secondary"
-          onClick={() => {
-            navigate(`/student/edit/${student.id}`);
-          }}
-        >
-          Edit
-        </Button>
-        <Button buttonColor="danger" onClick={removeStudent}>
-          Delete
-        </Button>
+        {(loginService.getUserToken().id === student.id ||
+          sessionStorage.getItem("user_role") === "Admin") && (
+          <>
+            <Button
+              buttonColor="secondary"
+              onClick={() => {
+                navigate(`/student/edit/${student.id}`);
+              }}
+            >
+              Edit
+            </Button>
+            <Button buttonColor="danger" onClick={removeStudent}>
+              Delete
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

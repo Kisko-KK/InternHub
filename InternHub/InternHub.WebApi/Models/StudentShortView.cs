@@ -11,6 +11,7 @@ namespace InternHub.WebApi.Models
         public string Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public StudyAreaView StudyArea { get; set; }
 
         public string Email{ get; set; }
         public StudentShortView(Student student)
@@ -19,6 +20,7 @@ namespace InternHub.WebApi.Models
             FirstName = student.FirstName;
             LastName = student.LastName;
             Email = student.Email;
+            StudyArea = new StudyAreaView(student.StudyArea);
         }
     }
 }

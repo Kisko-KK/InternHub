@@ -23,7 +23,6 @@ const InternshipDetails = () => {
     useState(false);
   const [students, setStudents] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
-  // const [internshipApplicationId, setInternshipApplicationId] = useState("");
   const [isCompany, setIsCompany] = useState(false);
   const studentService = new StudentService();
   const loginService = new LoginService();
@@ -64,7 +63,6 @@ const InternshipDetails = () => {
   };
   const handleApplySuccessAsync = async () => {
     alert("You applied successfully!");
-    // await fetchInternshipApplicationId();
     await fetchIsStudentRegisteredAsync();
   };
 
@@ -170,8 +168,15 @@ const InternshipDetails = () => {
                 />
               </div>
             </div>
-            <div style={{ height: 40 }}></div>
-            {isCompany && <StudentsList students={students} readonly={true} />}
+            {isCompany && (
+              <>
+                <div style={{ height: 40 }}></div>
+                <div className="text-center">
+                  <h4>Accepted students:</h4>
+                </div>
+                <StudentsList students={students} readonly={true} />
+              </>
+            )}
           </div>
         </div>
       </div>

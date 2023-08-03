@@ -13,10 +13,11 @@ export default function CompanyComponent({
 
   return (
     <tr>
+      <td>{company.getFullName()}</td>
       <td>{company.name}</td>
       <td>{company.address}</td>
       <td>
-        <a href={company.website} target="_blank">
+        <a href={company.website} target="_blank" rel="noreferrer">
           {company.website}
         </a>
       </td>
@@ -42,9 +43,14 @@ export default function CompanyComponent({
                   "Are you sure that you want to delete this company?"
                 );
                 if (result) {
-                  await companyService.removeAsync(company.id).then(() => {
-                    onRemove();
-                  });
+                  const removeResult = await companyService.removeAsync(
+                    company.id
+                  );
+                  if (removeResult) onRemove();
+                  else
+                    alert(
+                      "An error occured while removing the company... Please try again later!"
+                    );
                 }
               }}
             >

@@ -25,7 +25,7 @@ namespace InternHub.Repository
             List<Student> students = new List<Student>();
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
             {
-                NpgsqlCommand command = new NpgsqlCommand("select * from \"Student\" s inner join dbo.\"AspNetUsers\" anu on s.\"Id\" = anu.\"Id\"  inner join \"InternshipApplication\" ia on s.\"Id\" = ia.\"StudentId\" where ia.\"IsActive\" = true and anu.\"IsActive\" = true and ia.\"InternshipId\" = @internshipId", connection);
+                NpgsqlCommand command = new NpgsqlCommand("select * from \"Student\" s inner join dbo.\"AspNetUsers\" anu on s.\"Id\" = anu.\"Id\"  inner join \"InternshipApplication\" ia on s.\"Id\" = ia.\"StudentId\" inner join \"State\" sta on sta.\"Id\" = ia.\"StateId\" where ia.\"IsActive\" = true and anu.\"IsActive\" = true and ia.\"InternshipId\" = @internshipId and sta.\"Name\" ilike '%Accepted%'", connection);
                 command.Parameters.AddWithValue("@internshipId", internshipId);
 
                 await connection.OpenAsync();
@@ -422,24 +422,48 @@ namespace InternHub.Repository
 
         public async Task<int> DeleteAsync(Student student)
         {
-            int rowsAffected = 0;
-
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
             {
                 await connection.OpenAsync();
 
-                string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
+
+                using (NpgsqlTransaction transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
 
 
-                NpgsqlCommand updateUserCommand = new NpgsqlCommand(updateUserQuery, connection);
+                        NpgsqlCommand updateUserCommand = new NpgsqlCommand(updateUserQuery, connection, transaction);
 
-                updateUserCommand.Parameters.AddWithValue("@id", student.Id);
-                updateUserCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
+                        updateUserCommand.Parameters.AddWithValue("@id", student.Id);
+                        updateUserCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
 
-                rowsAffected = await updateUserCommand.ExecuteNonQueryAsync();
+                        string internshipApplicationQuery = $"UPDATE public.\"InternshipApplication\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE \"StudentId\" = @studentId;";
+                        NpgsqlCommand internshipApplicationCommand = new NpgsqlCommand(internshipApplicationQuery, connection, transaction);
+                        internshipApplicationCommand.Parameters.AddWithValue("@studentId", student.Id);
+                        internshipApplicationCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
+
+                        int userResult = await updateUserCommand.ExecuteNonQueryAsync();
+                        int internshipApplicationResult = await internshipApplicationCommand.ExecuteNonQueryAsync();
+
+                        int result = userResult * internshipApplicationResult;
+
+                        if (result > 0)
+                            await transaction.CommitAsync();
+                        else
+                            await transaction.RollbackAsync();
+
+                        return result;
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        return 0;
+                    }
+                }
+
             }
-
-            return rowsAffected;
         }
 
         public async Task<int> PutAsync(Student student)
@@ -453,7 +477,7 @@ namespace InternHub.Repository
                     {
                         string updateStudentQuery = "UPDATE public.\"Student\" SET \"StudyAreaId\" = @studyAreaId WHERE \"Id\" = @id ";
 
-                        string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"FirstName\" = @firstName, \"LastName\" = @lastName, \"Address\" = @address, \"Description\" = @description, \"PhoneNumber\" = @phoneNumber, \"Email\" = @email, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
+                        string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"FirstName\" = @firstName, \"LastName\" = @lastName, \"Address\" = @address, \"Description\" = @description, \"PhoneNumber\" = @phoneNumber, \"Email\" = @email, \"DateUpdated\" = @dateUpdated, \"CountyId\" = @countyId WHERE \"Id\" = @id";
 
                         NpgsqlCommand updateStudentCommand = new NpgsqlCommand(updateStudentQuery, connection);
                         NpgsqlCommand updateUserCommand = new NpgsqlCommand(updateUserQuery, connection);
@@ -469,6 +493,7 @@ namespace InternHub.Repository
                         updateUserCommand.Parameters.AddWithValue("@phoneNumber", student.PhoneNumber);
                         updateUserCommand.Parameters.AddWithValue("@email", student.Email);
                         updateUserCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
+                        updateUserCommand.Parameters.AddWithValue("@countyId", student.CountyId);
 
                         int numberOfUserRowsAffected = await updateStudentCommand.ExecuteNonQueryAsync();
                         int numberOfStudentRowsAffected = await updateUserCommand.ExecuteNonQueryAsync();

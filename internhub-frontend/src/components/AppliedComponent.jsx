@@ -4,9 +4,9 @@ export default function AppliedComponent() {
   return (
     <div
       style={{
-        "margin-right": "60px",
+        marginRight: "60px",
         padding: 6,
-        "border-radius": "8px",
+        borderRadius: "8px",
         backgroundColor: "green",
         color: "white",
       }}

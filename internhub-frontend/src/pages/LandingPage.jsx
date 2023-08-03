@@ -1,8 +1,8 @@
 import React from "react";
-import { Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/landingPage.css";
 import { useNavigate } from "react-router-dom";
+import { Button } from "../components";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -19,36 +19,34 @@ const LandingPage = () => {
     navigate("/login");
   };
   return (
-    <div className="d-flex flex-column align-items-center mt-4 justify-content-around">
-      <div className="d-flex align-items-center">
+    <div className="d-flex flex-column align-items-center justify-content-center vh-100 vw-75">
+      <div className="d-flex flex-column align-items-center">
         <img src="/logo192.png" alt="Logo" width="80" height="80" />
-        <h2 className="title ml-3">Welcome to InternHub</h2>
+        <div style={{ height: 25 }}></div>
+        <h1> Welcome to InternHub</h1>
       </div>
       <div className="mt-5" />
       <img src="/images/hello.svg" alt="hello" width={600} />
-      <div className="d-flex justify-content-between w-50 mt-5">
-        <Button
-          variant="primary"
-          className="custom-button"
-          onClick={handleStudentRegistry}
-        >
-          Register as a student
-        </Button>
-        <Button
-          variant="primary"
-          className="custom-button"
-          onClick={handleCompanyRegistry}
-        >
-          Register as a company
+      <div style={{ height: 80 }}></div>
+      <div className="d-flex justify-content-center w-75">
+        <div>
+          <Button onClick={handleStudentRegistry} width={"250px"}>
+            Register as a student
+          </Button>
+        </div>
+        <div style={{ width: 100 }}></div>
+        <div>
+          <Button onClick={handleCompanyRegistry} width={"250px"}>
+            Register as a company
+          </Button>
+        </div>
+      </div>
+      <div style={{ height: 50 }}></div>
+      <div className="row">
+        <Button onClick={handleLogin} width={"250px"}>
+          Login
         </Button>
       </div>
-      <Button
-        variant="primary"
-        className="custom-button mt-5"
-        onClick={handleLogin}
-      >
-        Login
-      </Button>
     </div>
   );
 };

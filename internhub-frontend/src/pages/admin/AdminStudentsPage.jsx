@@ -60,14 +60,6 @@ export default function AdminStudentsPage() {
             setCurrentFilter({ pageNumber: 1 });
           }}
         />
-        {/* <Button
-          buttonColor="success"
-          onClick={() => {
-            navigate("/student/register");
-          }}
-        >
-          New student
-        </Button> */}
         <div style={{ height: 30 }}></div>
         <StudentsList
           students={pagedStudents.data}

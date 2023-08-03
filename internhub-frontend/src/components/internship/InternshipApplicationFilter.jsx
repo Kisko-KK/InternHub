@@ -43,21 +43,23 @@ export default function InternshipApplicationFilter({
             />
           </div>
         </div>
-        <Button type="submit" buttonColor="primary">
-          Filter
-        </Button>
-        {isFilterActive && (
-          <Button
-            buttonColor="secondary"
-            onClick={() => {
-              setFirstName("");
-              setLastName("");
-              onClearFilter();
-            }}
-          >
-            Clear filter
+        <div className="text-center">
+          <Button type="submit" buttonColor="primary">
+            Filter
           </Button>
-        )}
+          {isFilterActive && (
+            <Button
+              buttonColor="secondary"
+              onClick={() => {
+                setFirstName("");
+                setLastName("");
+                onClearFilter();
+              }}
+            >
+              Clear filter
+            </Button>
+          )}
+        </div>
       </Form>
     </div>
   );

@@ -15,6 +15,7 @@ export default function CompanyAdminComponent({ company, onChange }) {
   }
   return (
     <tr>
+      <td>{company.getFullName()}</td>
       <td>{company.name}</td>
       <td>{company.address}</td>
       <td>

@@ -90,6 +90,8 @@ namespace InternHub.WebApi.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Bad Request");
             }
 
+            await NotificationService.AddAsync("Account created", "Dear " + newCompany.GetFullName() + "!\n\nYour account on the platform InternHub has been created. If you have any problems, feel free to contact us!" + " \n\nYour InternHub team", newCompany);
+
             return Request.CreateResponse(HttpStatusCode.OK, newCompany);
         }
 
@@ -130,6 +132,8 @@ namespace InternHub.WebApi.Controllers
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't delete company!");
             }
+
+            await NotificationService.AddAsync("Account deleted", "Dear " + existingCompany.GetFullName() + "!\n\nYour account on the platform InternHub has been deleted. If you think it's a mistake fell free to contact us!" + " \n\nYour InternHub team", existingCompany);
             return Request.CreateResponse(HttpStatusCode.OK, $"Company with id: {id} was deleted!");
         }
 
@@ -157,7 +161,7 @@ namespace InternHub.WebApi.Controllers
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't approve company!");
                     }
 
-                    await NotificationService.AddAsync("Vaš račun je prihvaćen", "Poštovani " + existingCompany.GetFullName() + "!\n\nVaša prijava za tvrtku " + existingCompany.Name + " na platformi InternHub je odobrena. Od sada možete neometano objavljivati vaše prakse!" + " \n\nVaša InternHub ekipa", existingCompany);
+                    await NotificationService.AddAsync("Account accepted", "Dear " + existingCompany.GetFullName() + "!\n\nYour registration for the company " + existingCompany.Name + " on the platform InternHub has been accepted. From now on you can create your internships without interruption!" + " \n\nYour InternHub team", existingCompany);
 
                     return Request.CreateResponse(HttpStatusCode.OK, "Company accepted!");
                 }
@@ -167,6 +171,7 @@ namespace InternHub.WebApi.Controllers
                     {
                         return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't delete company!");
                     }
+                    await NotificationService.AddAsync("Account rejected", "Dear " + existingCompany.GetFullName() + "!\n\nYour registration for the company " + existingCompany.Name + " on the platform InternHub has been rejected. If you think it's a mistake fell free to contact us!" + " \n\nYour InternHub team", existingCompany);
                     return Request.CreateResponse(HttpStatusCode.OK, $"Company with id: {id} was deleted!");
                 }
             }

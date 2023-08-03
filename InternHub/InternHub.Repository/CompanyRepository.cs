@@ -21,19 +21,48 @@ namespace InternHub.Repository
 
         public async Task<bool> DeleteAsync(Company company)
         {
-            int numberOfAffectedRows = 0;
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString.Name))
             {
                 await connection.OpenAsync();
-                string userQuery = $"UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
+                using (NpgsqlTransaction transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        string userQuery = $"UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
+                        NpgsqlCommand userCommand = new NpgsqlCommand(userQuery, connection, transaction);
+                        userCommand.Parameters.AddWithValue("@id", company.Id);
+                        userCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
 
-                NpgsqlCommand userCommand = new NpgsqlCommand(userQuery, connection);
-                userCommand.Parameters.AddWithValue("@id", company.Id);
-                userCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
+                        string internshipQuery = $"UPDATE public.\"Internship\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE \"CompanyId\" = @companyId";
+                        NpgsqlCommand internshipCommand = new NpgsqlCommand(internshipQuery, connection, transaction);
+                        internshipCommand.Parameters.AddWithValue("@companyId", company.Id);
+                        internshipCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
 
-                numberOfAffectedRows = await userCommand.ExecuteNonQueryAsync();
+                        string internshipApplicationQuery = $"UPDATE public.\"InternshipApplication\" ia SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE ia.\"InternshipId\" IN (SELECT i.\"Id\" FROM public.\"Internship\" i WHERE i.\"CompanyId\" = @companyId);";
+                        NpgsqlCommand internshipApplicationCommand = new NpgsqlCommand(internshipApplicationQuery, connection, transaction);
+                        internshipApplicationCommand.Parameters.AddWithValue("@companyId", company.Id);
+                        internshipApplicationCommand.Parameters.AddWithValue("@dateUpdated", company.DateUpdated);
+
+                        int userResult = await userCommand.ExecuteNonQueryAsync();
+                        int internshipResult = await internshipCommand.ExecuteNonQueryAsync();
+                        int internshipApplicationResult = await internshipApplicationCommand.ExecuteNonQueryAsync();
+
+                        int result = userResult * internshipResult * internshipApplicationResult;
+
+                        if (result > 0)
+                            await transaction.CommitAsync();
+                        else
+                            await transaction.RollbackAsync();
+
+                        return result > 0;
+                    }
+                    catch 
+                    { 
+                        await transaction.RollbackAsync();
+                        return false;
+                    }
+                }
             }
-            return numberOfAffectedRows > 0;
         }
 
         public async Task<PagedList<Company>> GetAsync(Sorting sorting, Paging paging, CompanyFilter filter)
@@ -64,7 +93,7 @@ namespace InternHub.Repository
             {
                 await connection.OpenAsync();
 
-                string selectQuery = "SELECT * FROM public.\"Company\" c INNER JOIN dbo.\"AspNetUsers\" u ON c.\"Id\" = u.\"Id\" inner join \"County\" co on u.\"CountyId\" = co.\"Id\" ";
+                string selectQuery = "SELECT u.*, c.*, co.\"Name\" as \"CountyName\" FROM public.\"Company\" c INNER JOIN dbo.\"AspNetUsers\" u ON c.\"Id\" = u.\"Id\" inner join \"County\" co on u.\"CountyId\" = co.\"Id\" ";
                 string countQuery = "SELECT COUNT(*) FROM public.\"Company\" c INNER JOIN dbo.\"AspNetUsers\" u ON c.\"Id\" = u.\"Id\" ";
 
                 string filterQuery = " WHERE 1=1 ";
@@ -199,7 +228,7 @@ namespace InternHub.Repository
                     {
                         string updateCompanySql = "UPDATE \"Company\" SET \"Website\" = @website, \"Name\" = @name WHERE \"Id\" = @id";
 
-                        string updateUserSql = "UPDATE dbo.\"AspNetUsers\" SET \"FirstName\" = @firstname, \"LastName\" = @lastname, \"Address\" = @address, \"Description\" = @description, \"Email\" = @email, \"PhoneNumber\" = @phoneNumber WHERE \"Id\" = @id";
+                        string updateUserSql = "UPDATE dbo.\"AspNetUsers\" SET \"FirstName\" = @firstname, \"LastName\" = @lastname, \"Address\" = @address, \"Description\" = @description, \"Email\" = @email, \"PhoneNumber\" = @phoneNumber, \"CountyId\" = @countyId WHERE \"Id\" = @id";
 
                         using (NpgsqlCommand updateCompanyCommand = new NpgsqlCommand(updateCompanySql, connection, transaction))
                         using (NpgsqlCommand updateUserCommand = new NpgsqlCommand(updateUserSql, connection, transaction))
@@ -215,6 +244,7 @@ namespace InternHub.Repository
                             updateUserCommand.Parameters.AddWithValue("@phoneNumber", company.PhoneNumber);
                             updateUserCommand.Parameters.AddWithValue("@address", company.Address);
                             updateUserCommand.Parameters.AddWithValue("@email", company.Email);
+                            updateUserCommand.Parameters.AddWithValue("@countyId", company.CountyId);
 
                             int companyRowsAffectedCount = await updateCompanyCommand.ExecuteNonQueryAsync();
                             int userRowsAffectedCount = await updateUserCommand.ExecuteNonQueryAsync();
@@ -245,7 +275,7 @@ namespace InternHub.Repository
                 {
                     await connection.OpenAsync();
 
-                    NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM public.\"Company\" INNER JOIN dbo.\"AspNetUsers\" ON public.\"Company\".\"Id\" = dbo.\"AspNetUsers\".\"Id\" INNER JOIN public.\"County\" ON public.\"County\".\"Id\" = dbo.\"AspNetUsers\".\"CountyId\" WHERE \"Company\".\"Id\" = @Id", connection);
+                    NpgsqlCommand command = new NpgsqlCommand("SELECT u.*, c.*, co.\"Name\" as \"CountyName\" FROM public.\"Company\" c INNER JOIN dbo.\"AspNetUsers\" u ON c.\"Id\" = u.\"Id\" INNER JOIN public.\"County\" co ON co.\"Id\" = u.\"CountyId\" WHERE c.\"Id\" = @Id", connection);
                     command.Parameters.AddWithValue("@Id", id);
                     NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
@@ -316,10 +346,7 @@ namespace InternHub.Repository
                     County = new County()
                     {
                         Id = (Guid)reader["CountyId"],
-                        CreatedByUserId = Convert.ToString(reader["CreatedByUserId"]),
-                        UpdatedByUserId = Convert.ToString(reader["UpdatedByUserId"]),
-                        Name = Convert.ToString(reader["Name"]),
-                        IsActive = Convert.ToBoolean(reader["IsActive"])
+                        Name = Convert.ToString(reader["CountyName"]),
                     },
                     DateCreated = Convert.ToDateTime(reader["DateCreated"]),
                     DateUpdated = Convert.ToDateTime(reader["DateUpdated"]),

@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Form, Input, Loader, SelectDropdown } from "../../components";
+import {
+  Button,
+  Form,
+  Input,
+  Loader,
+  NavigationBar,
+  SelectDropdown,
+} from "../../components";
 import { Student } from "../../models";
 import {
   CountyService,
@@ -31,16 +38,20 @@ export default function StudentRegisterPage() {
   if (loading) return <Loader />;
   return (
     <div>
-      {/* <NavigationBar /> */}
-      <div className="text-center">
-        {" "}
-        <h1>Student register</h1>
-      </div>
-      <div style={{ height: 40 }}></div>
+      <NavigationBar />
+
       <div className="container">
+        <div className="text-center">
+          <h1>Student register</h1>
+        </div>
+        <div style={{ height: 40 }}></div>
         <Form
           onSubmit={async (e) => {
             e.preventDefault();
+            if (e.target.password.value !== e.target.confirmpassword.value) {
+              alert("The two passwords don't match!");
+              return;
+            }
             var student = new Student({
               firstName: e.target.firstName.value,
               lastName: e.target.lastName.value,
@@ -62,11 +73,24 @@ export default function StudentRegisterPage() {
             }
           }}
         >
-          <Input name="email" text="Email:" />
-          <Input type="password" name="password" text="Password:" />
-          <Input name="firstName" text="First name:" />
-          <Input name="lastName" text="Last name:" />
-          <Input name="phoneNumber" text="Phone number:" />
+          <Input name="email" text="Email:" type="email" required={true} />
+          <Input
+            type="password"
+            name="password"
+            text="Password:"
+            minLength={6}
+            required={true}
+          />
+          <Input
+            type="password"
+            name="confirmpassword"
+            text="Confirm password:"
+            minLength={6}
+            required={true}
+          />
+          <Input name="firstName" text="First name:" required={true} />
+          <Input name="lastName" text="Last name:" required={true} />
+          <Input name="phoneNumber" text="Phone number:" required={true} />
           <SelectDropdown
             text={"County:"}
             placeholder={"Select county:"}
@@ -75,7 +99,7 @@ export default function StudentRegisterPage() {
             selectedId={countyId}
             onChange={(e) => setCountyId(e.target.value)}
           />
-          <Input name="address" text="Address:" />
+          <Input name="address" text="Address:" required={true} />
           <Input name="description" text="Description:" />
           <SelectDropdown
             text={"Study area:"}
@@ -86,9 +110,11 @@ export default function StudentRegisterPage() {
             onChange={(e) => setStudyAreaId(e.target.value)}
           />
           <br></br>
-          <Button buttonColor="primary" type="submit">
-            Create
-          </Button>
+          <div className="text-center">
+            <Button buttonColor="primary" type="submit">
+              Create
+            </Button>
+          </div>
         </Form>
       </div>
     </div>

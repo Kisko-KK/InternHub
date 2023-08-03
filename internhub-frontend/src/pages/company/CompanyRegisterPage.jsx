@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Button,
-  Form,
-  Input,
-  Loader,
-  SelectDropdown,
-  CompanyNavigation,
-} from "../../components";
+import { Button, Form, Input, Loader, SelectDropdown } from "../../components";
 import "../../styles/index.css";
 import { CountyService } from "../../services";
 import { CompanyService } from "../../services/CompanyService";
@@ -32,12 +25,18 @@ export default function CompanyRegisterPage() {
     }
   };
 
+  if (loading) return <Loader />;
+
   return (
     <div className="container">
-      <h1 className="text-center">Register company page</h1>
+      <h1 className="text-center">Register company</h1>
       <Form
         onSubmit={async (e) => {
           e.preventDefault();
+          if (e.target.password.value !== e.target.confirmpassword.value) {
+            alert("The two passwords don't match!");
+            return;
+          }
           var company = new Company({
             email: e.target.email.value,
             website: e.target.website.value,
@@ -62,23 +61,38 @@ export default function CompanyRegisterPage() {
           }
         }}
       >
-        <Input name="email" text="Email:" />
-        <Input type="password" name="password" text="Password:" />
-        <Input name="companyName" text="Company name:" />
+        <Input name="email" text="Email:" type="email" required={true} />
+        <Input
+          type="password"
+          name="password"
+          text="Password:"
+          minLength={6}
+          required={true}
+        />
+        <Input
+          type="password"
+          name="confirmpassword"
+          text="Confirm password:"
+          minLength={6}
+          required={true}
+        />
+        <Input name="companyName" text="Company name:" required={true} />
         <Input name="website" text="Website:" />
-        <Input name="firstName" text="First name:" />
-        <Input name="lastName" text="Last name:" />
-        <Input name="companyAddress" text="Address:" />
-        <Input name="phoneNumber" text="Phone number:" />
+        <Input name="firstName" text="First name:" required={true} />
+        <Input name="lastName" text="Last name:" required={true} />
+        <Input name="companyAddress" text="Address:" required={true} />
+        <Input name="phoneNumber" text="Phone number:" required={true} />
         <SelectDropdown
           text={"County:"}
           placeholder={"Pick county"}
           name={"county"}
           list={counties}
         />
-        <Input name="description" text="Description:" />
+        <Input name="description" text="Description:" required={true} />
         <br />
-        <Button type="submit">Create</Button>
+        <div className="text-center">
+          <Button type="submit">Create</Button>
+        </div>
       </Form>
     </div>
   );
