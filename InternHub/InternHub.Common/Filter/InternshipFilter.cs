@@ -9,6 +9,7 @@ namespace InternHub.Common.Filter
         public DateTime? StartDate { get; set; } = null;
         public DateTime? EndDate { get; set; } = null;
         public string Name { get; set; } = null;
-        public bool? IsActive { get; set; } = null;
+        public bool IsActive { get; set; } = true;
+        public string CompanyId { get; set; } = null;
     }
 }

@@ -9,21 +9,23 @@ namespace InternHub.Model
 {
     public class InternshipApplicationView
     {
-
+        public Guid Id { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
         public string Message { get; set; }
-
-        public StudentView StudentView { get; set; }    
-        public StateView StateView { get; set; }
+        public StudentView Student { get; set; }
+        public StateView State { get; set; }
+        public InternshipView Internship { get; set; }
 
         public InternshipApplicationView(InternshipApplication internshipApplication)
         {
-            Message=internshipApplication.Message;
-            DateCreated=internshipApplication.DateCreated;  
-            DateUpdated=internshipApplication.DateUpdated;
-            StudentView = new StudentView(internshipApplication.Student);
-            StateView = new StateView(internshipApplication.State);
-        }  
+            Id = internshipApplication.Id;
+            Message = internshipApplication.Message;
+            DateCreated = internshipApplication.DateCreated;
+            DateUpdated = internshipApplication.DateUpdated;
+            Student = new StudentView(internshipApplication.Student);
+            State = new StateView(internshipApplication.State);
+            Internship = new InternshipView(internshipApplication.Internship);
+        }
     }
 }

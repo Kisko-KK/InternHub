@@ -47,7 +47,7 @@ namespace InternHub.Repository
         {
             if (sorting == null) sorting = new Sorting();
             if (paging == null) paging = new Paging();
-            if(filter == null) filter = new InternshipFilter();
+            if (filter == null) filter = new InternshipFilter();
 
             List<Internship> internships = new List<Internship>();
             PagedList<Internship> pagedList = new PagedList<Internship>();
@@ -121,11 +121,14 @@ namespace InternHub.Repository
                 NpgsqlCommand countCommand = new NpgsqlCommand("", connection);
 
                 filterQueryBuilder.Append(filterQuery);
-                if (filter.IsActive != null)
+                filterQueryBuilder.Append(" AND i.\"IsActive\" = @isActive");
+                selectCommand.Parameters.AddWithValue("@isActive", filter.IsActive);
+                countCommand.Parameters.AddWithValue("@isActive", filter.IsActive);
+                if(filter.CompanyId != null)
                 {
-                    filterQueryBuilder.Append(" AND i.\"IsActive\" = @isActive");
-                    selectCommand.Parameters.AddWithValue("@isActive", filter.IsActive.Value);
-                    countCommand.Parameters.AddWithValue("@isActive", filter.IsActive.Value);
+                    filterQueryBuilder.Append(" AND i.\"CompanyId\" = @companyId ");
+                    selectCommand.Parameters.AddWithValue("@companyId", filter.CompanyId);
+                    countCommand.Parameters.AddWithValue("@companyId", filter.CompanyId);
                 }
                 if (filter.Name != null)
                 {
@@ -226,18 +229,21 @@ namespace InternHub.Repository
                                 " sa.\"Name\" AS \"StudyAreaName\", " +
                                 " i.\"CompanyId\"," +
                                 " cv.\"Name\" AS \"CompanyViewName\"," +
-                                " cv.\"Website\" AS \"CompanyWebsite\"" +
-                                " u.\"Address\" AS \"CompanyAddress\"" +
-                                " cv.\"Id\" AS \"CompanyId\"" +
+                                " cv.\"Website\" AS \"CompanyWebsite\"," +
+                                " u.\"Address\" AS \"CompanyAddress\"," +
+                                " cv.\"Id\" AS \"CompanyId\"," +
                                 " i.\"Name\"," +
                                 " i.\"Description\", " +
                                 " i.\"Address\"," +
                                 " i.\"StartDate\"," +
                                 " i.\"EndDate\"" +
-                            " FROM public.\"Internship\" i" +
-                            " INNER JOIN public.\"StudyArea\" sa ON i.\"StudyAreaId\" = sa.\"Id\"" +
-                            " INNER JOIN public.\"Company\" cv ON i.\"CompanyId\" = cv.\"Id\"" +
-                            " where i.\"Id\" = @id";
+                                " FROM public.\"Internship\" i" +
+                                " INNER JOIN public.\"StudyArea\" sa ON i.\"StudyAreaId\" = sa.\"Id\"" +
+                                " INNER JOIN public.\"Company\" cv ON i.\"CompanyId\" = cv.\"Id\"" +
+                                " INNER JOIN dbo.\"AspNetUsers\" u ON cv.\"Id\" = u.\"Id\"" +
+                                " INNER JOIN public.\"County\" c ON c.\"Id\" = u.\"CountyId\"" +
+                                " LEFT JOIN public.\"InternshipApplication\" ia ON i.\"Id\" = ia.\"InternshipId\" AND ia.\"IsActive\" = true" +
+                                " where i.\"Id\" = @id";
                     NpgsqlCommand command = new NpgsqlCommand(query, connection);
 
                     command.Parameters.AddWithValue("@id", id);
@@ -306,6 +312,33 @@ namespace InternHub.Repository
                 return rowsUpdated > 0;
             }
         }
+
+
+        public async Task<bool> IsStudentRegisteredToInternshipAsync(string studentId, Guid internshipId)
+        {
+            using (NpgsqlConnection connection= new NpgsqlConnection(connectionString.Name))
+            {
+                connection.Open();
+
+                NpgsqlCommand command = new NpgsqlCommand("select COUNT(*) " +
+                    "from public.\"InternshipApplication\" ia " +
+                    "inner join public.\"Student\" s on ia.\"StudentId\" = s.\"Id\" " +
+                    "inner join public.\"Internship\" i on ia.\"InternshipId\" = i.\"Id\" and i.\"IsActive\" = true " +
+                    "inner join dbo.\"AspNetUsers\" anu on anu.\"Id\" = s.\"Id\" and anu.\"IsActive\" = true " +
+                    "where ia.\"StudentId\" = @studentId and ia.\"InternshipId\" = @internshipId and ia.\"IsActive\" = true", connection);
+
+                command.Parameters.AddWithValue("@studentId", studentId);
+                command.Parameters.AddWithValue("internshipId", internshipId);
+
+
+                int count = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+
+
+                return count > 0;
+            }
+        }
+
 
         private Internship ReadInternship(NpgsqlDataReader reader)
         {

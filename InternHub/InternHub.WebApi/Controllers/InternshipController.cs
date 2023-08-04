@@ -1,6 +1,7 @@
 ﻿using InternHub.Common;
 using InternHub.Common.Filter;
 using InternHub.Model;
+using InternHub.Model.Common;
 using InternHub.Service;
 using InternHub.Service.Common;
 using InternHub.WebApi.Models;
@@ -18,6 +19,7 @@ using System.Web.Security;
 namespace InternHub.WebApi.Controllers
 {
     [Authorize]
+    [RoutePrefix("api/Internship")]
     public class InternshipController : ApiController
     {
         private IInternshipService InternshipService { get; set; }
@@ -29,12 +31,19 @@ namespace InternHub.WebApi.Controllers
         public async Task<HttpResponseMessage> GetAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] InternshipFilter filter = null)
         {
             PagedList<Internship> pagedList = await InternshipService.GetAsync(sorting, paging, filter);
+            List<InternshipView> internshipViews = new List<InternshipView>();
+            foreach(Internship internship in pagedList.Data)
+            {
+                InternshipView internshipView = new InternshipView(internship);
+                internshipView.IsApplied = await InternshipService.IsStudentRegisteredToInternshipAsync(User.Identity.GetUserId(), internship.Id);
+                internshipViews.Add(internshipView);
+            }
             PagedList<InternshipView> pagedListView = new PagedList<InternshipView>
             {
                 CurrentPage = pagedList.CurrentPage,
                 PageSize = pagedList.PageSize,
                 DatabaseRecordsCount = pagedList.DatabaseRecordsCount,
-                Data = pagedList.Data.Select(intership => new InternshipView(intership)).ToList(),
+                Data = internshipViews,
                 LastPage = pagedList.LastPage
             };
 
@@ -43,7 +52,7 @@ namespace InternHub.WebApi.Controllers
 
 
         [HttpGet]
-        [Route("api/Internship/GetCompanyViewInternship")]
+        [Route("GetCompanyViewInternship")]
         public async Task<HttpResponseMessage> GetCompanyViewInternshipAsync([FromUri] Sorting sorting = null, [FromUri] Paging paging = null, [FromUri] InternshipFilter filter = null)
         {
             PagedList<Internship> pagedList = await InternshipService.GetAsync(sorting, paging, filter);
@@ -68,17 +77,7 @@ namespace InternHub.WebApi.Controllers
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Not found!");
             }
-            InternshipView internshipView = new InternshipView {
-                StudyAreaId = internship.StudyAreaId,
-                StudyArea = new StudyAreaView(internship.StudyArea),
-                CompanyId = internship.CompanyId,
-                Company = new CompanyView(internship.Company),
-                Name = internship.Name,
-                Description = internship.Description,
-                Address = internship.Address,
-                StartDate = internship.StartDate,
-                EndDate = internship.EndDate
-            };
+            InternshipView internshipView = new InternshipView(internship);
             
             return Request.CreateResponse(HttpStatusCode.OK, internshipView);
         }
@@ -90,7 +89,7 @@ namespace InternHub.WebApi.Controllers
             Internship internship = new Internship
             {
                 StudyAreaId = internshipUpdate.StudyAreaId,
-                CompanyId = internshipUpdate.CompanyId,
+                CompanyId = User.Identity.GetUserId(),
                 Name = internshipUpdate.Name,
                 Description = internshipUpdate.Description,
                 Address = internshipUpdate.Address,
@@ -118,7 +117,6 @@ namespace InternHub.WebApi.Controllers
             if (updatedInternship.Address != null) internship.Address = updatedInternship.Address;
             if (updatedInternship.StartDate != null) internship.StartDate = updatedInternship.StartDate;
             if (updatedInternship.EndDate != null) internship.EndDate = updatedInternship.EndDate;
-            if (updatedInternship.CompanyId != null) internship.CompanyId = updatedInternship.CompanyId;
             if (updatedInternship.StudyAreaId != null) internship.StudyAreaId = updatedInternship.StudyAreaId;
 
             if (await InternshipService.PutAsync(internship, currentUserId) == false)
@@ -142,5 +140,18 @@ namespace InternHub.WebApi.Controllers
             }
             return Request.CreateResponse(HttpStatusCode.OK, $"Internship with id:{id} was deleted!");
         }
+
+        
+        [HttpGet]
+        [Route("IsStudentRegisteredToInternship")]
+        public async Task<HttpResponseMessage> IsStudentRegisteredToInternship([FromUri] string studentId, [FromUri] Guid internshipId)
+        {
+            if (await InternshipService.IsStudentRegisteredToInternshipAsync(studentId,internshipId))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, true);
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, false);
+        }
+        
     }
 }

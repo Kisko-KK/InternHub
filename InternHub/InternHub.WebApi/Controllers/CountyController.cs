@@ -22,13 +22,13 @@ namespace InternHub.WebApi.Controllers
         }
 
         // GET: api/County
-        [Authorize]
+        [AllowAnonymous]
         public async Task<HttpResponseMessage> GetAsync()
         {
             try
             {
                 List<County> counties = await CountyService.GetAllAsync();
-                return Request.CreateResponse(HttpStatusCode.OK, counties.Select(x => new CountyView(x)));
+                return Request.CreateResponse(HttpStatusCode.OK, counties.Select(x => new CountyView(x)).OrderBy(x => x.Name));
             }
             catch { return Request.CreateResponse(HttpStatusCode.InternalServerError, "Code crash"); }
         }

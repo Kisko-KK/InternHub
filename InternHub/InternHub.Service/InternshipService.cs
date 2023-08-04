@@ -11,6 +11,7 @@ namespace InternHub.Service
     public class InternshipService : IInternshipService
     {
         private IInternshipRepository InternshipRepository { get; set; }
+
         public InternshipService(IInternshipRepository internshipRepository)
         {
             InternshipRepository = internshipRepository;
@@ -53,6 +54,11 @@ namespace InternHub.Service
             internship.UpdatedByUserId = userId;
             internship.DateUpdated = DateTime.Now;
             return await InternshipRepository.PutAsync(internship);
+        }
+
+        public async Task<bool> IsStudentRegisteredToInternshipAsync(string studentId, Guid internshipId)
+        {
+            return await InternshipRepository.IsStudentRegisteredToInternshipAsync(studentId, internshipId);
         }
     }
 }

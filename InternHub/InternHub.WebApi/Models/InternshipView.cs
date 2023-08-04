@@ -13,6 +13,7 @@ namespace InternHub.WebApi.Models
 
         public InternshipView(Internship internship)
         {
+            Id = internship.Id;
             StudyAreaId = internship.StudyAreaId;
             StudyArea = new StudyAreaView(internship.StudyArea);
             CompanyId = internship.CompanyId;
@@ -22,6 +23,7 @@ namespace InternHub.WebApi.Models
             Address = internship.Address;
             StartDate = internship.StartDate;
             EndDate = internship.EndDate;
+            ApplicationsCount = internship.ApplicationsCount;
         }
 
         public Guid StudyAreaId { get; set; }
@@ -33,5 +35,8 @@ namespace InternHub.WebApi.Models
         public string Address { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public long ApplicationsCount { get; set; }
+        public Guid Id { get; set; }
+        public bool IsApplied { get; set; } = false;
     }
 }

@@ -12,6 +12,7 @@ namespace InternHub.Service.Common
     public interface IStudentService
     {
         Task<PagedList<Student>> GetAllAsync(Sorting sorting, Paging paging, StudentFilter filter);
+        Task<List<Student>> GetByInternship(Guid internshipId);
         Task<Student> GetStudentByIdAsync(string id);
         Task<int> PostAsync(Student student);
         Task<int> DeleteAsync(Student student);

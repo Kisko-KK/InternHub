@@ -20,6 +20,27 @@ namespace InternHub.Repository
             _connectionString = connectionString;
         }
 
+        public async Task<List<Student>> GetByInternship(Guid internshipId)
+        {
+            List<Student> students = new List<Student>();
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
+            {
+                NpgsqlCommand command = new NpgsqlCommand("select * from \"Student\" s inner join dbo.\"AspNetUsers\" anu on s.\"Id\" = anu.\"Id\"  inner join \"InternshipApplication\" ia on s.\"Id\" = ia.\"StudentId\" inner join \"State\" sta on sta.\"Id\" = ia.\"StateId\" where ia.\"IsActive\" = true and anu.\"IsActive\" = true and ia.\"InternshipId\" = @internshipId and sta.\"Name\" ilike '%Accepted%'", connection);
+                command.Parameters.AddWithValue("@internshipId", internshipId);
+
+                await connection.OpenAsync();
+
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.HasRows && await reader.ReadAsync())
+                {
+                    Student student = ReadStudentAsAdmin(reader);
+                    students.Add(student);
+                }
+            }
+            return students;
+        }
+
         public async Task<PagedList<Student>> GetStudentViewAsAdminAsync(Sorting sorting, Paging paging, StudentFilter filter)
         {
             PagedList<Student> pagedStudents = new PagedList<Student>()
@@ -44,6 +65,7 @@ namespace InternHub.Repository
                 string selectQuery = "SELECT * FROM public.\"Student\" s inner join dbo.\"AspNetUsers\" u on u.\"Id\" = s.\"Id\" ";
                 string countQuery = "SELECT COUNT(*) FROM public.\"Student\" s inner join dbo.\"AspNetUsers\" u on u.\"Id\" = s.\"Id\" ";
                 string initialFilterCondition = " WHERE u.\"IsActive\" = true ";
+                //string initialFilterCondition = " WHERE 1=1 ";
 
                 selectQueryBuilder.Append(selectQuery);
                 selectQueryBuilder.Append(initialFilterCondition);
@@ -51,15 +73,19 @@ namespace InternHub.Repository
                 countQueryBuilder.Append(countQuery);
                 countQueryBuilder.Append(initialFilterCondition);
 
+                //if(filter.IsActive != null)
+                //{
+                //    filterQueryBuilder.Append($" AND u.\"IsActive\" = " + filter.IsActive.Value);
+                //}
 
                 if (string.IsNullOrEmpty(filter.FirstName) == false)
                 {
-                    filterQueryBuilder.Append($" AND u.\"FirstName\" LIKE '{filter.FirstName}%'");
+                    filterQueryBuilder.Append($" AND u.\"FirstName\" ILIKE '{filter.FirstName}%'");
                 }
 
                 if (string.IsNullOrEmpty(filter.LastName) == false)
                 {
-                    filterQueryBuilder.Append($" AND u.\"LastName\" LIKE '{filter.LastName}%'");
+                    filterQueryBuilder.Append($" AND u.\"LastName\" ILIKE '{filter.LastName}%'");
                 }
 
 
@@ -175,7 +201,8 @@ namespace InternHub.Repository
 
                 string selectQuery = "SELECT s.*, u.*, c.\"Name\" as \"CountyName\", sa.\"Name\" as \"StudyAreaName\" FROM public.\"Student\" s inner join dbo.\"AspNetUsers\" u on u.\"Id\" = s.\"Id\" inner join public.\"County\" c on c.\"Id\" = u.\"CountyId\" inner join public.\"StudyArea\" sa on sa.\"Id\" = s.\"StudyAreaId\" ";
                 string countQuery = "SELECT COUNT(*) FROM public.\"Student\" s inner join dbo.\"AspNetUsers\" u on u.\"Id\" = s.\"Id\" inner join public.\"County\" c on c.\"Id\" = u.\"CountyId\" inner join public.\"StudyArea\" sa on sa.\"Id\" = s.\"StudyAreaId\" ";
-                string initialFilterCondition = " WHERE u.\"IsActive\" = true ";
+                //string initialFilterCondition = " WHERE u.\"IsActive\" = true ";
+                string initialFilterCondition = " WHERE 1=1 ";
 
                 selectQueryBuilder.Append(selectQuery);
                 selectQueryBuilder.Append(initialFilterCondition);
@@ -183,21 +210,23 @@ namespace InternHub.Repository
                 countQueryBuilder.Append(countQuery);
                 countQueryBuilder.Append(initialFilterCondition);
 
+                filterQueryBuilder.Append($" AND u.\"IsActive\" = " + filter.IsActive);
+
 
                 if (string.IsNullOrEmpty(filter.FirstName) == false)
                 {
-                    filterQueryBuilder.Append($" AND u.\"FirstName\" LIKE '{filter.FirstName}%'");
+                    filterQueryBuilder.Append($" AND u.\"FirstName\" ILIKE '{filter.FirstName}%'");
                 }
 
                 if (string.IsNullOrEmpty(filter.LastName) == false)
                 {
-                    filterQueryBuilder.Append($" AND u.\"LastName\" LIKE '{filter.LastName}%'");
+                    filterQueryBuilder.Append($" AND u.\"LastName\" ILIKE '{filter.LastName}%'");
                 }
 
 
                 if (filter.Counties != null && filter.Counties.Count != 0)
                 {
-                    filterQueryBuilder.Append("AND u.\"CountyId\" IN (");
+                    filterQueryBuilder.Append(" AND u.\"CountyId\" IN (");
 
                     for (int i = 0; i < filter.Counties.Count; i++)
                     {
@@ -214,7 +243,7 @@ namespace InternHub.Repository
 
                 if (filter.StudyAreas != null && filter.StudyAreas.Count != 0)
                 {
-                    filterQueryBuilder.Append("AND s.\"StudyAreaId\" IN (");
+                    filterQueryBuilder.Append(" AND s.\"StudyAreaId\" IN (");
 
                     for (int counter = 0; counter < filter.StudyAreas.Count; counter++)
                     {
@@ -251,7 +280,7 @@ namespace InternHub.Repository
                     while (await dr.ReadAsync())
                     {
                         Student student = ReadStudent(dr);
-                        students.Add(student);
+                        if (student != null) students.Add(student);
                     }
                 }
                 dr.Close();
@@ -270,7 +299,7 @@ namespace InternHub.Repository
 
             return pagedStudents;
         }
-       
+
 
         private Student ReadStudent(NpgsqlDataReader dr)
         {
@@ -287,7 +316,7 @@ namespace InternHub.Repository
             bool isActive = dr.GetBoolean(dr.GetOrdinal("IsActive"));
             Guid studyAreaId = dr.GetGuid(dr.GetOrdinal("StudyAreaId"));
 
-            Student student =  new Student(id, firstName, lastName, email, phoneNumber, address, description, dateCreated, dateUpdated, countyId, isActive, studyAreaId);
+            Student student = new Student(id, firstName, lastName, email, phoneNumber, address, description, dateCreated, dateUpdated, countyId, isActive, studyAreaId);
             student.County = new County
             {
                 Id = countyId,
@@ -308,7 +337,7 @@ namespace InternHub.Repository
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
             {
                 string query = @"
-                SELECT s.*, u.*, sa.""Name"" AS StudyAreaName
+                SELECT s.*, u.*, c.""Name"" as ""CountyName"", sa.""Name"" as ""StudyAreaName""
                 FROM public.""Student"" s
                 INNER JOIN public.""StudyArea"" sa ON s.""StudyAreaId"" = sa.""Id"" inner join dbo.""AspNetUsers"" u on s.""Id"" = u.""Id""
                 INNER JOIN public.""County"" c on u.""CountyId"" = c.""Id""
@@ -340,7 +369,7 @@ namespace InternHub.Repository
                 {
                     try
                     {
-                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\", \"Discriminator\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, @email, false, @password, 'security_stamp', '', false, false, null, false, 0, @username, 'User')";
+                        string insertUserQuery = "INSERT INTO dbo.\"AspNetUsers\" (\"Id\", \"FirstName\", \"LastName\", \"Address\", \"Description\", \"CountyId\", \"IsActive\", \"DateCreated\", \"DateUpdated\", \"Email\", \"EmailConfirmed\", \"PasswordHash\", \"SecurityStamp\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEndDateUtc\", \"LockoutEnabled\", \"AccessFailedCount\", \"UserName\", \"Discriminator\") VALUES (@id, @firstname, @lastname, @address, @description, @countyId, true, @dateCreated, @dateUpdated, @email, false, @password, 'security_stamp', @phoneNumber, false, false, null, false, 0, @username, 'User')";
                         string insertStudentQuery = "INSERT INTO public.\"Student\" (\"Id\", \"StudyAreaId\") VALUES (@id, @studyAreaId)";
 
 
@@ -356,6 +385,7 @@ namespace InternHub.Repository
                         userInsertCommand.Parameters.AddWithValue("@dateCreated", student.DateCreated);
                         userInsertCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
                         userInsertCommand.Parameters.AddWithValue("@email", student.Email);
+                        userInsertCommand.Parameters.AddWithValue("@phoneNumber", student.PhoneNumber);
                         userInsertCommand.Parameters.AddWithValue("@username", student.Email);
                         userInsertCommand.Parameters.AddWithValue("@isActive", student.IsActive = true);
                         userInsertCommand.Parameters.AddWithValue("@password", student.Password);
@@ -392,24 +422,48 @@ namespace InternHub.Repository
 
         public async Task<int> DeleteAsync(Student student)
         {
-            int rowsAffected = 0;
-
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString.Name))
             {
                 await connection.OpenAsync();
 
-                string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
+
+                using (NpgsqlTransaction transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
 
 
-                NpgsqlCommand updateUserCommand = new NpgsqlCommand(updateUserQuery, connection);
+                        NpgsqlCommand updateUserCommand = new NpgsqlCommand(updateUserQuery, connection, transaction);
 
-                updateUserCommand.Parameters.AddWithValue("@id", student.Id);
-                updateUserCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
+                        updateUserCommand.Parameters.AddWithValue("@id", student.Id);
+                        updateUserCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
 
-                rowsAffected = await updateUserCommand.ExecuteNonQueryAsync();
+                        string internshipApplicationQuery = $"UPDATE public.\"InternshipApplication\" SET \"IsActive\" = false, \"DateUpdated\" = @dateUpdated WHERE \"StudentId\" = @studentId;";
+                        NpgsqlCommand internshipApplicationCommand = new NpgsqlCommand(internshipApplicationQuery, connection, transaction);
+                        internshipApplicationCommand.Parameters.AddWithValue("@studentId", student.Id);
+                        internshipApplicationCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
+
+                        int userResult = await updateUserCommand.ExecuteNonQueryAsync();
+                        int internshipApplicationResult = await internshipApplicationCommand.ExecuteNonQueryAsync();
+
+                        int result = userResult * internshipApplicationResult;
+
+                        if (result > 0)
+                            await transaction.CommitAsync();
+                        else
+                            await transaction.RollbackAsync();
+
+                        return result;
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        return 0;
+                    }
+                }
+
             }
-
-            return rowsAffected;
         }
 
         public async Task<int> PutAsync(Student student)
@@ -423,7 +477,7 @@ namespace InternHub.Repository
                     {
                         string updateStudentQuery = "UPDATE public.\"Student\" SET \"StudyAreaId\" = @studyAreaId WHERE \"Id\" = @id ";
 
-                        string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"FirstName\" = @firstName, \"LastName\" = @lastName, \"Address\" = @address, \"Description\" = @description, \"Email\" = @email, \"DateUpdated\" = @dateUpdated WHERE \"Id\" = @id";
+                        string updateUserQuery = "UPDATE dbo.\"AspNetUsers\" SET \"FirstName\" = @firstName, \"LastName\" = @lastName, \"Address\" = @address, \"Description\" = @description, \"PhoneNumber\" = @phoneNumber, \"Email\" = @email, \"DateUpdated\" = @dateUpdated, \"CountyId\" = @countyId WHERE \"Id\" = @id";
 
                         NpgsqlCommand updateStudentCommand = new NpgsqlCommand(updateStudentQuery, connection);
                         NpgsqlCommand updateUserCommand = new NpgsqlCommand(updateUserQuery, connection);
@@ -436,8 +490,10 @@ namespace InternHub.Repository
                         updateUserCommand.Parameters.AddWithValue("@lastName", student.LastName);
                         updateUserCommand.Parameters.AddWithValue("@address", student.Address);
                         updateUserCommand.Parameters.AddWithValue("@description", student.Description);
+                        updateUserCommand.Parameters.AddWithValue("@phoneNumber", student.PhoneNumber);
                         updateUserCommand.Parameters.AddWithValue("@email", student.Email);
                         updateUserCommand.Parameters.AddWithValue("@dateUpdated", student.DateUpdated);
+                        updateUserCommand.Parameters.AddWithValue("@countyId", student.CountyId);
 
                         int numberOfUserRowsAffected = await updateStudentCommand.ExecuteNonQueryAsync();
                         int numberOfStudentRowsAffected = await updateUserCommand.ExecuteNonQueryAsync();

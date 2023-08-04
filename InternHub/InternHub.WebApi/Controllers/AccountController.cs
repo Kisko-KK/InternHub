@@ -19,6 +19,7 @@ using InternHub.WebApi.Results;
 using InternHub.WebApi.Models.Identity;
 using InternHub.Model.Identity;
 using InternHub.Service;
+using System.Web.Security;
 
 namespace InternHub.WebApi.Controllers
 {
@@ -43,6 +44,7 @@ namespace InternHub.WebApi.Controllers
         public UserManager UserManager { get; }
 
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
+
 
         // GET api/Account/UserInfo
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
@@ -118,7 +120,7 @@ namespace InternHub.WebApi.Controllers
 
             IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
                 model.NewPassword);
-            
+
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
@@ -251,13 +253,15 @@ namespace InternHub.WebApi.Controllers
             if (hasRegistered)
             {
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-                
-                 ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                    OAuthDefaults.AuthenticationType);
+
+                ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
+                   OAuthDefaults.AuthenticationType);
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
-                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.UserName);
+                IList<string> roles = await UserManager.GetRolesAsync(user.Id);
+
+                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user, roles.Count == 0 ? "" : roles[0]);
                 Authentication.SignIn(properties, oAuthIdentity, cookieIdentity);
             }
             else
@@ -361,7 +365,7 @@ namespace InternHub.WebApi.Controllers
             result = await UserManager.AddLoginAsync(user.Id, info.Login);
             if (!result.Succeeded)
             {
-                return GetErrorResult(result); 
+                return GetErrorResult(result);
             }
             return Ok();
         }

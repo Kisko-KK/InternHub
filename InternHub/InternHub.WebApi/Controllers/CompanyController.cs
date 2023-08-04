@@ -14,6 +14,7 @@ using System.Web.Http;
 
 namespace InternHub.WebApi.Controllers
 {
+    [RoutePrefix("api/Company")]
     public class CompanyController : ApiController
     {
         private ICompanyService CompanyService { get; }
@@ -52,9 +53,9 @@ namespace InternHub.WebApi.Controllers
 
             if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
 
-            CompanyView companyView = new CompanyView(existingCompany);
+            CompanyDetailsView companyDetailsView = new CompanyDetailsView(existingCompany);
 
-            return Request.CreateResponse(HttpStatusCode.OK, companyView);
+            return Request.CreateResponse(HttpStatusCode.OK, companyDetailsView);
         }
 
         // POST api/<controller>
@@ -73,12 +74,13 @@ namespace InternHub.WebApi.Controllers
                 LastName = company.LastName,
                 Address = company.Address,
                 Description = company.Description,
+                PhoneNumber = company.PhoneNumber,
                 CountyId = company.CountyId,
                 Email = company.Email,
                 Password = passwordHasher.HashPassword(company.Password)
             };
 
-            Role role = await RoleManager.FindByNameAsync("Company");
+            Role role = await RoleManager.FindByNameAsync("User");
             if (role == null) return Request.CreateResponse(HttpStatusCode.InternalServerError);
 
             newCompany.RoleId = role.Id;
@@ -87,6 +89,8 @@ namespace InternHub.WebApi.Controllers
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Bad Request");
             }
+
+            await NotificationService.AddAsync("Account created", "Dear " + newCompany.GetFullName() + "!\n\nYour account on the platform InternHub has been created. If you have any problems, feel free to contact us!" + " \n\nYour InternHub team", newCompany);
 
             return Request.CreateResponse(HttpStatusCode.OK, newCompany);
         }
@@ -105,6 +109,7 @@ namespace InternHub.WebApi.Controllers
             if (updatedCompany.LastName != null) existingCompany.LastName = updatedCompany.LastName;
             if (updatedCompany.Address != null) existingCompany.Address = updatedCompany.Address;
             if (updatedCompany.Description != null) existingCompany.Description = updatedCompany.Description;
+            if (updatedCompany.PhoneNumber != null) existingCompany.PhoneNumber = updatedCompany.PhoneNumber;
             if (updatedCompany.Email != null) existingCompany.Email = updatedCompany.Email;
             if (updatedCompany.CountyId != null) existingCompany.CountyId = updatedCompany.CountyId.Value;
 
@@ -127,25 +132,50 @@ namespace InternHub.WebApi.Controllers
             {
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't delete company!");
             }
+
+            await NotificationService.AddAsync("Account deleted", "Dear " + existingCompany.GetFullName() + "!\n\nYour account on the platform InternHub has been deleted. If you think it's a mistake fell free to contact us!" + " \n\nYour InternHub team", existingCompany);
             return Request.CreateResponse(HttpStatusCode.OK, $"Company with id: {id} was deleted!");
         }
 
 
-        [HttpPut, Route("api/Company/Approve/{id}")]
+        [HttpPut, Route("Approve")]
         [Authorize(Roles = "Admin")]
-        public async Task<HttpResponseMessage> ApproveAsync(string id)
+        public async Task<HttpResponseMessage> ApproveAsync(string id, bool isAccepted)
         {
-            Company existingCompany = await CompanyService.GetAsync(id);
-            if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
-
-            if (await CompanyService.AcceptAsync(existingCompany) == false)
+            try
             {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't approve company!");
+                Company existingCompany = await CompanyService.GetAsync(id);
+
+                if (existingCompany.IsAccepted) return Request.CreateResponse(HttpStatusCode.OK);
+
+                if (existingCompany == null) { return Request.CreateResponse(HttpStatusCode.NotFound, "There isn't any company with that id!"); }
+
+
+                if (isAccepted)
+                {
+                    Role role = await RoleManager.FindByNameAsync("Company");
+                    if (role == null) throw new Exception();
+                    existingCompany.RoleId = role.Id;
+                    if (await CompanyService.AcceptAsync(existingCompany) == false)
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Couldn't approve company!");
+                    }
+
+                    await NotificationService.AddAsync("Account accepted", "Dear " + existingCompany.GetFullName() + "!\n\nYour registration with the company " + existingCompany.Name + " on the platform InternHub has been accepted. From now on you can create your internships without interruption!" + " \n\nYour InternHub team", existingCompany);
+
+                    return Request.CreateResponse(HttpStatusCode.OK, "Company accepted!");
+                }
+                else
+                {
+                    if (await CompanyService.DeleteAsync(existingCompany) == false)
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Couldn't delete company!");
+                    }
+                    await NotificationService.AddAsync("Account rejected", "Dear " + existingCompany.GetFullName() + "!\n\nYour registration with the company " + existingCompany.Name + " on the platform InternHub has been rejected. If you think it's a mistake fell free to contact us!" + " \n\nYour InternHub team", existingCompany);
+                    return Request.CreateResponse(HttpStatusCode.OK, $"Company with id: {id} was deleted!");
+                }
             }
-
-            await NotificationService.AddAsync("Vaš račun je prihvaćen", "Poštovani " + existingCompany.GetFullName() + "!\n\nVaša prijava za tvrtku " + existingCompany.Name + " na platformi InternHub je odobrena. Od sada možete neometano objavljivati vaše prakse!" + " \n\nVaša InternHub ekipa", existingCompany);
-
-            return Request.CreateResponse(HttpStatusCode.OK, "Company accepted!");
+            catch { return Request.CreateResponse(HttpStatusCode.InternalServerError); }
         }
     }
 }

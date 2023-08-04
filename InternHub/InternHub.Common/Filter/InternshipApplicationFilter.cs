@@ -8,10 +8,12 @@ namespace InternHub.Common.Filter
 {
     public class InternshipApplicationFilter
     {
-        public string StateName { get; set; }
-
-        public string InternshipName { get; set; }
-
-        
+        public List<Guid> States { get; set; } = null;
+        public string InternshipName { get; set; } = null;
+        public string CompanyName { get; set; }
+        public string StudentId { get; set; } = null;
+        public string CompanyId { get; set; } = null;
+        public string FirstName { get; set; } = null;
+        public string LastName { get; set; } = null;
     }
 }

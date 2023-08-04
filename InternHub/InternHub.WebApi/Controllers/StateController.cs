@@ -22,13 +22,13 @@ namespace InternHub.WebApi.Controllers
         }
 
         // GET: api/State
-        [Authorize]
+        [AllowAnonymous]
         public async Task<HttpResponseMessage> GetAsync()
         {
             try
             {
                 List<State> states = await StateService.GetAllAsync();
-                return Request.CreateResponse(HttpStatusCode.OK, states.Select(x => new StateView(x)));
+                return Request.CreateResponse(HttpStatusCode.OK, states.Select(x => new StateView(x)).OrderBy(x => x.Name));
             }
             catch { return Request.CreateResponse(HttpStatusCode.InternalServerError, "Code crash"); }
         }
@@ -49,7 +49,7 @@ namespace InternHub.WebApi.Controllers
 
         // POST: api/State
         [Authorize(Roles = "Admin")]
-        public async Task<HttpResponseMessage> PostASync([FromBody] StatePut state)
+        public async Task<HttpResponseMessage> PostAsync([FromBody] StatePut state)
         {
             try
             {
