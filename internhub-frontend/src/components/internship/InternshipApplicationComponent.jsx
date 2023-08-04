@@ -52,7 +52,7 @@ export default function InternshipApplicationComponent({
       <div id="internship-container">
         <div className="header-container">
           <h3>{getStudentName()}</h3>
-          <div className="row text-center">
+          <div className="row text-center move-left-relative bg">
             <Button
               buttonColor={"success"}
               onClick={async () => await acceptStudentAsync(true)}

@@ -143,3 +143,11 @@ body {
   align-items: center;
   background-color: #a8bbbf;
 }
+
+.bg {
+  background-color: #a8bbbf;
+}
+
+.move-left-relative {
+  transform: translate(-30%, 0);
+}

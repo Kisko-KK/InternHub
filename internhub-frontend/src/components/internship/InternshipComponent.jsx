@@ -34,7 +34,7 @@ export default function InternshipComponent({
 
         <div className="p-button-flex">
           <p id="description">{internship.description}</p>
-          <div>
+          <div className="bg text-center">
             <Button onClick={() => redirectTo()}>{buttonText}</Button>
             {isOwner && (
               <Button
